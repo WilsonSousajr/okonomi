@@ -24,7 +24,7 @@ gem "jbuilder"
 # posicional. Com json 3.0.2 toda leitura de cookie assinado levanta
 # "ArgumentError: wrong number of arguments (given 2, expected 1)" e a
 # autenticacao inteira quebra. Ver #36.
-gem "json", "~> 2.9"
+gem "json", "~> 3.0"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"

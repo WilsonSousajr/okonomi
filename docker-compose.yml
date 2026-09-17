@@ -1,0 +1,33 @@
+# PostgreSQL de desenvolvimento e teste.
+# Evita exigir instalação local do banco em cada máquina da equipe (#22).
+# Produção não usa este arquivo — ver docs/INFRAESTRUTURA.md (#33).
+#
+# Nenhuma senha é fixada aqui. Copie .env.example para .env e defina
+# POSTGRES_PASSWORD; a sintaxe `:?` faz o compose falhar em vez de subir o
+# banco com uma senha conhecida por quem ler o repositório.
+
+name: okonomi
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: okonomi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-okonomi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no seu .env (veja .env.example)}
+      POSTGRES_DB: ${POSTGRES_DB:-okonomi_development}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-okonomi} -d ${POSTGRES_DB:-okonomi_development}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    name: okonomi_postgres_data

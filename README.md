@@ -51,6 +51,8 @@ cd okonomi
 
 git config core.hooksPath .githooks   # ativa a validação da mensagem de commit
 mise install                          # instala o Ruby 3.4.10 fixado em .mise.toml
+
+cp .env.example .env                  # e defina POSTGRES_PASSWORD
 docker compose up -d postgres         # sobe o banco
 bin/setup                             # instala gems, cria e migra o banco
 bin/dev                               # sobe a aplicação em http://localhost:3000

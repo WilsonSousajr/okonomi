@@ -29,3 +29,13 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        user_story:
+          attributes:
+            backlog:
+              must_be_product_backlog: "must be the product backlog when the story is created"
+              must_belong_to_same_project: "must belong to the story's project"
+            epic:
+              must_belong_to_same_project: "must belong to the story's project"

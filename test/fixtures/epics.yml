@@ -1,0 +1,7 @@
+okonomi_auth:
+  project: okonomi
+  title: Acesso ao sistema
+
+other_epic:
+  project: other_project
+  title: Épico de outro projeto

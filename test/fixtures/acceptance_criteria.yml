@@ -1,0 +1,5 @@
+login_success:
+  user_story: login
+  context: um usuário cadastrado na tela de login
+  action: ele informa e-mail e senha corretos
+  outcome: é levado à lista dos seus projetos

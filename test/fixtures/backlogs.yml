@@ -1,0 +1,17 @@
+okonomi_product:
+  project: okonomi
+  kind: product
+  name: Product backlog
+
+okonomi_sprint_one:
+  project: okonomi
+  kind: sprint
+  name: Sprint 1
+  goal: Autenticação funcionando de ponta a ponta.
+  starts_on: 2026-09-28
+  ends_on: 2026-10-11
+
+other_product:
+  project: other_project
+  kind: product
+  name: Product backlog

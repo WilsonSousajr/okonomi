@@ -12,6 +12,9 @@ default: &default
   port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
   username: <%= ENV.fetch("POSTGRES_USER", "okonomi") %>
   password: <%= ENV["POSTGRES_PASSWORD"] %>
+  # libpq negotiates GSSAPI by default, which deadlocks in forked test workers on
+  # macOS (#52). None of our Postgres servers use GSSAPI.
+  gssencmode: disable
 
 development:
   <<: *default

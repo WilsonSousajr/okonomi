@@ -210,6 +210,11 @@ check the issue before undoing any of them.
   fails with a `LoadError` on a missing directory, not a helpful message, if it is
   ever deleted.
 
+- **`gssencmode: disable` in `config/database.yml` must stay** (#52). Rails forks
+  parallel test workers once the suite reaches 50 tests, and libpq's default GSSAPI
+  negotiation deadlocks in forked processes on macOS: `bin/rails test` hangs forever
+  with idle workers and no error. `PARALLEL_WORKERS=1` hides it; it does not fix it.
+
 - **Port 3000 is often taken** by another service on this machine. Run
   `bin/rails server -p 3001` and check with `lsof -nP -iTCP:3000 -sTCP:LISTEN` before
   concluding the app is broken.

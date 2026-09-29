@@ -1,0 +1,20 @@
+login:
+  project: okonomi
+  backlog: okonomi_product
+  epic: okonomi_auth
+  role: usuário cadastrado
+  action: entrar com e-mail e senha
+  benefit: acessar meus projetos
+  story_points: 3
+  moscow: M
+  rice_reach: 100
+  rice_impact: 2
+  rice_confidence: 80
+  rice_effort: 3
+
+other_story:
+  project: other_project
+  backlog: other_product
+  role: usuário
+  action: fazer algo
+  benefit: obter algo

@@ -14,3 +14,8 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+# Rails singularizes "criteria" to "criterium"; the domain term is "criterion" (#12).
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular "criterion", "criteria"
+end

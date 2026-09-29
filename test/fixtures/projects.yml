@@ -1,0 +1,8 @@
+okonomi:
+  user: one
+  name: okonomi
+  description: Gestão de requisitos com histórias de usuário.
+
+other_project:
+  user: two
+  name: Projeto de outro usuário

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Renders the textual artefacts in docs/*.md to docs/pdf/*.pdf (instruction 7, #58).
+# Markdown stays the versioned source; the PDF is always regenerated from it.
+#
+#   bin/docs-pdf                  # every docs/*.md
+#   bin/docs-pdf docs/VISAO.md    # just the given files
+#
+# Needs pandoc and Chrome/Chromium. Set CHROME_BIN if Chrome is not found.
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+css="$root/lib/docs_pdf/print.css"
+out_dir="$root/docs/pdf"
+
+command -v pandoc >/dev/null || { echo "pandoc não encontrado (brew install pandoc)" >&2; exit 1; }
+
+chrome="${CHROME_BIN:-}"
+if [ -z "$chrome" ]; then
+  for candidate in "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" google-chrome chromium chromium-browser; do
+    if command -v "$candidate" >/dev/null 2>&1 || [ -x "$candidate" ]; then chrome="$candidate"; break; fi
+  done
+fi
+[ -n "$chrome" ] || { echo "Chrome não encontrado; defina CHROME_BIN" >&2; exit 1; }
+
+if [ "$#" -gt 0 ]; then sources=("$@"); else sources=("$root"/docs/*.md); fi
+
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
+mkdir -p "$out_dir"
+
+for source in "${sources[@]}"; do
+  name="$(basename "$source" .md)"
+  html="$work/$name.html"
+  # --embed-resources inlines images and CSS, so Chrome needs no file access beyond the HTML.
+  pandoc "$source" --from gfm --to html5 --standalone --embed-resources \
+    --resource-path="$(dirname "$source")" --css "$css" \
+    --metadata pagetitle="$name" --metadata lang=pt-BR --output "$html"
+  "$chrome" --headless --disable-gpu --no-pdf-header-footer \
+    --print-to-pdf="$out_dir/$name.pdf" "file://$html" 2>/dev/null
+  echo "docs/pdf/$name.pdf"
+done

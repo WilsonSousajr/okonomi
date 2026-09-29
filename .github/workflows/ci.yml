@@ -18,7 +18,7 @@ jobs:
     env:
       RUBOCOP_CACHE_ROOT: tmp/rubocop
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -36,7 +36,7 @@ jobs:
     name: Brakeman e auditoria de dependências
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Instalar pacotes do sistema
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -97,7 +97,7 @@ jobs:
     steps:
       - name: Instalar pacotes do sistema
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true

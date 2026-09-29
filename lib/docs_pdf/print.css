@@ -27,3 +27,7 @@ pre code { background: none; padding: 0; }
 img { max-width: 100%; border: 1px solid #ccc; }
 a { color: #0645ad; text-decoration: none; }
 blockquote { margin: 0 0 0 10pt; padding-left: 8pt; border-left: 3px solid #ccc; color: #444; }
+
+/* Keep an image's caption paragraph on the same page as the image. */
+p:has(+ p > img) { break-after: avoid; }
+p:has(> img) { break-inside: avoid; }

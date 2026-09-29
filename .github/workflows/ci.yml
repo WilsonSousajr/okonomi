@@ -36,6 +36,11 @@ jobs:
     name: Brakeman e auditoria de dependências
     runs-on: ubuntu-latest
     steps:
+      # `bin/importmap audit` sobe a aplicação, e desde o image_processing 2.0 o
+      # ruby-vips é carregado no boot. Sem o libvips o job falha em FFI, não por
+      # uma vulnerabilidade de verdade (PR #42).
+      - name: Instalar pacotes do sistema
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
       - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:

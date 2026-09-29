@@ -103,7 +103,7 @@ jobs:
           bundler-cache: true
       - run: bin/rails db:test:prepare test:system
       - name: Guardar screenshots de testes de sistema que falharam
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: screenshots

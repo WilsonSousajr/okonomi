@@ -21,4 +21,5 @@ Closes #<!-- número da issue. Todo PR fecha ou referencia uma issue. -->
 - [ ] Cada critério de aceitação da issue tem um teste correspondente
 - [ ] Se corrige um defeito: existe teste de regressão que falhava antes da correção
 - [ ] Título do PR segue `tipo(#issue): mensagem`
+- [ ] Se entrega artefato: revisão de ortografia e clareza feita (instrução 5, ver `docs/ENTREGA.md`)
 - [ ] Cartão movido para **Review** no quadro

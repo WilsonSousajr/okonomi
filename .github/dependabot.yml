@@ -1,12 +1,29 @@
 version: 2
 updates:
-- package-ecosystem: bundler
-  directory: "/"
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 10
-- package-ecosystem: github-actions
-  directory: "/"
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 10
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    ignore:
+      # O json está fixado em ~> 2.9 de propósito (#36): o json 3.0 tornou as
+      # opções de JSON.parse exclusivamente nomeadas, e o
+      # ActiveSupport::JSON.decode do Rails 8.1.3.1 ainda passa um hash
+      # posicional. Com o json 3.x toda leitura de cookie assinado levanta
+      # ArgumentError e a autenticação para de funcionar (PR #43 foi fechado
+      # por isso).
+      #
+      # `version-update:semver-major` bloqueia apenas atualizações de versão.
+      # Alertas de segurança continuam chegando: se surgir uma CVE no json 2.x,
+      # queremos saber.
+      #
+      # Remover este ignore junto com a fixação no Gemfile, quando o Rails
+      # publicar uma versão que aceite json 3.x.
+      - dependency-name: "json"
+        update-types: [ "version-update:semver-major" ]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10

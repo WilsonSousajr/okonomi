@@ -20,7 +20,7 @@ participantes).
 | # | Artefato | Documento | Issue | Autor | Situação |
 |---|---|---|---|---|---|
 | 1 | Descrição do processo (quadro e cartões Kanban) | [`docs/PROCESSO.md`](PROCESSO.md) | [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | José Wilson Barbosa de Sousa Júnior | em revisão |
-| 2 | Documento de visão e escopo | [`docs/VISAO.md`](VISAO.md) | [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | José Wilson Barbosa de Sousa Júnior | a fazer |
+| 2 | Documento de visão e escopo | [`docs/VISAO.md`](VISAO.md) | [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 3 | Requisitos não funcionais | [`docs/REQUISITOS-NAO-FUNCIONAIS.md`](REQUISITOS-NAO-FUNCIONAIS.md) | [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | José Wilson Barbosa de Sousa Júnior | a fazer |
 | 4 | Requisitos funcionais por histórias de usuário | [`docs/HISTORIAS-DE-USUARIO.md`](HISTORIAS-DE-USUARIO.md) | [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | José Wilson Barbosa de Sousa Júnior | a fazer |
 | 5 | Architecture notebook | [`docs/ARQUITETURA.md`](ARQUITETURA.md) | [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | José Wilson Barbosa de Sousa Júnior | a fazer |
@@ -33,6 +33,9 @@ A coluna **Situação** acompanha o quadro Kanban: *a fazer* (Backlog ou Sprint
 Backlog), *em andamento* (Doing), *em revisão* (Review) e *concluído* (Done). O
 histórico de cada artefato — quem escreveu cada trecho e quando — está no
 histórico de commits do repositório.
+
+Cada documento é entregue também em **PDF** (instrução 7), em
+[`docs/pdf/`](pdf/), gerado a partir do Markdown por `bin/docs-pdf`.
 
 ## Como as instruções 1 a 6 são atendidas
 
@@ -74,6 +77,5 @@ branco.
 ## Entrega
 
 O arquivo de entrega (instruções 26 e 27) terá o nome **`ESW-241024259.ZIP`**,
-formado pela matrícula do único autor. Conteúdo, conversão dos documentos para
-PDF (instrução 7) e verificações finais (instrução 28) estão em
+formado pela matrícula do único autor. Conteúdo, os PDFs de `docs/pdf/` (instrução 7) e verificações finais (instrução 28) estão em
 [#35](https://github.com/WilsonSousajr/okonomi/issues/35).

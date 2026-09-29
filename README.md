@@ -39,7 +39,7 @@ Dois formatos são impostos pela estrutura de dados, não por convenção:
 
 ## Como rodar
 
-Pré-requisitos: [mise](https://mise.jdx.dev) e Docker.
+Pré-requisitos: [mise](https://mise.jdx.dev) e Docker. Para gerar os PDFs dos artefatos: [pandoc](https://pandoc.org) e Google Chrome (`bin/docs-pdf`).
 
 ```bash
 git clone https://github.com/WilsonSousajr/okonomi.git
@@ -110,6 +110,9 @@ O hook `.githooks/commit-msg` recusa mensagens fora do padrão.
 | Seção 5 — 9 critérios de avaliação | *checkboxes* na issue do artefato correspondente; as labels `artefato:*` mapeiam 1:1 com os critérios |
 
 ## Documentação
+
+Os documentos são escritos em Markdown e entregues em PDF (instrução 7): cada um tem
+sua versão em [`docs/pdf/`](docs/pdf/), gerada por `bin/docs-pdf`.
 
 | Artefato | Documento |
 |---|---|

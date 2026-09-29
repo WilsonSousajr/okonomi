@@ -56,7 +56,7 @@ app/
 ├── controllers/         thin: authenticate, authorise, call a model, render
 ├── views/               ERB + Turbo frames/streams
 ├── javascript/          Stimulus controllers only
-└── services/            POROs for logic that spans models
+└── services/            POROs for logic that spans models (created when first needed)
 config/
 db/                      migrations + schema.rb (never edit schema.rb by hand)
 test/
@@ -64,7 +64,7 @@ test/
 ├── controllers/         authorisation and happy path
 ├── system/              end-to-end, one per acceptance scenario in the RF issues
 └── fixtures/
-docs/
+docs/                    only RF/ exists so far; the rest land with issues #25-#33
 ├── RF/                  the course brief (PDF) and the .odt templates — DO NOT EDIT
 ├── PROCESSO.md          artefato 1 — Kanban process description
 ├── VISAO.md             artefato 2 — vision and scope
@@ -97,12 +97,18 @@ bin/rails test:system                    # end-to-end, headless
 Day-to-day:
 
 ```bash
+cp .env.example .env                     # then set POSTGRES_PASSWORD — see below
 docker compose up -d postgres            # database (no local install needed)
 bin/setup                                # install gems, create and migrate the DB
 bin/dev                                  # server + Tailwind watcher on :3000
 bin/rails db:migrate
 RAILS_ENV=test bin/rails db:migrate
 ```
+
+**`.env` is required, not optional.** No credential has a default value anywhere in
+the repository, so without it `docker compose` refuses to start and `bin/rails` cannot
+connect. `dotenv-rails` loads it in development and test only; in production the
+variables come from the deployment environment.
 
 The gate is necessary, not sufficient. A green gate says the units pass; it does not
 say the screens work. **Every requirement issue also ends with the flow exercised in a
@@ -181,6 +187,42 @@ real browser**, because the evaluated deliverable is a working prototype plus a 
 - Every new dependency is a line in `docs/INFRAESTRUTURA.md` (#33) and a licence to
   declare in `docs/REQUISITOS-NAO-FUNCIONAIS.md` (#27). Adding one is not free.
 
+## Gotchas
+
+Things that cost real time here. Each one is pinned or worked around for a reason —
+check the issue before undoing any of them.
+
+- **`json` is pinned to `~> 2.9` and must stay there** (#36). `json 3.0` made
+  `JSON.parse`'s options keyword-only; Rails 8.1.3.1's `ActiveSupport::JSON.decode`
+  still passes a positional hash. Ruby 3.4.10 ships `json 3.0.2` as a default gem, so
+  unpinning breaks **every signed-cookie read** — authentication stops working
+  entirely, with `ArgumentError: wrong number of arguments (given 2, expected 1)`
+  pointing at `authentication.rb`, which is nowhere near the actual cause. Remove the
+  pin only when Rails ships a version that handles `json 3.x`.
+
+- **`minitest/mock` does not exist.** Minitest 6 dropped it, so `Rails.stub(...)` and
+  `Object#stub` raise `NoMethodError`/`LoadError`. To vary the environment in a test,
+  assign and restore it directly — see `with_env` in
+  `test/controllers/concerns/authentication_test.rb`.
+
+- **`rails new` did not generate `test/system/`** or
+  `application_system_test_case.rb`; both were added by hand. `bin/rails test:system`
+  fails with a `LoadError` on a missing directory, not a helpful message, if it is
+  ever deleted.
+
+- **Port 3000 is often taken** by another service on this machine. Run
+  `bin/rails server -p 3001` and check with `lsof -nP -iTCP:3000 -sTCP:LISTEN` before
+  concluding the app is broken.
+
+- **The `ci` check that protects `main` is an aggregating job**, not any individual
+  one. Add new steps as jobs listed in its `needs:`; never rename the `ci` job, or
+  branch protection silently stops matching anything.
+
+- **GitGuardian scans every commit in a pull request, not just the final tree.** If a
+  secret lands in an early commit, removing it in a later one does not clear the
+  check — squash the branch (`git reset --soft origin/main && git commit`) so no
+  commit ever contained it.
+
 ## Cross-cutting invariants (do not violate)
 
 These come straight from section 2 of the brief. Each is validated **in the model**,
@@ -206,8 +248,11 @@ only in a form is not a rule.
    not define this case; this is our decision and it is recorded in #19.
 8. **Every user sees only their own data.** Every query is scoped through the current
    user; cross-user access returns not-found, not forbidden.
-9. **Every functional requirement in section 2 maps to exactly one issue labelled `RF`.**
-   If you find work that no issue covers, open the issue first.
+9. **The session cookie is `secure` in production** and `httponly` / `SameSite=Lax`
+   everywhere (#40). Set through `session_cookie_options` in the `Authentication`
+   concern, never inline at the call site.
+10. **Every functional requirement in section 2 maps to exactly one issue labelled
+    `RF`.** If you find work that no issue covers, open the issue first.
 
 ## Testing instructions
 
@@ -249,9 +294,16 @@ is not an exemption: the bug was reachable, so something can reach it again.
 
 ## Security considerations
 
-- **Never commit secrets.** Credentials go in Rails encrypted credentials or the
-  environment. `.env` is gitignored; `.env.example` documents the keys with dummy
-  values.
+- **Never commit secrets — and a default counts as a secret.** No credential has a
+  default value anywhere in the repository, not even for development: a password
+  written into `docker-compose.yml`, `config/database.yml` or a CI workflow is a
+  published password. `docker-compose.yml` uses `${POSTGRES_PASSWORD:?...}` so it
+  fails loudly instead of starting with a known one, and CI uses
+  `POSTGRES_HOST_AUTH_METHOD=trust` on its throwaway container so no password exists
+  to leak. `.env` is gitignored; `.env.example` documents the **keys**, never values.
+- **The session cookie is `secure` in production** (#40), and `force_ssl` is on.
+  Without it the signed cookie travels over plain HTTP and anyone on the network path
+  takes over the session without needing the password.
 - **Passwords are stored as digests** via `has_secure_password`, never in plain text.
 - **Strong parameters everywhere.** Never `permit!`.
 - **Authorisation is checked on every action**, not just hidden in the view. A link

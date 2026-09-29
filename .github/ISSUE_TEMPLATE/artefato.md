@@ -19,6 +19,10 @@ labels: docs
 
 - [ ] <bullet literal do critério>
 
+## Revisão (instrução 5)
+
+- [ ] Ortografia, clareza, consistência e links revisados antes do merge (rotina em `docs/ENTREGA.md`)
+
 ## Rastreabilidade
 
 - Relacionado: #

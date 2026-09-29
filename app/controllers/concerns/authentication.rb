@@ -34,6 +34,19 @@ module Authentication
       redirect_to new_session_path
     end
 
+    # `secure` fecha o sequestro de sessão por rede: sem ele o cookie assinado
+    # trafega em HTTP puro e quem estiver no caminho assume a sessão sem precisar
+    # da senha (#40). Fora de produção fica false, senão o desenvolvimento local
+    # em http://localhost nunca receberia o cookie.
+    def session_cookie_options(session)
+      {
+        value: session.id,
+        httponly: true,
+        same_site: :lax,
+        secure: Rails.env.production?
+      }
+    end
+
     def after_authentication_url
       session.delete(:return_to_after_authenticating) || root_url
     end
@@ -41,7 +54,7 @@ module Authentication
     def start_new_session_for(user)
       user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
         Current.session = session
-        cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
+        cookies.signed.permanent[:session_id] = session_cookie_options(session)
       end
     end
 

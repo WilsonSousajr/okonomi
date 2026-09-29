@@ -18,12 +18,12 @@ jobs:
     env:
       RUBOCOP_CACHE_ROOT: tmp/rubocop
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
       - name: Prepare RuboCop cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         env:
           DEPENDENCIES_HASH: ${{ hashFiles('.ruby-version', '**/.rubocop.yml', 'Gemfile.lock') }}
         with:
@@ -36,7 +36,7 @@ jobs:
     name: Brakeman e auditoria de dependências
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Instalar pacotes do sistema
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -97,13 +97,13 @@ jobs:
     steps:
       - name: Instalar pacotes do sistema
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
       - run: bin/rails db:test:prepare test:system
       - name: Guardar screenshots de testes de sistema que falharam
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: screenshots

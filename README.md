@@ -71,7 +71,8 @@ bin/rails test:system
 O gerenciamento segue o método **Kanban**, no quadro
 **[okonomi (GitHub Projects)](https://github.com/users/WilsonSousajr/projects/14)**.
 O quadro e os cartões são, eles próprios, um artefato avaliado (Critério de
-Avaliação 01).
+Avaliação 01). O processo completo está descrito em
+[`docs/PROCESSO.md`](docs/PROCESSO.md).
 
 | Coluna | Propósito | Critério de saída |
 |---|---|---|

@@ -21,13 +21,9 @@ Dois formatos são impostos pela estrutura de dados, não por convenção:
 
 ## Equipe
 
-<!-- TODO: preencher com nome completo e matrícula de cada participante.
-     Exigido pela instrução 6 do enunciado e usado para nomear o arquivo de
-     entrega ESW-A-B-C-D-E-F.ZIP (instrução 27). Ver issues #34 e #35. -->
-
 | Nome | Matrícula | Artefatos construídos |
 |---|---|---|
-| Wilson Sousa | _a preencher_ | _a preencher_ |
+| José Wilson Barbosa de Sousa Júnior | 241024259 | Todos (1 a 9) — ver [`docs/ENTREGA.md`](docs/ENTREGA.md) |
 
 ## Stack
 

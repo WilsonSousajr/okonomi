@@ -19,7 +19,7 @@ participantes).
 
 | # | Artefato | Documento | Issue | Autor | Situação |
 |---|---|---|---|---|---|
-| 1 | Descrição do processo (quadro e cartões Kanban) | [`docs/PROCESSO.md`](PROCESSO.md) | [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | José Wilson Barbosa de Sousa Júnior | em revisão |
+| 1 | Descrição do processo (quadro e cartões Kanban) | [`docs/PROCESSO.md`](PROCESSO.md) | [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 2 | Documento de visão e escopo | [`docs/VISAO.md`](VISAO.md) | [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 3 | Requisitos não funcionais | [`docs/REQUISITOS-NAO-FUNCIONAIS.md`](REQUISITOS-NAO-FUNCIONAIS.md) | [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | José Wilson Barbosa de Sousa Júnior | a fazer |
 | 4 | Requisitos funcionais por histórias de usuário | [`docs/HISTORIAS-DE-USUARIO.md`](HISTORIAS-DE-USUARIO.md) | [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | José Wilson Barbosa de Sousa Júnior | a fazer |

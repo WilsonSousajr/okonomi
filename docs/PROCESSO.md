@@ -93,7 +93,7 @@ Três modelos de issue padronizam a criação dos cartões:
 |---|---|---|
 | Requisito funcional (`RF`) | 19 | Um por requisito da seção 2 do enunciado (#1–#19). |
 | Artefato (`artefato:*`) | 9 | Um por artefato da seção 3 (#25–#33). |
-| Gestão e entrega | 2 | Processo e equipe (#34) e entrega final (#35). |
+| Gestão e entrega | 3 | Processo e equipe (#34), geração dos PDFs (#58) e entrega final (#35). |
 | Fundação e infraestrutura | 5 | Convenções, esqueleto, banco, CI e modelo de domínio (#20–#24). |
 | Defeito (`fix` + `regression`) | 3 | Encontrados durante o trabalho (#36, #40, #52). |
 | Manutenção | 2 | Ajustes de documentação e dependências (#46, #48). |
@@ -137,10 +137,11 @@ Três modelos de issue padronizam a criação dos cartões:
 | Proteção do `main`: PR obrigatório, check `ci` obrigatório, sem *force-push*. | Regras da branch |
 | Integração contínua com análise estática e testes. | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
 | Registro de defeitos encontrados como cartões com teste de regressão. | #36, #40, #52 |
+| Geração dos artefatos textuais em PDF a partir do Markdown (instrução 7). | `bin/docs-pdf`, [`docs/pdf/`](pdf/), #58 |
 
 ## 6. Inventário de cartões
 
-Retrato do quadro em **28/09/2026**, gerado com
+Retrato do quadro em **29/09/2026**, gerado com
 `gh project item-list 14 --owner WilsonSousajr --format json`. O estado atual
 está sempre no [quadro](https://github.com/users/WilsonSousajr/projects/14).
 
@@ -169,9 +170,9 @@ está sempre no [quadro](https://github.com/users/WilsonSousajr/projects/14).
 | [#21](https://github.com/WilsonSousajr/okonomi/issues/21) | chore: esqueleto Rails 8.1 com PostgreSQL e Tailwind | `chore` `area:infra` | M0 | 5 | M | Done |
 | [#22](https://github.com/WilsonSousajr/okonomi/issues/22) | build: PostgreSQL de desenvolvimento via Docker Compose | `build` `area:db` `area:infra` | M0 | 2 | M | Done |
 | [#23](https://github.com/WilsonSousajr/okonomi/issues/23) | ci: pipeline de integração contínua | `ci` `area:infra` | M0 | 3 | S | Done |
-| [#24](https://github.com/WilsonSousajr/okonomi/issues/24) | feat: modelagem base do domínio (migrations, models e invariantes) | `feat` `area:db` | M0 | 8 | M | Review |
-| [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | [Artefato 1] Descrição do processo — quadro e cartões Kanban | `docs` `artefato:processo` | M1 | 3 | M | Doing |
-| [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | [Artefato 2] Documento de visão e escopo | `docs` `artefato:visao` | M2 | 5 | M | Backlog |
+| [#24](https://github.com/WilsonSousajr/okonomi/issues/24) | feat: modelagem base do domínio (migrations, models e invariantes) | `feat` `area:db` | M0 | 8 | M | Done |
+| [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | [Artefato 1] Descrição do processo — quadro e cartões Kanban | `docs` `artefato:processo` | M1 | 3 | M | Review |
+| [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | [Artefato 2] Documento de visão e escopo | `docs` `artefato:visao` | M2 | 5 | M | Done |
 | [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | [Artefato 3] Especificação de requisitos não funcionais | `docs` `artefato:rnf` | M2 | 8 | M | Backlog |
 | [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | [Artefato 4] Especificação de requisitos funcionais por histórias de usuário | `docs` `artefato:historias` | M2 | 5 | M | Backlog |
 | [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | [Artefato 5] Architecture notebook | `docs` `artefato:arquitetura` | M3 | 8 | M | Backlog |
@@ -179,13 +180,14 @@ está sempre no [quadro](https://github.com/users/WilsonSousajr/projects/14).
 | [#31](https://github.com/WilsonSousajr/okonomi/issues/31) | [Artefato 7] Projeto físico do banco de dados | `docs` `area:db` `artefato:bd` | M3 | 5 | M | Backlog |
 | [#32](https://github.com/WilsonSousajr/okonomi/issues/32) | [Artefato 8] Protótipo e vídeo de teste de sistema | `docs` `artefato:prototipo` | M4 | 13 | M | Backlog |
 | [#33](https://github.com/WilsonSousajr/okonomi/issues/33) | [Artefato 9] Descrição da infraestrutura de implantação | `docs` `area:infra` `artefato:infraestrutura` | M5 | 5 | M | Backlog |
-| [#34](https://github.com/WilsonSousajr/okonomi/issues/34) | Processo e equipe — participantes, templates e revisão dos artefatos | `docs` `artefato:processo` | M1 | 2 | M | Sprint Backlog |
+| [#34](https://github.com/WilsonSousajr/okonomi/issues/34) | Processo e equipe — participantes, templates e revisão dos artefatos | `docs` `artefato:processo` | M1 | 2 | M | Done |
 | [#35](https://github.com/WilsonSousajr/okonomi/issues/35) | Entrega final — ESW-A-B-C-D-E-F.ZIP | `docs` `entrega` | M5 | 3 | M | Backlog |
 | [#36](https://github.com/WilsonSousajr/okonomi/issues/36) | fix: json 3.0 quebra a leitura de cookies assinados (autenticação inteira falha) | `fix` `build` `area:auth` `regression` | M0 | 2 | M | Done |
 | [#40](https://github.com/WilsonSousajr/okonomi/issues/40) | fix: cookie de sessão sem flag secure e force_ssl desativado em produção | `fix` `area:auth` `area:infra` `regression` | M0 | 2 | M | Done |
 | [#46](https://github.com/WilsonSousajr/okonomi/issues/46) | docs: CLAUDE.md duplica regras que pertencem só ao AGENTS.md | `docs` | M0 | 1 | M | Done |
 | [#48](https://github.com/WilsonSousajr/okonomi/issues/48) | build: ignorar o json no Dependabot enquanto a fixação em 2.x for necessária | `build` `ci` | M0 | 1 | M | Done |
 | [#52](https://github.com/WilsonSousajr/okonomi/issues/52) | fix: suíte de testes trava no macOS quando roda em paralelo | `fix` `area:infra` `regression` | M0 | 1 | M | Done |
+| [#58](https://github.com/WilsonSousajr/okonomi/issues/58) | build: gerar os artefatos textuais em PDF | `docs` `build` `entrega` | M1 | 3 | M | Done |
 
 Pull requests também aparecem no quadro, sempre em Done após o merge, ligados à
 issue que fecham; foram omitidos do inventário para não duplicar cartões.
@@ -196,7 +198,7 @@ Visão *Board* do quadro, com as cinco colunas:
 
 ![Quadro Kanban do okonomi na visão Board](PROCESSO/quadro.png)
 
-Detalhe de um cartão, com labels, marco, Story Points, MoSCoW e PR vinculado:
+Detalhe de um cartão ([#24](https://github.com/WilsonSousajr/okonomi/issues/24)), com labels, coluna (Status), Story Points, RICE, MoSCoW, marco e PR vinculado:
 
 ![Detalhe de um cartão no quadro](PROCESSO/cartao.png)
 

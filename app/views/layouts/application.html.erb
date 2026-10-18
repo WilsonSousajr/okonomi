@@ -30,6 +30,7 @@
 
         <div class="flex flex-wrap items-center gap-3 text-sm">
           <% if authenticated? %>
+            <%= link_to "Projetos", projects_path, class: "rounded-md px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100" %>
             <%= button_to "Sair", session_path, method: :delete,
                   class: "rounded-md px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100 cursor-pointer" %>
           <% else %>

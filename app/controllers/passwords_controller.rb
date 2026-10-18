@@ -22,11 +22,20 @@ class PasswordsController < ApplicationController
       @user.sessions.destroy_all
       redirect_to new_session_path, notice: "Senha redefinida. Entre com a nova senha."
     else
-      redirect_to edit_password_path(params[:token]), alert: "As senhas não conferem."
+      redirect_to edit_password_path(params[:token]), alert: reset_failure_message
     end
   end
 
   private
+    # Says why the reset failed: a short password is not a mismatch (#80).
+    def reset_failure_message
+      if @user.errors.of_kind?(:password_confirmation, :confirmation)
+        "As senhas não conferem."
+      else
+        @user.errors.full_messages.to_sentence
+      end
+    end
+
     def set_user_by_token
       @user = User.find_by_password_reset_token!(params[:token])
     rescue ActiveSupport::MessageVerifier::InvalidSignature

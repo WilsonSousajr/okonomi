@@ -55,6 +55,8 @@
       not_an_integer: não é um número inteiro
       other_than: deve ser diferente de %{count}
       present: deve ficar em branco
+      # has_secure_password counts bytes, not characters (#81).
+      password_too_long: "é muito longa (máximo: 72 bytes; letras acentuadas contam como 2)"
       required: é obrigatório(a)
       taken: já está em uso
       too_long:

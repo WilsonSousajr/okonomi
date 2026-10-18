@@ -106,6 +106,15 @@ class ProjectsAuthenticationTest < ActionDispatch::IntegrationTest
     assert_redirected_to project_url(projects(:okonomi))
   end
 
+  test "signing in after an anonymous form submission lands on the project list issue_82" do
+    post project_user_stories_path(projects(:okonomi)), params: { user_story: { role: "a", action: "b", benefit: "c" } }
+    assert_redirected_to new_session_path
+
+    post session_path, params: { email_address: "one@example.com", password: "password" }
+
+    assert_redirected_to projects_url
+  end
+
   test "an authenticated visitor at the root goes to the project list" do
     sign_in_as users(:one)
 

@@ -30,7 +30,8 @@ module Authentication
     end
 
     def request_authentication
-      session[:return_to_after_authenticating] = request.url
+      # Only a GET (or HEAD) can be replayed after signing in; a form submission would land on a 404 (#82).
+      session[:return_to_after_authenticating] = request.url if request.get? || request.head?
       redirect_to new_session_path, alert: "Entre na sua conta para continuar."
     end
 

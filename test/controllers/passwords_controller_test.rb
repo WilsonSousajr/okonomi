@@ -60,6 +60,24 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_notice "As senhas não conferem"
   end
 
+  test "update with a short password explains the policy issue_80" do
+    token = @user.password_reset_token
+    assert_no_changes -> { @user.reload.password_digest } do
+      put password_path(token), params: { password: "curta1", password_confirmation: "curta1" }
+      assert_redirected_to edit_password_path(token)
+    end
+
+    follow_redirect!
+    assert_notice "Senha é muito curto"
+  end
+
+  test "the reset form states the minimum length issue_80" do
+    get edit_password_path(@user.password_reset_token)
+
+    assert_select "input[name=password][minlength='8']"
+    assert_select "#password_hint", "Mínimo de 8 caracteres."
+  end
+
   private
     def assert_notice(text)
       assert_select "div", /#{text}/

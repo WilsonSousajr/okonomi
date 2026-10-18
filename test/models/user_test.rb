@@ -32,6 +32,14 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.valid?
   end
 
+  test "explains the 72-byte limit in Portuguese for accented passwords issue_81" do
+    user = User.new(email_address: "nova@example.com", password: "ã" * 40)
+
+    assert_not user.valid?
+    message = user.errors.full_messages_for(:password).first
+    assert_equal "Senha é muito longa (máximo: 72 bytes; letras acentuadas contam como 2)", message
+  end
+
   test "rejects a duplicate e-mail regardless of case and padding (#2)" do
     user = User.new(email_address: " ONE@Example.com ", password: "12345678")
 

@@ -141,6 +141,11 @@
           has_one: "Não é possível excluir o registro pois existe um %{record} dependente"
           has_many: "Não é possível excluir o registro pois existem %{record} dependentes"
       models:
+        backlog:
+          attributes:
+            kind:
+              format: "%{message}"
+              taken: Este projeto já possui um product backlog — só pode existir um por projeto.
         user:
           attributes:
             email_address:

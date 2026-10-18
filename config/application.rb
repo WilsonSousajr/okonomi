@@ -28,5 +28,7 @@ module Okonomi
     # only as the fallback the framework ships with.
     config.i18n.default_locale = :"pt-BR"
     config.i18n.available_locales = [ :"pt-BR", :en ]
+    # Lets a message own its whole sentence via errors.models.*.attributes.*.format (#5).
+    config.active_model.i18n_customize_full_message = true
   end
 end

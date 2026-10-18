@@ -33,7 +33,7 @@ as histórias respeitam.
 | RNF-01 | **Autenticação obrigatória.** Toda funcionalidade, exceto a página inicial, a criação de conta, a entrada e a redefinição de senha, exige um usuário autenticado. Quem não está autenticado é levado à tela de entrada com a mensagem "Entre na sua conta para continuar." | Testes de controller `anonymous …` (#3). |
 | RNF-02 | **Isolamento entre usuários.** Cada usuário vê e altera só os próprios projetos e o que há dentro deles. O acesso a um recurso de outro usuário responde **404 (não encontrado)**, e não 403, para não confirmar que o recurso existe. | Testes `… is not found` em projetos, backlogs e histórias (#3–#7). |
 | RNF-03 | **Mensagem de autenticação genérica.** Uma tentativa de entrada malsucedida mostra "E-mail ou senha inválidos.", sem revelar se o e-mail tem conta. | Teste `wrong password and unknown e-mail get the same generic message` (#3). |
-| RNF-04 | **Política de senha.** A senha tem no mínimo 8 e no máximo 72 caracteres (o limite do bcrypt), com confirmação na criação da conta. | Testes de `User` e de cadastro (#2). |
+| RNF-04 | **Política de senha.** A senha tem no mínimo **8 caracteres** e no máximo **72 bytes**, o limite do bcrypt (letras acentuadas ocupam 2 bytes). Há confirmação na criação da conta e na redefinição, e cada recusa explica o motivo. | Testes de `User`, de cadastro (#2) e de redefinição (#80, #81). |
 | RNF-05 | **Limite de tentativas.** Entrada, criação de conta e pedido de redefinição de senha aceitam no máximo **10 tentativas a cada 3 minutos** por origem; depois disso o sistema responde "Muitas tentativas. Tente novamente mais tarde." | `rate_limit` nos três controllers. |
 | RNF-06 | **Redefinição de senha por e-mail.** O usuário que esqueceu a senha recebe por e-mail um link que expira em **15 minutos**. A resposta da tela é a mesma exista ou não a conta. Redefinir a senha encerra todas as sessões abertas. | Testes de `PasswordsController` e do e-mail (#1). |
 | RNF-07 | **Exclusão sem órfãos.** Excluir um projeto exclui tudo o que ele contém. Excluir uma sprint devolve as histórias dela ao product backlog. Excluir uma história exclui os critérios de aceitação dela. Toda exclusão pede confirmação na interface. | Testes de modelo e de controller (#4, #6, #7). |
@@ -44,9 +44,9 @@ as histórias respeitam.
 
 | Id | Requisito | Métrica ou verificação |
 |---|---|---|
-| RNF-08 | **Idioma.** Toda a interface, inclusive mensagens de validação, datas e e-mails, está em **português do Brasil**. | Locale padrão `pt-BR`; o teste `LocaleTest` falha se aparecer "translation missing". |
+| RNF-08 | **Idioma.** Toda a interface, inclusive mensagens de validação, datas e e-mails, está em **português do Brasil**. | Locale padrão `pt-BR` (`LocaleTest`); os testes de cada tela conferem as mensagens em português. Uma chave sem tradução ("translation missing") é tratada como defeito e ganha teste de regressão, como em #81. |
 | RNF-09 | **Acessibilidade.** A interface busca o nível **AA da WCAG 2.2**. Todo campo tem rótulo visível ligado a ele; mensagens de erro e de retorno ficam numa região `role="alert"`/`role="status"`; a navegação funciona só com teclado; o contraste do texto é de pelo menos 4,5:1. | Revisão com as ferramentas de acessibilidade do navegador a cada tela nova; testes de sistema usam os rótulos para preencher os campos. |
-| RNF-10 | **Responsividade.** Todas as telas funcionam a partir de **375 px** de largura sem rolagem horizontal. | Teste de sistema `no horizontal scroll at 375px` (#1). |
+| RNF-10 | **Responsividade.** Todas as telas funcionam a partir de **375 px** de largura sem rolagem horizontal. | Teste de sistema `no horizontal scroll at 375px` (#1) nas telas públicas; as demais usam o mesmo layout e são conferidas no navegador a cada história. |
 | RNF-11 | **Formatos guiados.** O formulário da história mostra os campos "Como um", "eu quero" e "para", e o do critério de aceitação mostra "Dado", "quando" e "então", para que o usuário não precise conhecer os formatos de antemão. | Histórias RF09 e RF13. |
 | RNF-12 | **Facilidade de aprendizado.** Um membro de equipe ágil que nunca usou o sistema consegue, sem manual, criar a conta, um projeto, o product backlog e a primeira história em até **5 minutos**. | Roteiro do vídeo de teste de sistema (#32). |
 
@@ -55,7 +55,7 @@ as histórias respeitam.
 | Id | Requisito | Métrica ou verificação |
 |---|---|---|
 | RNF-13 | **Integridade garantida pelo banco.** As regras do domínio (um product backlog por projeto, escalas fechadas, histórias e épicos sempre do mesmo projeto, formatos em colunas obrigatórias) são impostas pelo banco de dados, além do modelo. Nenhum defeito na aplicação consegue gravar um dado que as viole. | Testes que contornam o modelo e esperam o erro do banco; ver o artefato 7, seção 4. |
-| RNF-14 | **Falha sem perda.** Um erro inesperado devolve uma página de erro e não deixa gravação pela metade: cada ação grava numa única transação. | Transações do Active Record; páginas `public/4xx/5xx`. |
+| RNF-14 | **Falha sem perda.** Um erro inesperado devolve uma página de erro e não deixa registro gravado pela metade: cada gravação ou exclusão de um registro, com os efeitos colaterais dela (por exemplo, devolver as histórias de uma sprint excluída), acontece numa única transação. | Transações do Active Record; páginas `public/4xx/5xx`. |
 | RNF-15 | **Cópia de segurança.** Em produção, o banco tem cópia de segurança diária mantida por pelo menos 7 dias. Perda máxima aceitável: 24 horas de dados. | Descrito no artefato 9 (infraestrutura, #33). |
 | RNF-16 | **Disponibilidade.** Durante o período de avaliação, a meta é 99% de disponibilidade mensal, com a verificação de saúde em `/up`. | Monitoramento da rota `/up` pelo Kamal. |
 

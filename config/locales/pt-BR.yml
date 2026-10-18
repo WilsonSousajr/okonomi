@@ -1,0 +1,164 @@
+# Mensagens da interface em português (#1). Escrito à mão para não adicionar a
+# gem rails-i18n: cobre só as chaves que a aplicação usa.
+"pt-BR":
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d/%m"
+      long: "%d de %B de %Y"
+    day_names: [domingo, segunda-feira, terça-feira, quarta-feira, quinta-feira, sexta-feira, sábado]
+    abbr_day_names: [dom, seg, ter, qua, qui, sex, sáb]
+    month_names: [~, janeiro, fevereiro, março, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro]
+    abbr_month_names: [~, jan, fev, mar, abr, mai, jun, jul, ago, set, out, nov, dez]
+    order: [day, month, year]
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M"
+    am: am
+    pm: pm
+  datetime:
+    distance_in_words:
+      less_than_x_minutes:
+        one: menos de um minuto
+        other: menos de %{count} minutos
+      x_minutes:
+        one: 1 minuto
+        other: "%{count} minutos"
+      about_x_hours:
+        one: aproximadamente 1 hora
+        other: aproximadamente %{count} horas
+      x_days:
+        one: 1 dia
+        other: "%{count} dias"
+  number:
+    format:
+      separator: ","
+      delimiter: "."
+      precision: 2
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: deve ser aceito
+      blank: não pode ficar em branco
+      confirmation: não confere com %{attribute}
+      empty: não pode ficar vazio
+      equal_to: deve ser igual a %{count}
+      exclusion: não está disponível
+      greater_than: deve ser maior que %{count}
+      greater_than_or_equal_to: deve ser maior ou igual a %{count}
+      in: deve estar entre %{count}
+      inclusion: não está incluído na lista
+      invalid: não é válido
+      less_than: deve ser menor que %{count}
+      less_than_or_equal_to: deve ser menor ou igual a %{count}
+      not_a_number: não é um número
+      not_an_integer: não é um número inteiro
+      other_than: deve ser diferente de %{count}
+      present: deve ficar em branco
+      required: é obrigatório(a)
+      taken: já está em uso
+      too_long:
+        one: "é muito longo (máximo: 1 caractere)"
+        other: "é muito longo (máximo: %{count} caracteres)"
+      too_short:
+        one: "é muito curto (mínimo: 1 caractere)"
+        other: "é muito curto (mínimo: %{count} caracteres)"
+      wrong_length:
+        one: "não possui o tamanho esperado (1 caractere)"
+        other: "não possui o tamanho esperado (%{count} caracteres)"
+    template:
+      header:
+        one: "Não foi possível gravar: 1 erro"
+        other: "Não foi possível gravar: %{count} erros"
+  helpers:
+    select:
+      prompt: Selecione
+    submit:
+      create: Criar %{model}
+      update: Salvar %{model}
+      submit: Salvar %{model}
+  activerecord:
+    models:
+      user:
+        one: usuário
+        other: usuários
+      project:
+        one: projeto
+        other: projetos
+      backlog:
+        one: backlog
+        other: backlogs
+      epic:
+        one: épico
+        other: épicos
+      user_story:
+        one: história de usuário
+        other: histórias de usuário
+      acceptance_criterion:
+        one: critério de aceitação
+        other: critérios de aceitação
+    attributes:
+      user:
+        email_address: E-mail
+        password: Senha
+        password_confirmation: Confirmação da senha
+      project:
+        name: Nome
+        description: Descrição
+        user: Usuário
+      backlog:
+        name: Nome
+        goal: Objetivo
+        kind: Tipo
+        starts_on: Início
+        ends_on: Fim
+        project: Projeto
+      epic:
+        title: Título
+        description: Descrição
+        project: Projeto
+      user_story:
+        role: Papel
+        action: Ação
+        benefit: Benefício
+        backlog: Backlog
+        epic: Épico
+        project: Projeto
+        story_points: Story points
+        moscow: MoSCoW
+        rice_reach: Alcance (Reach)
+        rice_impact: Impacto (Impact)
+        rice_confidence: Confiança (Confidence)
+        rice_effort: Esforço (Effort)
+      acceptance_criterion:
+        context: Contexto
+        action: Ação
+        outcome: Resultado
+    errors:
+      messages:
+        record_invalid: "A validação falhou: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Não é possível excluir o registro pois existe um %{record} dependente"
+          has_many: "Não é possível excluir o registro pois existem %{record} dependentes"
+      models:
+        backlog:
+          attributes:
+            base:
+              stories_need_product_backlog: Crie o product backlog antes de excluir uma sprint com histórias — elas voltariam para ele.
+            kind:
+              format: "%{message}"
+              taken: Este projeto já possui um product backlog — só pode existir um por projeto.
+        user:
+          attributes:
+            email_address:
+              already_registered: já está cadastrado
+        user_story:
+          attributes:
+            backlog:
+              # Frases completas: a mensagem de backlog ausente não cabe após o nome do atributo (#7).
+              format: "%{message}"
+              required: Crie o product backlog antes de adicionar histórias.
+              must_be_product_backlog: "Toda história nasce no product backlog: não é possível criá-la direto numa sprint."
+              must_belong_to_same_project: "O backlog deve pertencer ao projeto da história."
+            epic:
+              must_belong_to_same_project: "deve pertencer ao projeto da história"

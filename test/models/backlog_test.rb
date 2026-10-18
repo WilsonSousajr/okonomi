@@ -53,4 +53,40 @@ class BacklogTest < ActiveSupport::TestCase
       backlogs(:okonomi_sprint_one).update_column(:kind, "release")
     end
   end
+
+  test "destroying a sprint moves its stories back to the product backlog (#6)" do
+    sprint = backlogs(:okonomi_sprint_one)
+    story = user_stories(:login)
+    story.update_columns(backlog_id: sprint.id)
+
+    assert_no_difference -> { UserStory.count } do
+      sprint.destroy!
+    end
+
+    assert_equal backlogs(:okonomi_product), story.reload.backlog
+  end
+
+  test "destroying a sprint holding stories is refused when there is no product backlog (#6)" do
+    sprint = backlogs(:okonomi_sprint_one)
+    user_stories(:login).update_columns(backlog_id: sprint.id)
+    Backlog.where(id: backlogs(:okonomi_product).id).delete_all
+
+    assert_not sprint.destroy
+    assert sprint.errors.of_kind?(:base, :stories_need_product_backlog)
+    assert Backlog.exists?(sprint.id)
+  end
+
+  test "destroying an empty sprint without a product backlog is allowed" do
+    sprint = backlogs(:okonomi_sprint_one)
+    UserStory.where(backlog: backlogs(:okonomi_product)).destroy_all
+    Backlog.where(id: backlogs(:okonomi_product).id).delete_all
+
+    assert sprint.destroy
+  end
+
+  test "destroying the product backlog destroys its stories and their criteria" do
+    assert_difference -> { UserStory.count } => -1, -> { AcceptanceCriterion.count } => -1 do
+      backlogs(:okonomi_product).destroy!
+    end
+  end
 end

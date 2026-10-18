@@ -14,6 +14,6 @@ class HomeTest < ApplicationSystemTestCase
     visit root_path
     click_on "Entrar"
 
-    assert_selector "h1", text: "Sign in"
+    assert_selector "h1", text: "Entrar"
   end
 end

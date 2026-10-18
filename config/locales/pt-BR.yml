@@ -141,6 +141,10 @@
           has_one: "Não é possível excluir o registro pois existe um %{record} dependente"
           has_many: "Não é possível excluir o registro pois existem %{record} dependentes"
       models:
+        user:
+          attributes:
+            email_address:
+              already_registered: já está cadastrado
         user_story:
           attributes:
             backlog:

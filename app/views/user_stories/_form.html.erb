@@ -1,0 +1,28 @@
+<%# Os três campos são o formato padrão "Como um … eu quero … para …" (#9). %>
+<%= form_with model: user_story,
+      url: user_story.persisted? ? project_user_story_path(project, user_story) : project_user_stories_path(project),
+      class: "contents" do |form| %>
+  <%= render "shared/form_errors", model: user_story %>
+
+  <div class="my-5">
+    <%= form.label :role, "Como um", class: "font-medium" %>
+    <%= form.text_field :role, required: true, autofocus: true, placeholder: "papel do usuário", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :action, "eu quero", class: "font-medium" %>
+    <%= form.text_area :action, required: true, rows: 2, placeholder: "ação desejada", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :benefit, "para", class: "font-medium" %>
+    <%= form.text_area :benefit, required: true, rows: 2, placeholder: "benefício esperado", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-4">
+    <%= form.submit user_story.persisted? ? "Salvar história" : "Criar história",
+          class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+    <%= link_to "Cancelar", user_story.persisted? ? project_user_story_path(project, user_story) : project,
+          class: "text-gray-700 underline hover:no-underline" %>
+  </div>
+<% end %>

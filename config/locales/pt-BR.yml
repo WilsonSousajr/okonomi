@@ -143,6 +143,8 @@
       models:
         backlog:
           attributes:
+            base:
+              stories_need_product_backlog: Crie o product backlog antes de excluir uma sprint com histórias — elas voltariam para ele.
             kind:
               format: "%{message}"
               taken: Este projeto já possui um product backlog — só pode existir um por projeto.

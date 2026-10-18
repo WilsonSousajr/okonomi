@@ -1,0 +1,5 @@
+<% if backlog.starts_on || backlog.ends_on %>
+  <p class="text-sm text-gray-600">
+    <%= [ backlog.starts_on, backlog.ends_on ].map { |date| date ? l(date) : "—" }.join(" a ") %>
+  </p>
+<% end %>

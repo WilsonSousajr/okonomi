@@ -14,7 +14,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
 
     follow_redirect!
-    assert_notice "reset instructions sent"
+    assert_notice "instruções para redefinir a senha"
   end
 
   test "create for an unknown user redirects but sends no mail" do
@@ -23,7 +23,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
 
     follow_redirect!
-    assert_notice "reset instructions sent"
+    assert_notice "instruções para redefinir a senha"
   end
 
   test "edit" do
@@ -36,17 +36,17 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_password_path
 
     follow_redirect!
-    assert_notice "reset link is invalid"
+    assert_notice "link de redefinição é inválido"
   end
 
   test "update" do
     assert_changes -> { @user.reload.password_digest } do
-      put password_path(@user.password_reset_token), params: { password: "new", password_confirmation: "new" }
+      put password_path(@user.password_reset_token), params: { password: "nova-senha", password_confirmation: "nova-senha" }
       assert_redirected_to new_session_path
     end
 
     follow_redirect!
-    assert_notice "Password has been reset"
+    assert_notice "Senha redefinida"
   end
 
   test "update with non matching passwords" do
@@ -57,7 +57,25 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
 
     follow_redirect!
-    assert_notice "Passwords did not match"
+    assert_notice "As senhas não conferem"
+  end
+
+  test "update with a short password explains the policy issue_80" do
+    token = @user.password_reset_token
+    assert_no_changes -> { @user.reload.password_digest } do
+      put password_path(token), params: { password: "curta1", password_confirmation: "curta1" }
+      assert_redirected_to edit_password_path(token)
+    end
+
+    follow_redirect!
+    assert_notice "Senha é muito curto"
+  end
+
+  test "the reset form states the minimum length issue_80" do
+    get edit_password_path(@user.password_reset_token)
+
+    assert_select "input[name=password][minlength='8']"
+    assert_select "#password_hint", "Mínimo de 8 caracteres."
   end
 
   private

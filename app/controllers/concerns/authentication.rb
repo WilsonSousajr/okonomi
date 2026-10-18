@@ -30,8 +30,9 @@ module Authentication
     end
 
     def request_authentication
-      session[:return_to_after_authenticating] = request.url
-      redirect_to new_session_path
+      # Only a GET (or HEAD) can be replayed after signing in; a form submission would land on a 404 (#82).
+      session[:return_to_after_authenticating] = request.url if request.get? || request.head?
+      redirect_to new_session_path, alert: "Entre na sua conta para continuar."
     end
 
     # `secure` fecha o sequestro de sessão por rede: sem ele o cookie assinado
@@ -48,7 +49,7 @@ module Authentication
     end
 
     def after_authentication_url
-      session.delete(:return_to_after_authenticating) || root_url
+      session.delete(:return_to_after_authenticating) || projects_url
     end
 
     def start_new_session_for(user)

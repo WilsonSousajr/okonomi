@@ -1,0 +1,22 @@
+<section id="sprint_backlogs" class="mt-10" aria-labelledby="sprint_backlogs_title">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h2 id="sprint_backlogs_title" class="font-semibold text-2xl">Sprints</h2>
+    <%= link_to "Nova sprint", new_project_sprint_backlog_path(project),
+          class: "rounded-md px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-sm font-medium" %>
+  </div>
+
+  <% sprints = project.sprint_backlogs.order(:starts_on, :id) %>
+  <% if sprints.any? %>
+    <% sprints.each do |sprint| %>
+      <article id="<%= dom_id(sprint) %>" class="mt-4 rounded-md border border-gray-200 p-4">
+        <h3 class="font-semibold text-lg break-words">
+          <%= link_to sprint.name, project_sprint_backlog_path(project, sprint), class: "text-blue-700 hover:underline" %>
+        </h3>
+        <%= render "sprint_backlogs/period", backlog: sprint %>
+        <%= render "backlogs/stories", stories: sprint.user_stories.order(:id) %>
+      </article>
+    <% end %>
+  <% else %>
+    <p class="mt-2 text-gray-600">Nenhuma sprint ainda.</p>
+  <% end %>
+</section>

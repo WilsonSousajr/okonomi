@@ -23,5 +23,10 @@ module Okonomi
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # The interface is delivered in Portuguese (#1); English stays available
+    # only as the fallback the framework ships with.
+    config.i18n.default_locale = :"pt-BR"
+    config.i18n.available_locales = [ :"pt-BR", :en ]
   end
 end

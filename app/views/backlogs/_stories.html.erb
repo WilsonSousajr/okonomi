@@ -2,7 +2,10 @@
 <% if stories.any? %>
   <ul class="mt-3 divide-y divide-gray-200 rounded-md border border-gray-200">
     <% stories.each do |story| %>
-      <li id="<%= dom_id(story) %>" class="p-3 break-words"><%= story %></li>
+      <li id="<%= dom_id(story) %>" class="p-3">
+        <%= link_to story, project_user_story_path(story.project_id, story), class: "break-words text-blue-700 hover:underline" %>
+        <%= render "user_stories/estimates", story: story %>
+      </li>
     <% end %>
   </ul>
 <% else %>

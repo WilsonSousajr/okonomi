@@ -155,7 +155,10 @@
         user_story:
           attributes:
             backlog:
-              must_be_product_backlog: "deve ser o product backlog quando a história é criada"
-              must_belong_to_same_project: "deve pertencer ao projeto da história"
+              # Frases completas: a mensagem de backlog ausente não cabe após o nome do atributo (#7).
+              format: "%{message}"
+              required: Crie o product backlog antes de adicionar histórias.
+              must_be_product_backlog: "Toda história nasce no product backlog: não é possível criá-la direto numa sprint."
+              must_belong_to_same_project: "O backlog deve pertencer ao projeto da história."
             epic:
               must_belong_to_same_project: "deve pertencer ao projeto da história"

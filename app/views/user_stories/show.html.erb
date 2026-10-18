@@ -1,0 +1,18 @@
+<% content_for :title, "História · okonomi" %>
+
+<nav class="text-sm text-gray-600" aria-label="Trilha">
+  <%= link_to "Meus projetos", projects_path, class: "underline hover:no-underline" %> ›
+  <%= link_to @project.name, @project, class: "underline hover:no-underline" %>
+</nav>
+
+<h1 class="mt-2 font-bold text-2xl break-words"><%= @user_story %></h1>
+
+<p class="mt-2 text-gray-600">Backlog: <%= @user_story.backlog.name %></p>
+<div class="mt-2"><%= render "estimates", story: @user_story %></div>
+
+<div class="mt-6 flex flex-wrap items-center gap-2">
+  <%= link_to "Editar", edit_project_user_story_path(@project, @user_story), class: "rounded-md px-3 py-2 border border-gray-300 hover:bg-gray-50 font-medium" %>
+  <%= button_to "Excluir história", project_user_story_path(@project, @user_story), method: :delete,
+        form: { data: { turbo_confirm: "Excluir a história e os critérios de aceitação dela?" } },
+        class: "rounded-md px-3 py-2 bg-red-600 hover:bg-red-500 text-white font-medium cursor-pointer" %>
+</div>

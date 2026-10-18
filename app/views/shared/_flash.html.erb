@@ -1,0 +1,9 @@
+<%# Mensagens de retorno das ações (#1): um único lugar, anunciado por leitores de tela. %>
+<div id="flash" class="space-y-2">
+  <% if notice.present? %>
+    <p role="status" class="rounded-md bg-green-50 px-3 py-2 font-medium text-green-800"><%= notice %></p>
+  <% end %>
+  <% if alert.present? %>
+    <p role="alert" class="rounded-md bg-red-50 px-3 py-2 font-medium text-red-800"><%= alert %></p>
+  <% end %>
+</div>

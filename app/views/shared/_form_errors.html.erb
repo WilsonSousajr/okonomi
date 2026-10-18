@@ -1,0 +1,14 @@
+<%# Componente padrão de erros de validação (#1). Uso: render "shared/form_errors", model: record %>
+<% if model.errors.any? %>
+  <div id="error_explanation" role="alert" aria-labelledby="error_explanation_title"
+       class="mb-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+    <h2 id="error_explanation_title" class="font-semibold">
+      <%= t("errors.template.header", count: model.errors.count) %>
+    </h2>
+    <ul class="mt-2 list-disc pl-5">
+      <% model.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

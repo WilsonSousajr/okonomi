@@ -101,4 +101,37 @@ class UserStoriesControllerTest < ActionDispatch::IntegrationTest
       delete project_user_story_path(@project, other)
     end
   end
+
+  test "the story form has three separate fields labelled with the standard format (#9)" do
+    get new_project_user_story_path(@project)
+
+    assert_select "label[for=user_story_role]", "Como um"
+    assert_select "label[for=user_story_action]", "eu quero"
+    assert_select "label[for=user_story_benefit]", "para"
+    assert_select "form [name='user_story[role]']", 1
+    assert_select "form [name='user_story[action]']", 1
+    assert_select "form [name='user_story[benefit]']", 1
+  end
+
+  test "each blank part of the story is pointed at on its own field (#9)" do
+    { role: "Papel", action: "Ação", benefit: "Benefício" }.each do |field, name|
+      parts = { role: "gerente", action: "ver", benefit: "planejar" }.merge(field => "")
+
+      post project_user_stories_path(@project), params: { user_story: parts }
+
+      assert_response :unprocessable_entity
+      assert_select "#error_explanation li", /#{name} não pode ficar em branco/
+      assert_select "#user_story_#{field}[aria-invalid=true]", 1
+      assert_select "[aria-invalid=true]", 1
+    end
+  end
+
+  test "a sprint backlog lists its stories in the standard format (#9)" do
+    @story.update_columns(backlog_id: backlogs(:okonomi_sprint_one).id)
+
+    get project_sprint_backlog_path(@project, backlogs(:okonomi_sprint_one))
+
+    assert_select "##{ActionView::RecordIdentifier.dom_id(@story)} a",
+      "Como um usuário cadastrado, eu quero entrar com e-mail e senha, para acessar meus projetos."
+  end
 end

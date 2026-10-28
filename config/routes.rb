@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     resource :product_backlog, only: %i[ new create edit update destroy ]
     resources :sprint_backlogs, except: :index
     resources :user_stories, except: :index
+    resources :epics, except: :index
   end
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

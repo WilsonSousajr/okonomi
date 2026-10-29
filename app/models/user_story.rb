@@ -13,11 +13,15 @@ class UserStory < ApplicationRecord
   MOSCOW = %w[ M S C W ].freeze
   RICE_IMPACTS = %w[ 3 2 1 0.5 0.25 ].map { |impact| BigDecimal(impact) }.freeze
   RICE_CONFIDENCES = [ 100, 80, 50 ].freeze
+  # rice_reach is an int4 column; a larger number would raise instead of failing validation (#104).
+  RICE_REACH_MAX = 2_147_483_647
 
   validates :role, :action, :benefit, presence: true
+  # only_integer checks the raw input, so "2.5" or "abc" is refused instead of being cast to 2 or 0 (#102).
+  validates :story_points, :rice_confidence, :rice_effort, numericality: { only_integer: true }, allow_nil: true
   validates :story_points, inclusion: { in: STORY_POINTS }, allow_nil: true
   validates :moscow, inclusion: { in: MOSCOW }, allow_nil: true
-  validates :rice_reach, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :rice_reach, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: RICE_REACH_MAX }, allow_nil: true
   validates :rice_impact, inclusion: { in: RICE_IMPACTS }, allow_nil: true
   validates :rice_confidence, inclusion: { in: RICE_CONFIDENCES }, allow_nil: true
   validates :rice_effort, inclusion: { in: STORY_POINTS }, allow_nil: true
@@ -59,7 +63,9 @@ class UserStory < ApplicationRecord
       errors.add(:backlog, :must_belong_to_same_project) if backlog && backlog.project_id != project_id
     end
 
+    # A dangling epic_id (an epic deleted in another tab) resolves to nil and would hit the
+    # composite foreign key as a 500, so it is refused here like a foreign epic (#103).
     def epic_in_same_project
-      errors.add(:epic, :must_belong_to_same_project) if epic && epic.project_id != project_id
+      errors.add(:epic, :must_belong_to_same_project) if epic_id && epic&.project_id != project_id
     end
 end

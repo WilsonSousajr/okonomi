@@ -51,4 +51,30 @@ class StoryPointsTest < ActionDispatch::IntegrationTest
 
     assert_select "[data-field=points_total]", "5 pontos"
   end
+
+  test "the estimate field offers only the allowed scale (#15)" do
+    get edit_project_user_story_path(@project, @story)
+
+    values = css_select("select#user_story_story_points option").map { |option| option["value"] }
+    assert_equal [ "", "0", "1", "2", "3", "5", "8", "13", "21", "34", "55" ], values
+  end
+
+  test "a value outside the scale is refused by the server even when the form is bypassed (#15)" do
+    @story.update!(story_points: 5)
+
+    [ "4", "7", "100", "-1" ].each do |value|
+      patch project_user_story_path(@project, @story), params: { user_story: { story_points: value } }
+
+      assert_response :unprocessable_entity
+      assert_select "#error_explanation li", /Story points não está incluído na lista/
+      assert_equal 5, @story.reload.story_points
+    end
+  end
+
+  test "RICE Effort uses exactly the story point scale (#15)" do
+    inclusion = ->(attribute) { UserStory.validators_on(attribute).grep(ActiveModel::Validations::InclusionValidator).first.options[:in] }
+
+    assert_equal UserStory::STORY_POINTS, inclusion.(:story_points)
+    assert_equal UserStory::STORY_POINTS, inclusion.(:rice_effort)
+  end
 end

@@ -54,13 +54,13 @@ class UserStoriesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "estimates that are not set are shown as a dash" do
+  test "estimates that are not set are shown as a dash, and a missing RICE score as undefined (#17)" do
     story = @project.user_stories.create!(role: "gerente", action: "ver", benefit: "planejar")
 
     get project_path(@project)
 
     assert_select "##{ActionView::RecordIdentifier.dom_id(story)} [data-field=moscow]", "—"
-    assert_select "##{ActionView::RecordIdentifier.dom_id(story)} [data-field=rice]", "—"
+    assert_select "##{ActionView::RecordIdentifier.dom_id(story)} [data-field=rice]", "indefinida"
   end
 
   test "show displays the story in the standard format" do

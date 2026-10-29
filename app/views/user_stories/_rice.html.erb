@@ -1,0 +1,7 @@
+<%# Os quatro valores RICE da história (#17), com o rótulo do método para Impact e Confidence (#18). %>
+<dl class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600" aria-label="Critério RICE">
+  <div class="flex gap-1"><dt>Reach:</dt><dd data-field="rice_reach" class="font-medium text-gray-900"><%= story.rice_reach || "—" %></dd></div>
+  <div class="flex gap-1"><dt>Impact:</dt><dd data-field="rice_impact" class="font-medium text-gray-900"><%= rice_impact_text(story.rice_impact) || "—" %></dd></div>
+  <div class="flex gap-1"><dt>Confidence:</dt><dd data-field="rice_confidence" class="font-medium text-gray-900"><%= rice_confidence_text(story.rice_confidence) || "—" %></dd></div>
+  <div class="flex gap-1"><dt>Effort:</dt><dd data-field="rice_effort" class="font-medium text-gray-900"><%= story.rice_effort || "—" %></dd></div>
+</dl>

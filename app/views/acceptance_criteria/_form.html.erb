@@ -1,0 +1,28 @@
+<%# Os três campos são o formato padrão "Dado … quando … então …" (#13). %>
+<%= form_with model: acceptance_criterion,
+      url: acceptance_criterion.persisted? ? project_user_story_acceptance_criterion_path(project, user_story, acceptance_criterion) : project_user_story_acceptance_criteria_path(project, user_story),
+      class: "contents" do |form| %>
+  <%= render "shared/form_errors", model: acceptance_criterion %>
+
+  <div class="my-5">
+    <%= form.label :context, "Dado", class: "font-medium" %>
+    <%= form.text_area :context, required: true, autofocus: true, rows: 2, placeholder: "contexto inicial ou estado do sistema", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :action, "quando", class: "font-medium" %>
+    <%= form.text_area :action, required: true, rows: 2, placeholder: "ação ou evento que o usuário executa", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :outcome, "então", class: "font-medium" %>
+    <%= form.text_area :outcome, required: true, rows: 2, placeholder: "resultado esperado", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-4">
+    <%= form.submit acceptance_criterion.persisted? ? "Salvar critério" : "Criar critério",
+          class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+    <%= link_to "Cancelar", project_user_story_path(project, user_story),
+          class: "text-gray-700 underline hover:no-underline" %>
+  </div>
+<% end %>

@@ -35,4 +35,19 @@ class UserStoriesTest < ApplicationSystemTestCase
     assert_text "História excluída."
     within("#product_backlog") { assert_no_text "pagar com cartão" }
   end
+
+  test "a blank part of the story is pointed at in the browser (#9)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    visit new_project_user_story_path(projects(:okonomi))
+
+    fill_in "Como um", with: "cliente"
+    fill_in "eu quero", with: "pagar com Pix"
+    fill_in "para", with: "   "
+    click_button "Criar história"
+
+    assert_selector "#error_explanation", text: "Benefício não pode ficar em branco"
+    assert_selector "#user_story_benefit[aria-invalid=true]"
+    assert_no_selector "#user_story_role[aria-invalid=true]"
+  end
 end

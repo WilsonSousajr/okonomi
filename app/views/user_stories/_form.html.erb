@@ -35,6 +35,12 @@
         <%= form.select :story_points, UserStory::STORY_POINTS, { include_blank: "Sem estimativa" },
               class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
       </div>
+
+      <div>
+        <%= form.label :moscow, class: "font-medium" %>
+        <%= form.select :moscow, moscow_options, { include_blank: "Sem etiqueta" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
     </div>
   </fieldset>
 

@@ -67,4 +67,15 @@ class EpicsControllerTest < ActionDispatch::IntegrationTest
       delete project_epic_path(@project, other)
     end
   end
+
+  test "the epic page lists its stories and the sum of their story points (#11)" do
+    @project.user_stories.create!(role: "gerente", action: "recuperar a senha", benefit: "voltar a entrar", epic: @epic, story_points: 5)
+    @project.user_stories.create!(role: "gerente", action: "sair", benefit: "proteger a conta", epic: @epic)
+
+    get project_epic_path(@project, @epic)
+
+    assert_select "#epic_stories li", 3
+    assert_select "#epic_stories", /Como um usuário cadastrado, eu quero entrar com e-mail e senha/
+    assert_select "[data-field=points_total]", "8 pontos"
+  end
 end

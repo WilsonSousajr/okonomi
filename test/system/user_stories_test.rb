@@ -50,4 +50,20 @@ class UserStoriesTest < ApplicationSystemTestCase
     assert_selector "#user_story_benefit[aria-invalid=true]"
     assert_no_selector "#user_story_role[aria-invalid=true]"
   end
+
+  test "moving a story to a sprint and back through the browser (#8)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    visit project_user_story_path(projects(:okonomi), user_stories(:login))
+
+    select "Sprint 1", from: "Mover para"
+    click_button "Mover"
+    assert_text "História movida para Sprint 1."
+    assert_text "Backlog: Sprint 1"
+
+    select "Product backlog", from: "Mover para"
+    click_button "Mover"
+    assert_text "História movida para Product backlog."
+    assert_text "Backlog: Product backlog"
+  end
 end

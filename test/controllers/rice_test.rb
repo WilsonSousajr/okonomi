@@ -54,4 +54,45 @@ class RiceTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select "[data-field=rice]", "indefinida"
   end
+
+  test "Reach refuses a negative or non-integer number of users (#18)" do
+    [ "-1", "2.5" ].each do |value|
+      patch project_user_story_path(@project, @story), params: rice(reach: value)
+
+      assert_response :unprocessable_entity
+      assert_select "#error_explanation li", /Alcance \(Reach\)/
+      assert_nil @story.reload.rice_reach
+    end
+  end
+
+  test "Impact, Confidence and Effort refuse values outside their domains (#18)" do
+    { impact: "4", confidence: "90", effort: "4" }.each do |field, value|
+      patch project_user_story_path(@project, @story), params: rice(field => value)
+
+      assert_response :unprocessable_entity, "#{field}=#{value} should be refused"
+      assert_select "#error_explanation li", /não está incluíd/
+    end
+    @story.reload
+    assert_equal [ nil, nil, nil ], [ @story.rice_impact, @story.rice_confidence, @story.rice_effort ]
+  end
+
+  test "the Impact, Confidence and Effort fields offer only their domain, with textual labels (#18)" do
+    get edit_project_user_story_path(@project, @story)
+
+    options = ->(id) { css_select("select##{id} option").map { |option| [ option["value"], option.text ] } }
+    assert_equal [ [ "", "Não definido" ], [ "3", "3 — massivo" ], [ "2", "2 — alto" ], [ "1", "1 — médio" ], [ "0.5", "0,5 — baixo" ], [ "0.25", "0,25 — mínimo" ] ],
+      options.("user_story_rice_impact")
+    assert_equal [ [ "", "Não definida" ], [ "100", "100% — alta" ], [ "80", "80% — média" ], [ "50", "50% — baixa" ] ],
+      options.("user_story_rice_confidence")
+    assert_equal [ "", "0", "1", "2", "3", "5", "8", "13", "21", "34", "55" ],
+      options.("user_story_rice_effort").map(&:first)
+  end
+
+  test "a stored Impact of 0.25 is preselected when editing (#18)" do
+    @story.update!(rice_impact: BigDecimal("0.25"))
+
+    get edit_project_user_story_path(@project, @story)
+
+    assert_select "select#user_story_rice_impact option[selected]", "0,25 — mínimo"
+  end
 end

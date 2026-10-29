@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   resources :projects do
     resource :product_backlog, only: %i[ new create edit update destroy ]
     resources :sprint_backlogs, except: :index
-    resources :user_stories, except: :index
+    resources :user_stories, except: :index do
+      resources :acceptance_criteria, except: %i[ index show ]
+    end
     resources :epics, except: :index
   end
   resources :passwords, param: :token

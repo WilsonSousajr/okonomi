@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :sprint_backlogs, except: :index
     resources :user_stories, except: :index do
       resources :acceptance_criteria, except: %i[ index show ]
+      resource :move, only: :create, controller: "user_story_moves"
     end
     resources :epics, except: :index
   end

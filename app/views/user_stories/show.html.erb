@@ -17,6 +17,7 @@
   <% end %>
 </p>
 <div class="mt-2"><%= render "estimates", story: @user_story %></div>
+<%= render "move", project: @project, story: @user_story %>
 
 <div class="mt-6 flex flex-wrap items-center gap-2">
   <%= link_to "Editar", edit_project_user_story_path(@project, @user_story), class: "rounded-md px-3 py-2 border border-gray-300 hover:bg-gray-50 font-medium" %>

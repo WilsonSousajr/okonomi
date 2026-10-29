@@ -5,6 +5,8 @@ class UserStory < ApplicationRecord
   has_many :acceptance_criteria, dependent: :destroy
 
   normalizes :role, :action, :benefit, with: ->(value) { value.squish }
+  # The form's blank option means "no tag"; an empty string would fail the domain check (#16).
+  normalizes :moscow, with: ->(value) { value.presence }
 
   # The same scale is the domain of story points (#15) and of RICE Effort (#18).
   STORY_POINTS = [ 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 ].freeze
@@ -24,6 +26,9 @@ class UserStory < ApplicationRecord
   validate :epic_in_same_project
 
   before_validation :default_to_product_backlog, on: :create
+
+  # An unknown tag filters nothing rather than emptying the backlog (#16).
+  scope :with_moscow, ->(tag) { MOSCOW.include?(tag) ? where(moscow: tag) : all }
 
   def to_s = "Como um #{role}, eu quero #{action}, para #{benefit}."
 

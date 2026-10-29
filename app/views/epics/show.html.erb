@@ -24,9 +24,7 @@
 <section id="epic_stories" class="mt-6" aria-labelledby="epic_stories_title">
   <div class="flex flex-wrap items-baseline justify-between gap-3">
     <h2 id="epic_stories_title" class="font-semibold text-2xl">Histórias do épico</h2>
-    <p class="text-gray-600">
-      Total: <span data-field="points_total"><%= pluralize(@epic.user_stories.sum(:story_points), "ponto", plural: "pontos") %></span>
-    </p>
+    <%= render "backlogs/points_total", stories: @epic.user_stories %>
   </div>
   <%= render "backlogs/stories", stories: @epic.user_stories.order(:id) %>
 </section>

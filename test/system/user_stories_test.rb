@@ -66,4 +66,15 @@ class UserStoriesTest < ApplicationSystemTestCase
     assert_text "História movida para Product backlog."
     assert_text "Backlog: Product backlog"
   end
+
+  test "estimating a story through the browser (#14)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    visit edit_project_user_story_path(projects(:okonomi), user_stories(:login))
+
+    select "8", from: "Story points"
+    click_button "Salvar história"
+    assert_text "História atualizada."
+    assert_selector "[data-field=story_points]", text: "8"
+  end
 end

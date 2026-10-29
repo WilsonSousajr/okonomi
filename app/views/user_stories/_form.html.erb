@@ -19,6 +19,13 @@
     <%= form.text_area :benefit, required: true, rows: 2, placeholder: "benefício esperado", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
   </div>
 
+  <%# Só os épicos do próprio projeto; o model ainda recusa um épico de outro projeto (#11). %>
+  <div class="my-5">
+    <%= form.label :epic_id, "Épico", class: "font-medium" %>
+    <%= form.collection_select :epic_id, project.epics.order(:title), :id, :title, { include_blank: "Sem épico" },
+          class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
   <div class="flex flex-wrap items-center gap-4">
     <%= form.submit user_story.persisted? ? "Salvar história" : "Criar história",
           class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>

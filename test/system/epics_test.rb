@@ -23,4 +23,20 @@ class EpicsTest < ApplicationSystemTestCase
     assert_text "Épico excluído."
     within("#epics") { assert_no_text "Pagamentos e cobrança" }
   end
+
+  test "linking a story to an epic through the browser (#11)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    project = projects(:okonomi)
+    project.epics.create!(title: "Pagamentos")
+
+    visit edit_project_user_story_path(project, user_stories(:login))
+    select "Pagamentos", from: "Épico"
+    click_button "Salvar história"
+    assert_text "História atualizada."
+
+    click_on "Pagamentos"
+    assert_selector "h1", text: "Pagamentos"
+    within("#epic_stories") { assert_text "eu quero entrar com e-mail e senha" }
+  end
 end

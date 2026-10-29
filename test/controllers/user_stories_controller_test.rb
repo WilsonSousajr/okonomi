@@ -134,4 +134,45 @@ class UserStoriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "##{ActionView::RecordIdentifier.dom_id(@story)} a",
       "Como um usuário cadastrado, eu quero entrar com e-mail e senha, para acessar meus projetos."
   end
+
+  test "a story is linked to an epic of the same project (#11)" do
+    epic = @project.epics.create!(title: "Pagamentos")
+
+    patch project_user_story_path(@project, @story), params: { user_story: { epic_id: epic.id } }
+
+    assert_redirected_to project_user_story_path(@project, @story)
+    assert_equal epic, @story.reload.epic
+  end
+
+  test "unlinking keeps the story, now without an epic (#11)" do
+    assert_no_difference -> { UserStory.count } do
+      patch project_user_story_path(@project, @story), params: { user_story: { epic_id: "" } }
+    end
+
+    assert_nil @story.reload.epic
+  end
+
+  test "linking a story to another project's epic is refused (#11)" do
+    patch project_user_story_path(@project, @story), params: { user_story: { epic_id: epics(:other_epic).id } }
+
+    assert_response :unprocessable_entity
+    assert_select "#error_explanation li", /deve pertencer ao projeto da história/
+    assert_equal epics(:okonomi_auth), @story.reload.epic
+  end
+
+  test "the story form offers only the project's epics (#11)" do
+    get edit_project_user_story_path(@project, @story)
+
+    assert_select "select#user_story_epic_id" do
+      assert_select "option", "Sem épico"
+      assert_select "option[selected]", "Acesso ao sistema"
+      assert_select "option", text: "Épico de outro projeto", count: 0
+    end
+  end
+
+  test "the story page shows its epic (#11)" do
+    get project_user_story_path(@project, @story)
+
+    assert_select "a[href=?]", project_epic_path(@project, epics(:okonomi_auth)), "Acesso ao sistema"
+  end
 end

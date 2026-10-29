@@ -8,6 +8,14 @@
 <h1 class="mt-2 font-bold text-2xl break-words"><%= @user_story %></h1>
 
 <p class="mt-2 text-gray-600">Backlog: <%= @user_story.backlog.name %></p>
+<p class="mt-1 text-gray-600">
+  Épico:
+  <% if @user_story.epic %>
+    <%= link_to @user_story.epic.title, project_epic_path(@project, @user_story.epic), class: "text-blue-700 underline hover:no-underline" %>
+  <% else %>
+    sem épico
+  <% end %>
+</p>
 <div class="mt-2"><%= render "estimates", story: @user_story %></div>
 
 <div class="mt-6 flex flex-wrap items-center gap-2">

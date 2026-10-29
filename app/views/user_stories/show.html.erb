@@ -17,6 +17,7 @@
   <% end %>
 </p>
 <div class="mt-2"><%= render "estimates", story: @user_story %></div>
+<%= render "rice", story: @user_story %>
 <%= render "move", project: @project, story: @user_story %>
 
 <div class="mt-6 flex flex-wrap items-center gap-2">

@@ -45,6 +45,6 @@ class UserStoriesController < ApplicationController
     end
 
     def user_story_params
-      params.expect(user_story: [ :role, :action, :benefit, :epic_id, :story_points, :moscow ])
+      params.expect(user_story: [ :role, :action, :benefit, :epic_id, :story_points, :moscow, :rice_reach, :rice_impact, :rice_confidence, :rice_effort ])
     end
 end

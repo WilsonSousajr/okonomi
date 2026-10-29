@@ -42,6 +42,31 @@
               class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
       </div>
     </div>
+
+    <%# RICE é opcional; com qualquer campo em branco ou Effort 0 a pontuação fica indefinida (#17, #19). %>
+    <h3 class="mt-5 font-medium">RICE</h3>
+    <div class="mt-2 grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= form.label :rice_reach, class: "font-medium" %>
+        <%= form.number_field :rice_reach, min: 0, step: 1, placeholder: "número de usuários",
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+      <div>
+        <%= form.label :rice_impact, class: "font-medium" %>
+        <%= form.select :rice_impact, rice_impact_options, { include_blank: "Não definido", selected: rice_impact_value(form.object.rice_impact) },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+      <div>
+        <%= form.label :rice_confidence, class: "font-medium" %>
+        <%= form.select :rice_confidence, rice_confidence_options, { include_blank: "Não definida" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+      <div>
+        <%= form.label :rice_effort, class: "font-medium" %>
+        <%= form.select :rice_effort, UserStory::STORY_POINTS, { include_blank: "Não definido" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+    </div>
   </fieldset>
 
   <div class="flex flex-wrap items-center gap-4">

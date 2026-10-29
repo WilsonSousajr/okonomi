@@ -77,4 +77,18 @@ class UserStoriesTest < ApplicationSystemTestCase
     assert_text "História atualizada."
     assert_selector "[data-field=story_points]", text: "8"
   end
+
+  test "filling part of RICE through the browser leaves the score undefined (#17)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    visit edit_project_user_story_path(projects(:okonomi), user_stories(:login))
+
+    fill_in "Alcance (Reach)", with: "500"
+    select "Não definido", from: "Esforço (Effort)"
+    click_button "Salvar história"
+
+    assert_text "História atualizada."
+    assert_selector "[data-field=rice_reach]", text: "500"
+    assert_selector "[data-field=rice]", text: "indefinida"
+  end
 end

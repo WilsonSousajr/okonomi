@@ -25,4 +25,18 @@ class AcceptanceCriteriaTest < ApplicationSystemTestCase
     assert_text "Critério excluído."
     within("#acceptance_criteria") { assert_no_text "tela de recuperação" }
   end
+
+  test "a blank part of the criterion is pointed at in the browser (#13)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    visit new_project_user_story_acceptance_criterion_path(projects(:okonomi), user_stories(:login))
+
+    fill_in "Dado", with: "um usuário cadastrado"
+    fill_in "quando", with: "erra a senha"
+    fill_in "então", with: "   "
+    click_button "Criar critério"
+
+    assert_selector "#error_explanation", text: "Resultado não pode ficar em branco"
+    assert_selector "#acceptance_criterion_outcome[aria-invalid=true]"
+  end
 end

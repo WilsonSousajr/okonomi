@@ -76,4 +76,34 @@ class AcceptanceCriteriaControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_not_equal "trocado", @criterion.reload.outcome
   end
+
+  test "the criterion form has three separate fields labelled with the standard format (#13)" do
+    get new_project_user_story_acceptance_criterion_path(@project, @story)
+
+    assert_select "label[for=acceptance_criterion_context]", "Dado"
+    assert_select "label[for=acceptance_criterion_action]", "quando"
+    assert_select "label[for=acceptance_criterion_outcome]", "então"
+  end
+
+  test "each blank part of the criterion is refused and pointed at on its own field (#13)" do
+    { context: "Contexto", action: "Ação", outcome: "Resultado" }.each do |field, name|
+      parts = { context: "um usuário", action: "entra", outcome: "vê os projetos" }.merge(field => " ")
+
+      assert_no_difference -> { AcceptanceCriterion.count } do
+        post project_user_story_acceptance_criteria_path(@project, @story), params: { acceptance_criterion: parts }
+      end
+
+      assert_response :unprocessable_entity
+      assert_select "#error_explanation li", /#{name} não pode ficar em branco/
+      assert_select "#acceptance_criterion_#{field}[aria-invalid=true]", 1
+      assert_select "[aria-invalid=true]", 1
+    end
+  end
+
+  test "a saved criterion is shown as Dado …, quando …, então … (#13)" do
+    get project_user_story_path(@project, @story)
+
+    assert_select "##{ActionView::RecordIdentifier.dom_id(@criterion)} p",
+      "Dado um usuário cadastrado na tela de login, quando ele informa e-mail e senha corretos, então é levado à lista dos seus projetos."
+  end
 end

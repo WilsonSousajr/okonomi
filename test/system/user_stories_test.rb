@@ -91,4 +91,25 @@ class UserStoriesTest < ApplicationSystemTestCase
     assert_selector "[data-field=rice_reach]", text: "500"
     assert_selector "[data-field=rice]", text: "indefinida"
   end
+
+  test "scoring a story and sorting the backlog by RICE through the browser (#19)" do
+    sign_in_through_form users(:one)
+    assert_selector "h1", text: "Meus projetos"
+    visit edit_project_user_story_path(projects(:okonomi), user_stories(:login))
+
+    fill_in "Alcance (Reach)", with: "1000"
+    select "2 — alto", from: "Impacto (Impact)"
+    select "80% — média", from: "Confiança (Confidence)"
+    select "5", from: "Esforço (Effort)"
+    click_button "Salvar história"
+    assert_selector "[data-field=rice]", text: "320,00"
+
+    visit project_path(projects(:okonomi))
+    within("#product_backlog") do
+      select "Maior RICE primeiro", from: "Ordenar"
+      click_button "Filtrar"
+    end
+    assert_current_path(/sort=rice/)
+    within("#product_backlog") { assert_text "320,00" }
+  end
 end

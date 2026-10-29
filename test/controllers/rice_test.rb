@@ -95,4 +95,42 @@ class RiceTest < ActionDispatch::IntegrationTest
 
     assert_select "select#user_story_rice_impact option[selected]", "0,25 — mínimo"
   end
+
+  test "R=1000, I=2, C=80, E=5 shows a score of 320 (#19)" do
+    @story.update!(rice_reach: 1000, rice_impact: 2, rice_confidence: 80, rice_effort: 5)
+
+    get project_user_story_path(@project, @story)
+
+    assert_select "[data-field=rice]", "320,00"
+  end
+
+  test "a blank field or Effort 0 shows the score as undefined, without error (#19)" do
+    @story.update!(rice_reach: 1000, rice_impact: 2, rice_confidence: 80, rice_effort: 0)
+
+    get project_user_story_path(@project, @story)
+
+    assert_response :success
+    assert_select "[data-field=rice]", "indefinida"
+  end
+
+  test "sorting the backlog by RICE lists the highest score first and undefined last (#19)" do
+    @story.update!(rice_reach: 1000, rice_impact: 2, rice_confidence: 80, rice_effort: 5)
+    undefined = @project.user_stories.create!(role: "gerente", action: "x", benefit: "y")
+
+    get project_path(@project, sort: "rice")
+
+    ids = css_select("#product_backlog li[id^=user_story_]").map { |item| item["id"] }
+    dom_id = ->(record) { ActionView::RecordIdentifier.dom_id(record) }
+    assert_equal [ dom_id.(@story), dom_id.(user_stories(:login)), dom_id.(undefined) ], ids
+  end
+
+  test "sorting can be combined with the MoSCoW filter (#16, #19)" do
+    @story.update!(moscow: "M", rice_reach: 1000, rice_impact: 2, rice_confidence: 80, rice_effort: 5)
+    @project.user_stories.create!(role: "gerente", action: "x", benefit: "y", moscow: "S", rice_reach: 99_999, rice_impact: 3, rice_confidence: 100, rice_effort: 1)
+
+    get project_path(@project, sort: "rice", moscow: "M")
+
+    ids = css_select("#product_backlog li[id^=user_story_]").map { |item| item["id"] }
+    assert_equal [ ActionView::RecordIdentifier.dom_id(@story), ActionView::RecordIdentifier.dom_id(user_stories(:login)) ], ids
+  end
 end

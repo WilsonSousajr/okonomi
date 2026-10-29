@@ -29,6 +29,11 @@ class UserStory < ApplicationRecord
 
   # An unknown tag filters nothing rather than emptying the backlog (#16).
   scope :with_moscow, ->(tag) { MOSCOW.include?(tag) ? where(moscow: tag) : all }
+  # Same formula as rice_score, in SQL. Any blank field makes the product NULL and NULLIF turns
+  # Effort 0 into NULL, so undefined scores sort last instead of dividing by zero (#19).
+  scope :by_rice, -> {
+    order(Arel.sql("(rice_reach * rice_impact * rice_confidence / 100.0) / NULLIF(rice_effort, 0) DESC NULLS LAST, user_stories.id"))
+  }
 
   def to_s = "Como um #{role}, eu quero #{action}, para #{benefit}."
 

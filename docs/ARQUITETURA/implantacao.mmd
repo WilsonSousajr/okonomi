@@ -1,0 +1,16 @@
+flowchart LR
+  user["Navegador"]
+  subgraph host["Servidor Linux com Docker (previsto, detalhado no artefato 9)"]
+    direction TB
+    proxy["kamal-proxy"]
+    subgraph web["Contêiner okonomi (Dockerfile)"]
+      thrust["Thruster<br/>compressão e cache de assets"]
+      puma["Puma<br/>Rails + plugin Solid Queue"]
+    end
+    db[("PostgreSQL 17<br/>okonomi_production<br/>_cache · _queue · _cable")]
+  end
+  smtp["Servidor SMTP<br/>(redefinição de senha)"]
+  dev["Máquina de desenvolvimento<br/>kamal deploy"] -- "imagem Docker" --> web
+  user -- "HTTP(S)" --> proxy --> thrust --> puma
+  puma --> db
+  puma -- "SMTP" --> smtp

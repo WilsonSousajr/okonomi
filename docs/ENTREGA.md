@@ -21,11 +21,11 @@ participantes).
 |---|---|---|---|---|---|
 | 1 | Descrição do processo (quadro e cartões Kanban) | [`docs/PROCESSO.md`](PROCESSO.md) | [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 2 | Documento de visão e escopo | [`docs/VISAO.md`](VISAO.md) | [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | José Wilson Barbosa de Sousa Júnior | concluído |
-| 3 | Requisitos não funcionais | [`docs/REQUISITOS-NAO-FUNCIONAIS.md`](REQUISITOS-NAO-FUNCIONAIS.md) | [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | José Wilson Barbosa de Sousa Júnior | a fazer |
-| 4 | Requisitos funcionais por histórias de usuário | [`docs/HISTORIAS-DE-USUARIO.md`](HISTORIAS-DE-USUARIO.md) | [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | José Wilson Barbosa de Sousa Júnior | a fazer |
-| 5 | Architecture notebook | [`docs/ARQUITETURA.md`](ARQUITETURA.md) | [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | José Wilson Barbosa de Sousa Júnior | a fazer |
+| 3 | Requisitos não funcionais | [`docs/REQUISITOS-NAO-FUNCIONAIS.md`](REQUISITOS-NAO-FUNCIONAIS.md) | [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | José Wilson Barbosa de Sousa Júnior | concluído |
+| 4 | Requisitos funcionais por histórias de usuário | [`docs/HISTORIAS-DE-USUARIO.md`](HISTORIAS-DE-USUARIO.md) | [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | José Wilson Barbosa de Sousa Júnior | concluído |
+| 5 | Architecture notebook | [`docs/ARQUITETURA.md`](ARQUITETURA.md) | [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 6 | Projeto de interface (storyboards e wireframes) | [`docs/INTERFACE/`](INTERFACE/) | [#30](https://github.com/WilsonSousajr/okonomi/issues/30) | José Wilson Barbosa de Sousa Júnior | a fazer |
-| 7 | Projeto físico do banco de dados | [`docs/BANCO-DE-DADOS.md`](BANCO-DE-DADOS.md) | [#31](https://github.com/WilsonSousajr/okonomi/issues/31) | José Wilson Barbosa de Sousa Júnior | a fazer |
+| 7 | Projeto físico do banco de dados | [`docs/BANCO-DE-DADOS.md`](BANCO-DE-DADOS.md) | [#31](https://github.com/WilsonSousajr/okonomi/issues/31) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 8 | Protótipo e vídeo de teste de sistema | esta aplicação | [#32](https://github.com/WilsonSousajr/okonomi/issues/32) | José Wilson Barbosa de Sousa Júnior | a fazer |
 | 9 | Infraestrutura de implantação | [`docs/INFRAESTRUTURA.md`](INFRAESTRUTURA.md) | [#33](https://github.com/WilsonSousajr/okonomi/issues/33) | José Wilson Barbosa de Sousa Júnior | a fazer |
 

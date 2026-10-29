@@ -1,0 +1,50 @@
+classDiagram
+  direction LR
+  class User {
+    email_address
+    password_digest
+  }
+  class Session
+  class Project {
+    name
+    description
+  }
+  class Backlog {
+    kind : product | sprint
+    name
+    goal
+    starts_on
+    ends_on
+  }
+  class UserStory {
+    role
+    action
+    benefit
+    story_points
+    moscow
+    rice_reach
+    rice_impact
+    rice_confidence
+    rice_effort
+    to_s()
+    rice_score()
+  }
+  class Epic {
+    title
+    description
+  }
+  class AcceptanceCriterion {
+    context
+    action
+    outcome
+    to_s()
+  }
+  User "1" --> "*" Session
+  User "1" --> "*" Project
+  Project "1" --> "0..1" Backlog : product backlog
+  Project "1" --> "*" Backlog : sprint backlogs
+  Project "1" --> "*" Epic
+  Project "1" --> "*" UserStory
+  Backlog "1" --> "*" UserStory
+  Epic "0..1" --> "*" UserStory
+  UserStory "1" --> "*" AcceptanceCriterion

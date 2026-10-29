@@ -1,0 +1,21 @@
+<section id="epics" class="mt-10" aria-labelledby="epics_title">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h2 id="epics_title" class="font-semibold text-2xl">Épicos</h2>
+    <%= link_to "Novo épico", new_project_epic_path(project),
+          class: "rounded-md px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-sm font-medium" %>
+  </div>
+
+  <% epics = project.epics.left_joins(:user_stories).group(:id).select("epics.*, COUNT(user_stories.id) AS stories_count").order(:title) %>
+  <% if epics.any? %>
+    <ul class="mt-4 divide-y divide-gray-200 rounded-md border border-gray-200">
+      <% epics.each do |epic| %>
+        <li id="<%= dom_id(epic) %>" class="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+          <%= link_to epic.title, project_epic_path(project, epic), class: "min-w-0 break-words text-blue-700 hover:underline" %>
+          <span class="text-sm text-gray-600"><%= pluralize(epic.stories_count, "história", plural: "histórias") %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-2 text-gray-600">Nenhum épico ainda.</p>
+  <% end %>
+</section>

@@ -128,6 +128,7 @@ jobs:
           path: |
             ${{ github.workspace }}/tmp/screenshots
             ${{ github.workspace }}/tmp/rodada-*.log
+            ${{ github.workspace }}/log/test.log
           if-no-files-found: ignore
 
   # Check único exigido pela proteção do branch main.

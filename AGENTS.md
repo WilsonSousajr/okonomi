@@ -109,7 +109,15 @@ bin/setup                                # install gems, create and migrate the 
 bin/dev                                  # server + Tailwind watcher on :3000
 bin/rails db:migrate
 RAILS_ENV=test bin/rails db:migrate
+bin/demo-video                           # artefato 8 video (#32): runs test/system/demo_test.rb
+                                         # with DEMO=1, records it, writes tmp/demo/*.mp4
 ```
+
+The demo test is skipped unless `DEMO=1`, so it never runs in CI. It drives one
+walkthrough with a success scenario per service (instruction 24). When a screen's
+labels or flow change, update it and record again; the video is a build output, not
+committed, and `bin/package-delivery` (#35) puts it in the ZIP. Needs `node` and
+`ffmpeg`.
 
 **`.env` is required, not optional.** No credential has a default value anywhere in
 the repository, so without it `docker compose` refuses to start and `bin/rails` cannot

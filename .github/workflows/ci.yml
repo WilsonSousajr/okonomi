@@ -118,9 +118,9 @@ jobs:
           fails=0
           for i in 1 2 3 4 5 6; do
             echo "::group::rodada $i"
-            bin/rails test:system 2>&1 | tee "tmp/rodada-$i.log" || true
+            ROUND=$i bin/rails test:system 2>&1 | tee "tmp/rodada-$i.log" || true
             echo "::endgroup::"
-            grep -qE ' [1-9][0-9]* (failures|errors)' "tmp/rodada-$i.log" && fails=$((fails+1)) && echo "RODADA $i FALHOU"
+            if grep -qE ' [1-9][0-9]* (failures|errors)' "tmp/rodada-$i.log"; then fails=$((fails+1)); echo "RODADA $i FALHOU"; else rm -f "tmp/chromedriver-$i.log"; fi
           done
           echo "falhas: $fails de 6"
           [ "$fails" -eq 0 ]
@@ -133,6 +133,7 @@ jobs:
             ${{ github.workspace }}/tmp/screenshots
             ${{ github.workspace }}/tmp/rodada-*.log
             ${{ github.workspace }}/log/test.log
+            ${{ github.workspace }}/tmp/chromedriver-*.log
           if-no-files-found: ignore
 
   # Check único exigido pela proteção do branch main.

@@ -1,0 +1,24 @@
+sequenceDiagram
+  autonumber
+  actor U as Usuário
+  participant N as Navegador (Turbo)
+  participant C as UserStoryMovesController
+  participant A as Authentication / ProjectScoped
+  participant M as UserStory (Active Record)
+  participant D as PostgreSQL
+  U->>N: escolhe "Mover para: Sprint 1"
+  N->>C: POST /projects/1/user_stories/7/move
+  C->>A: require_authentication
+  A->>D: busca Session pelo cookie assinado
+  A->>D: Current.user.projects.find(1)
+  Note over A,D: projeto de outro usuário → 404
+  C->>D: @project.user_stories.find(7)
+  C->>D: @project.backlogs.find(backlog_id)
+  Note over C,D: backlog de outro projeto → 404
+  C->>M: update!(backlog:)
+  M->>M: validações (mesmo projeto)
+  M->>D: UPDATE (FK composta project_id, backlog_id)
+  C-->>N: 303 redirect + flash
+  N->>C: GET /projects/1/user_stories/7
+  C-->>N: HTML da história
+  N-->>U: página atualizada sem recarregar o layout

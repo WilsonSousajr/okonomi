@@ -1,0 +1,4 @@
+<%# Soma dos story points das histórias (#14); histórias sem estimativa não somam. %>
+<p class="mt-1 text-sm text-gray-600">
+  Total: <span data-field="points_total" class="font-medium text-gray-900"><%= pluralize(stories.sum(:story_points), "ponto", plural: "pontos") %></span>
+</p>

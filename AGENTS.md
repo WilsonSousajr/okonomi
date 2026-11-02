@@ -109,7 +109,15 @@ bin/setup                                # install gems, create and migrate the 
 bin/dev                                  # server + Tailwind watcher on :3000
 bin/rails db:migrate
 RAILS_ENV=test bin/rails db:migrate
+bin/demo-video                           # artefato 8 video (#32): runs test/system/demo_test.rb
+                                         # with DEMO=1, records it, writes tmp/demo/*.mp4
 ```
+
+The demo test is skipped unless `DEMO=1`, so it never runs in CI. It drives one
+walkthrough with a success scenario per service (instruction 24). When a screen's
+labels or flow change, update it and record again; the video is a build output, not
+committed, and `bin/package-delivery` (#35) puts it in the ZIP. Needs `node` and
+`ffmpeg`.
 
 **`.env` is required, not optional.** No credential has a default value anywhere in
 the repository, so without it `docker compose` refuses to start and `bin/rails` cannot
@@ -181,6 +189,8 @@ real browser**, because the evaluated deliverable is a working prototype plus a 
   number** in the comment: `# Effort = 0 yields nil rather than dividing by zero (#19)`.
 - Document every non-obvious domain rule at the point it is enforced, with the RF it
   comes from.
+- These rules govern the repository. The copy delivered to the teacher is stripped of
+  comments — see [Final delivery](#final-delivery-zip-for-the-teacher).
 
 ## Dependencies
 
@@ -383,6 +393,37 @@ is not an exemption: the bug was reachable, so something can reach it again.
 - **Every bug found gets an issue and a regression test**, even when fixed immediately.
   Label it `regression`.
 - **No version bump and no release tag without explicit approval.**
+
+## Final delivery (ZIP for the teacher)
+
+Before the project is sent to the teacher (#35), the delivered copy must contain **no
+code comments** and **no AI or agent files**. This applies to the ZIP only: the
+repository, its comments and its history stay as they are.
+
+1. **Export, never the working tree.** Build the package from a clean export of the
+   final `main` (`git archive`), so no ignored or untracked file leaks in.
+2. **Remove every comment from all code** in the export: Ruby, ERB, YAML, JavaScript,
+   CSS, shell scripts, `Dockerfile`, TOML, and the generator boilerplate in `config/`.
+   Keep only the lines that change behaviour: shebangs, `# frozen_string_literal`,
+   encoding comments and CSS/importmap directives (`@import`, `pin`).
+3. **Remove all AI and agent files** from the export: `AGENTS.md`, `CLAUDE.md`,
+   `.claude/`, `.superpowers/`, `.ai-memory*`, `.cursor*`, `.codex*`, `.opencode*`,
+   `GEMINI.md`, `.github/copilot*`, `.mcp.json`.
+4. **Remove every reference to them** in the exported README and docs (today:
+   `README.md`, `docs/PROCESSO.md`, `docs/HISTORIAS-DE-USUARIO.md`,
+   `docs/REQUISITOS-NAO-FUNCIONAIS.md`) and re-render the affected PDFs from the
+   cleaned copy. `grep -rniE 'agents\.md|claude|agentes? de ia|copilot'` over the
+   export must come back empty.
+5. **Prove the stripped copy still works:** `bin/rails test` passes and the app boots.
+6. Zip it as `ESW-241024259.ZIP` and run the checks in #35 (unzips cleanly, no virus).
+
+`bin/package-delivery [ref]` does all six steps and stops at the first one that
+fails; the result is `tmp/delivery/ESW-241024259.ZIP`, with the nine artefacts in
+`artefatos/` and the stripped source in `codigo/`. It needs the video from
+`bin/demo-video` (#32), `pdftotext` (poppler) and `clamscan` (clamav). The comment
+rules live in `lib/delivery/comment_stripper.rb` and its tests. When the docs gain a
+new reference to an AI file, the build aborts on the grep check: add an explicit
+edit to `REFERENCE_EDITS` in the script rather than loosening the pattern.
 
 ## Documentation map
 

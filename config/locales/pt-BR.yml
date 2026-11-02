@@ -164,3 +164,20 @@
               must_belong_to_same_project: "O backlog deve pertencer ao projeto da história."
             epic:
               must_belong_to_same_project: "deve pertencer ao projeto da história"
+  user_stories:
+    moscow:
+      M: "M — Must have (obrigatório)"
+      S: "S — Should have (importante)"
+      C: "C — Could have (desejável)"
+      W: "W — Won't have (fora desta entrega)"
+    rice_impact:
+      massive: massivo
+      high: alto
+      medium: médio
+      low: baixo
+      minimal: mínimo
+    rice_confidence:
+      high: alta
+      medium: média
+      low: baixa
+    rice_score_undefined: indefinida

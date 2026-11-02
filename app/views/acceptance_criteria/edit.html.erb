@@ -1,0 +1,7 @@
+<% content_for :title, "Editar critério de aceitação · okonomi" %>
+
+<div class="mx-auto w-full md:w-2/3">
+  <h1 class="font-bold text-3xl">Editar critério de aceitação</h1>
+  <p class="mt-1 text-gray-600 break-words"><%= @user_story %></p>
+  <%= render "form", project: @project, user_story: @user_story, acceptance_criterion: @acceptance_criterion %>
+</div>

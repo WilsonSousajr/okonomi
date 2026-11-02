@@ -1,0 +1,26 @@
+<section id="acceptance_criteria" class="mt-8" aria-labelledby="acceptance_criteria_title">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h2 id="acceptance_criteria_title" class="font-semibold text-xl">Critérios de aceitação</h2>
+    <%= link_to "Novo critério", new_project_user_story_acceptance_criterion_path(project, story),
+          class: "rounded-md px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-sm font-medium" %>
+  </div>
+
+  <% criteria = story.acceptance_criteria.order(:id) %>
+  <% if criteria.any? %>
+    <ol class="mt-4 divide-y divide-gray-200 rounded-md border border-gray-200">
+      <% criteria.each do |criterion| %>
+        <li id="<%= dom_id(criterion) %>" class="flex flex-wrap items-start justify-between gap-2 px-4 py-3">
+          <p class="min-w-0 break-words"><%= criterion %></p>
+          <div class="flex items-center gap-2 text-sm">
+            <%= link_to "Editar", edit_project_user_story_acceptance_criterion_path(project, story, criterion), class: "underline hover:no-underline" %>
+            <%= button_to "Excluir", project_user_story_acceptance_criterion_path(project, story, criterion), method: :delete,
+                  form: { data: { turbo_confirm: "Excluir este critério de aceitação?" } },
+                  class: "text-red-700 underline hover:no-underline cursor-pointer" %>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <p class="mt-2 text-gray-600">Nenhum critério de aceitação ainda.</p>
+  <% end %>
+</section>

@@ -192,4 +192,29 @@ class UserStoryTest < ActiveSupport::TestCase
       user_stories(:login).destroy!
     end
   end
+
+  test "by_rice orders by score, highest first, with undefined scores last (#19)" do
+    project = projects(:okonomi)
+    build = ->(name, reach, effort) { project.user_stories.create!(role: name, action: "a", benefit: "b", rice_reach: reach, rice_impact: 1, rice_confidence: 100, rice_effort: effort) }
+    low = build.("low", 10, 5)
+    high = build.("high", 1000, 5)
+    zero_effort = build.("zero", 1000, 0)
+    blank = project.user_stories.create!(role: "blank", action: "a", benefit: "b")
+
+    ordered = project.user_stories.by_rice.to_a
+
+    assert_equal [ high, user_stories(:login), low ], ordered.first(3)
+    assert_equal [ zero_effort, blank ].sort_by(&:id), ordered.last(2).sort_by(&:id)
+  end
+
+  test "by_rice agrees with rice_score on every defined story (#19)" do
+    project = projects(:okonomi)
+    [ [ 1000, "2", 80, 5 ], [ 10, "0.25", 50, 1 ], [ 300, "3", 100, 55 ] ].each do |reach, impact, confidence, effort|
+      project.user_stories.create!(role: "r", action: "a", benefit: "b", rice_reach: reach, rice_impact: impact, rice_confidence: confidence, rice_effort: effort)
+    end
+
+    scored = project.user_stories.by_rice.select(&:rice_score)
+
+    assert_equal scored.map(&:rice_score).sort.reverse, scored.map(&:rice_score)
+  end
 end

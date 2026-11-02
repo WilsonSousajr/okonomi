@@ -19,6 +19,56 @@
     <%= form.text_area :benefit, required: true, rows: 2, placeholder: "benefício esperado", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
   </div>
 
+  <%# Só os épicos do próprio projeto; o model ainda recusa um épico de outro projeto (#11). %>
+  <div class="my-5">
+    <%= form.label :epic_id, "Épico", class: "font-medium" %>
+    <%= form.collection_select :epic_id, project.epics.order(:title), :id, :title, { include_blank: "Sem épico" },
+          class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  </div>
+
+  <fieldset class="my-5 rounded-md border border-gray-200 p-4">
+    <legend class="px-1 font-semibold">Estimativa e prioridade</legend>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= form.label :story_points, class: "font-medium" %>
+        <%= form.select :story_points, UserStory::STORY_POINTS, { include_blank: "Sem estimativa" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+
+      <div>
+        <%= form.label :moscow, class: "font-medium" %>
+        <%= form.select :moscow, moscow_options, { include_blank: "Sem etiqueta" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+    </div>
+
+    <%# RICE é opcional; com qualquer campo em branco ou Effort 0 a pontuação fica indefinida (#17, #19). %>
+    <h3 class="mt-5 font-medium">RICE</h3>
+    <div class="mt-2 grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= form.label :rice_reach, class: "font-medium" %>
+        <%= form.number_field :rice_reach, min: 0, max: UserStory::RICE_REACH_MAX, step: 1, placeholder: "número de usuários",
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+      <div>
+        <%= form.label :rice_impact, class: "font-medium" %>
+        <%= form.select :rice_impact, rice_impact_options, { include_blank: "Não definido", selected: rice_impact_value(form.object.rice_impact) },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+      <div>
+        <%= form.label :rice_confidence, class: "font-medium" %>
+        <%= form.select :rice_confidence, rice_confidence_options, { include_blank: "Não definida" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+      <div>
+        <%= form.label :rice_effort, class: "font-medium" %>
+        <%= form.select :rice_effort, UserStory::STORY_POINTS, { include_blank: "Não definido" },
+              class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      </div>
+    </div>
+  </fieldset>
+
   <div class="flex flex-wrap items-center gap-4">
     <%= form.submit user_story.persisted? ? "Salvar história" : "Criar história",
           class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>

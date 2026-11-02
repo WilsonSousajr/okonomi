@@ -23,5 +23,7 @@
 </div>
 
 <section class="mt-6" aria-label="Histórias da sprint">
-  <%= render "backlogs/stories", stories: @backlog.user_stories.order(:id) %>
+  <%= render "backlogs/points_total", stories: @backlog.user_stories %>
+  <%= render "backlogs/toolbar", path: project_sprint_backlog_path(@project, @backlog) %>
+  <%= render "backlogs/stories", stories: backlog_stories(@backlog) %>
 </section>

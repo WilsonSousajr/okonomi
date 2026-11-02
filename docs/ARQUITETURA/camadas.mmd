@@ -1,0 +1,21 @@
+flowchart TB
+  nav["Navegador<br/>HTML + Turbo + Stimulus"]
+  subgraph app["Aplicação Rails 8.1 (Puma + Thruster)"]
+    direction TB
+    rotas["Rotas<br/>config/routes.rb"]
+    ctrl["Controllers<br/>Projects, ProductBacklogs, SprintBacklogs,<br/>UserStories, UserStoryMoves, Epics,<br/>AcceptanceCriteria, Sessions, Registrations, Passwords"]
+    conc["Concerns<br/>Authentication · ProjectScoped"]
+    views["Views ERB + partials<br/>Tailwind CSS"]
+    models["Models Active Record<br/>Project, Backlog, UserStory, Epic,<br/>AcceptanceCriterion, User, Session"]
+    jobs["Active Job + Action Mailer<br/>PasswordsMailer"]
+  end
+  pg[("PostgreSQL 17<br/>primary · cache · queue · cable")]
+  nav -- "HTTP (GET/POST/PATCH/DELETE)" --> rotas
+  rotas --> ctrl
+  conc -. "before_action" .-> ctrl
+  ctrl --> models
+  ctrl --> views
+  views -- "HTML / Turbo Drive" --> nav
+  ctrl --> jobs
+  models --> pg
+  jobs -- "Solid Queue" --> pg

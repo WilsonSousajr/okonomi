@@ -8,7 +8,17 @@
 <h1 class="mt-2 font-bold text-2xl break-words"><%= @user_story %></h1>
 
 <p class="mt-2 text-gray-600">Backlog: <%= @user_story.backlog.name %></p>
+<p class="mt-1 text-gray-600">
+  Épico:
+  <% if @user_story.epic %>
+    <%= link_to @user_story.epic.title, project_epic_path(@project, @user_story.epic), class: "text-blue-700 underline hover:no-underline" %>
+  <% else %>
+    sem épico
+  <% end %>
+</p>
 <div class="mt-2"><%= render "estimates", story: @user_story %></div>
+<%= render "rice", story: @user_story %>
+<%= render "move", project: @project, story: @user_story %>
 
 <div class="mt-6 flex flex-wrap items-center gap-2">
   <%= link_to "Editar", edit_project_user_story_path(@project, @user_story), class: "rounded-md px-3 py-2 border border-gray-300 hover:bg-gray-50 font-medium" %>
@@ -16,3 +26,5 @@
         form: { data: { turbo_confirm: "Excluir a história e os critérios de aceitação dela?" } },
         class: "rounded-md px-3 py-2 bg-red-600 hover:bg-red-500 text-white font-medium cursor-pointer" %>
 </div>
+
+<%= render "criteria", project: @project, story: @user_story %>

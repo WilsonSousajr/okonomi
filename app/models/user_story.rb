@@ -5,17 +5,23 @@ class UserStory < ApplicationRecord
   has_many :acceptance_criteria, dependent: :destroy
 
   normalizes :role, :action, :benefit, with: ->(value) { value.squish }
+  # The form's blank option means "no tag"; an empty string would fail the domain check (#16).
+  normalizes :moscow, with: ->(value) { value.presence }
 
   # The same scale is the domain of story points (#15) and of RICE Effort (#18).
   STORY_POINTS = [ 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 ].freeze
   MOSCOW = %w[ M S C W ].freeze
   RICE_IMPACTS = %w[ 3 2 1 0.5 0.25 ].map { |impact| BigDecimal(impact) }.freeze
   RICE_CONFIDENCES = [ 100, 80, 50 ].freeze
+  # rice_reach is an int4 column; a larger number would raise instead of failing validation (#104).
+  RICE_REACH_MAX = 2_147_483_647
 
   validates :role, :action, :benefit, presence: true
+  # only_integer checks the raw input, so "2.5" or "abc" is refused instead of being cast to 2 or 0 (#102).
+  validates :story_points, :rice_confidence, :rice_effort, numericality: { only_integer: true }, allow_nil: true
   validates :story_points, inclusion: { in: STORY_POINTS }, allow_nil: true
   validates :moscow, inclusion: { in: MOSCOW }, allow_nil: true
-  validates :rice_reach, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :rice_reach, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: RICE_REACH_MAX }, allow_nil: true
   validates :rice_impact, inclusion: { in: RICE_IMPACTS }, allow_nil: true
   validates :rice_confidence, inclusion: { in: RICE_CONFIDENCES }, allow_nil: true
   validates :rice_effort, inclusion: { in: STORY_POINTS }, allow_nil: true
@@ -24,6 +30,14 @@ class UserStory < ApplicationRecord
   validate :epic_in_same_project
 
   before_validation :default_to_product_backlog, on: :create
+
+  # An unknown tag filters nothing rather than emptying the backlog (#16).
+  scope :with_moscow, ->(tag) { MOSCOW.include?(tag) ? where(moscow: tag) : all }
+  # Same formula as rice_score, in SQL. Any blank field makes the product NULL and NULLIF turns
+  # Effort 0 into NULL, so undefined scores sort last instead of dividing by zero (#19).
+  scope :by_rice, -> {
+    order(Arel.sql("(rice_reach * rice_impact * rice_confidence / 100.0) / NULLIF(rice_effort, 0) DESC NULLS LAST, user_stories.id"))
+  }
 
   def to_s = "Como um #{role}, eu quero #{action}, para #{benefit}."
 
@@ -49,7 +63,9 @@ class UserStory < ApplicationRecord
       errors.add(:backlog, :must_belong_to_same_project) if backlog && backlog.project_id != project_id
     end
 
+    # A dangling epic_id (an epic deleted in another tab) resolves to nil and would hit the
+    # composite foreign key as a 500, so it is refused here like a foreign epic (#103).
     def epic_in_same_project
-      errors.add(:epic, :must_belong_to_same_project) if epic && epic.project_id != project_id
+      errors.add(:epic, :must_belong_to_same_project) if epic_id && epic&.project_id != project_id
     end
 end

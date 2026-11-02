@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Records the system test video for artefato 8 (#32): runs test/system/demo_test.rb
+# in headless Chrome while script/demo_recorder.mjs captures the DevTools screencast,
+# then encodes the frames with ffmpeg. Output: tmp/demo/okonomi-teste-de-sistema.mp4
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+out_dir="$root/tmp/demo"
+video="$out_dir/okonomi-teste-de-sistema.mp4"
+
+command -v node >/dev/null || { echo "node não encontrado (brew install node)" >&2; exit 1; }
+command -v ffmpeg >/dev/null || { echo "ffmpeg não encontrado (brew install ffmpeg)" >&2; exit 1; }
+
+rm -rf "$out_dir"
+mkdir -p "$out_dir"
+
+# test:system builds the CSS itself; a single test file does not.
+(cd "$root" && bin/rails tailwindcss:build >/dev/null)
+
+node "$root/script/demo_recorder.mjs" 9333 "$out_dir" &
+recorder=$!
+trap 'kill "$recorder" 2>/dev/null || true' EXIT
+
+status=0
+(cd "$root" && DEMO=1 bin/rails test test/system/demo_test.rb) || status=$?
+
+kill -INT "$recorder" 2>/dev/null || true
+wait "$recorder" 2>/dev/null || true
+trap - EXIT
+
+if [ "$status" -ne 0 ]; then
+  echo "O teste de demonstração falhou; o vídeo não foi gerado." >&2
+  exit "$status"
+fi
+
+ffmpeg -loglevel error -y -f concat -safe 0 -i "$out_dir/frames.txt" \
+  -vf "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:white,format=yuv420p" -r 30 -c:v libx264 -crf 20 \
+  -movflags +faststart "$video"
+
+echo "$video"

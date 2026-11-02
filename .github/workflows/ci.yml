@@ -83,6 +83,10 @@ jobs:
   system-test:
     name: Testes de sistema
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [ 1, 2, 3, 4 ]
     services:
       postgres:
         image: postgres:17-alpine
@@ -124,7 +128,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: screenshots
+          name: screenshots-${{ matrix.shard }}
           path: |
             ${{ github.workspace }}/tmp/screenshots
             ${{ github.workspace }}/tmp/rodada-*.log

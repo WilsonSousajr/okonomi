@@ -52,7 +52,7 @@ gem "thruster", require: false
 # "ImageProcessing::Vips requires the ruby-vips gem" (PR #42). O libvips ja era
 # instalado pela CI e usado antes, entao isto torna explicito o que ja existia.
 gem "ruby-vips", "~> 2.0"
-gem "image_processing", "~> 2.1"
+gem "image_processing", "~> 2.2"
 
 group :development, :test do
   # O Rails 8 nao le arquivos .env. Como nenhuma credencial tem valor padrao no

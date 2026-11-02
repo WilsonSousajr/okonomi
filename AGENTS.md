@@ -409,6 +409,14 @@ repository, its comments and its history stay as they are.
 5. **Prove the stripped copy still works:** `bin/rails test` passes and the app boots.
 6. Zip it as `ESW-241024259.ZIP` and run the checks in #35 (unzips cleanly, no virus).
 
+`bin/package-delivery [ref]` does all six steps and stops at the first one that
+fails; the result is `tmp/delivery/ESW-241024259.ZIP`, with the nine artefacts in
+`artefatos/` and the stripped source in `codigo/`. It needs the video from
+`bin/demo-video` (#32), `pdftotext` (poppler) and `clamscan` (clamav). The comment
+rules live in `lib/delivery/comment_stripper.rb` and its tests. When the docs gain a
+new reference to an AI file, the build aborts on the grep check: add an explicit
+edit to `REFERENCE_EDITS` in the script rather than loosening the pattern.
+
 ## Documentation map
 
 - `docs/RF/ESW-TRABALHO-PRÁTICO.pdf` — the assignment. The source of truth for every

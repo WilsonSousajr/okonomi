@@ -1,0 +1,184 @@
+#!/usr/bin/env ruby
+# Builds the final delivery ESW-241024259.ZIP (#35) following AGENTS.md "Final
+# delivery": a clean export of a git ref, without AI/agent files, without code
+# comments, with the affected PDFs re-rendered, proven to still pass the tests.
+#
+#   bin/package-delivery [ref] [--video PATH] [--sem-video] [--sem-testes]
+#
+# Output: tmp/delivery/ESW-241024259.ZIP
+require "fileutils"
+require "open3"
+require "prism"
+require "shellwords"
+require_relative "../lib/delivery/comment_stripper"
+
+ROOT = File.expand_path("..", __dir__)
+PACKAGE = "ESW-241024259".freeze
+REFERENCE_PATTERN = /agents\.md|claude|agentes? de ia|copilot/i
+
+AI_FILES = %w[
+  AGENTS.md CLAUDE.md GEMINI.md .mcp.json .claude .superpowers .ai-memory* .cursor* .codex* .opencode*
+  .github/copilot*
+].freeze
+
+# Delivery tooling that only makes sense in the repository.
+TOOLING_FILES = %w[bin/package-delivery lib/delivery test/lib/delivery].freeze
+
+# Every reference to the AI files, replaced by an explicit edit. A missing target
+# aborts the build: the docs changed and this list must be reviewed.
+REFERENCE_EDITS = {
+  "README.md" => [
+    [ "\nDiretrizes para agentes de IA e para contribuidores: [`AGENTS.md`](AGENTS.md).\n", "\n" ]
+  ],
+  ".githooks/commit-msg" => [
+    [ "Toda mudança nasce de uma issue — veja AGENTS.md.", "Toda mudança nasce de uma issue — veja docs/PROCESSO.md." ]
+  ],
+  ".github/ISSUE_TEMPLATE/defeito.md" => [
+    [ "Todo defeito vira teste **antes** da correção — veja AGENTS.md.", "Todo defeito vira teste **antes** da correção." ]
+  ],
+  "docs/PROCESSO.md" => [
+    [ "| `.githooks/commit-msg`, `AGENTS.md` |", "| `.githooks/commit-msg` |" ],
+    [ "| docs: CLAUDE.md duplica regras que pertencem só ao AGENTS.md |",
+      "| docs: arquivo de instruções duplica regras do guia de contribuição |" ]
+  ],
+  "docs/HISTORIAS-DE-USUARIO.md" => [
+    [ "a escolha está registrada aqui e no `AGENTS.md`.",
+      "a escolha está registrada aqui e no architecture notebook (decisão D9)." ]
+  ],
+  "docs/REQUISITOS-NAO-FUNCIONAIS.md" => [
+    [ "| RNF-54 | O `AGENTS.md` registra as convenções de código, de testes e de Git e os problemas conhecidos do ambiente, para qualquer pessoa ou agente que contribua. |",
+      "| RNF-54 | O repositório registra as convenções de código, de testes e de Git e os problemas conhecidos do ambiente, para qualquer pessoa que contribua. |" ]
+  ]
+}.freeze
+
+# Artefacts at the top of the package, in the order of the brief (section 3).
+ARTEFACTS = {
+  "01-descricao-do-processo.pdf" => "docs/pdf/PROCESSO.pdf",
+  "02-visao-e-escopo.pdf" => "docs/pdf/VISAO.pdf",
+  "03-requisitos-nao-funcionais.pdf" => "docs/pdf/REQUISITOS-NAO-FUNCIONAIS.pdf",
+  "04-historias-de-usuario.pdf" => "docs/pdf/HISTORIAS-DE-USUARIO.pdf",
+  "05-architecture-notebook.pdf" => "docs/pdf/ARQUITETURA.pdf",
+  "06-projeto-de-interface.pdf" => "docs/pdf/INTERFACE.pdf",
+  "07-projeto-fisico-do-banco.pdf" => "docs/pdf/BANCO-DE-DADOS.pdf",
+  "09-infraestrutura-de-implantacao.pdf" => "docs/pdf/INFRAESTRUTURA.pdf",
+  "equipe-e-autoria.pdf" => "docs/pdf/ENTREGA.pdf"
+}.freeze
+VIDEO_NAME = "08-prototipo-video-teste-de-sistema.mp4".freeze
+SKIPPED_FROM_STRIPPING = %r{\A(docs|vendor)/}
+
+def run!(*command, chdir: ROOT, env: {})
+  output, status = Open3.capture2e(env, *command, chdir: chdir)
+  abort "falhou: #{command.join(' ')}\n#{output}" unless status.success?
+  output
+end
+
+def step(message) = puts("==> #{message}")
+
+args = ARGV.dup
+with_video = !args.delete("--sem-video")
+with_tests = !args.delete("--sem-testes")
+video = (index = args.index("--video")) ? args.slice!(index, 2).last : File.join(ROOT, "tmp/demo/okonomi-teste-de-sistema.mp4")
+ref = args.first || "origin/main"
+abort "vídeo não encontrado em #{video} (gere com bin/demo-video ou use --sem-video)" if with_video && !File.exist?(video)
+
+work = File.join(ROOT, "tmp/delivery")
+package_dir = File.join(work, PACKAGE)
+code = File.join(package_dir, "codigo")
+FileUtils.rm_rf(work)
+FileUtils.mkdir_p(code)
+
+step "exportando #{ref} (#{run!('git', 'rev-parse', '--short', ref).strip}) com git archive"
+run!("bash", "-c", "git archive --format=tar #{ref} | tar -x -C #{code.shellescape}")
+
+step "removendo arquivos de IA e de agentes"
+(AI_FILES + TOOLING_FILES).each do |pattern|
+  Dir.glob(File.join(code, pattern), File::FNM_DOTMATCH).each { |path| FileUtils.rm_rf(path) }
+end
+
+step "removendo referências a esses arquivos"
+changed_docs = []
+REFERENCE_EDITS.each do |relative, edits|
+  path = File.join(code, relative)
+  text = File.read(path)
+  edits.each do |from, to|
+    abort "trecho não encontrado em #{relative}: #{from.strip[0, 80]}" unless text.include?(from)
+    text = text.sub(from, to)
+  end
+  File.write(path, text)
+  changed_docs << relative if relative.start_with?("docs/") && relative.end_with?(".md")
+end
+
+step "removendo comentários do código"
+stripped = 0
+Dir.glob("**/*", File::FNM_DOTMATCH, base: code).sort.each do |relative|
+  path = File.join(code, relative)
+  next unless File.file?(path) && !relative.match?(SKIPPED_FROM_STRIPPING)
+
+  source = File.binread(path)
+  next unless source.force_encoding(Encoding::UTF_8).valid_encoding? && !source.include?("\0")
+
+  result = Delivery::CommentStripper.strip(relative, source)
+  next if result == source
+
+  if Delivery::CommentStripper.language(relative, source) == :ruby && !Prism.parse(result).success?
+    abort "Ruby inválido depois de remover comentários: #{relative}"
+  end
+  File.write(path, result)
+  stripped += 1
+end
+puts "    #{stripped} arquivos alterados"
+
+step "gerando de novo os PDFs alterados: #{changed_docs.join(', ')}"
+run!("bin/docs-pdf", *changed_docs, chdir: code) if changed_docs.any?
+
+step "conferindo que não sobrou referência a IA"
+leftovers = run!("bash", "-c", "grep -rIliE 'agents\\.md|claude|agentes? de ia|copilot' . || true", chdir: code).split("\n")
+if system("command -v pdftotext >/dev/null")
+  Dir.glob(File.join(code, "docs/pdf/*.pdf")).each do |pdf|
+    leftovers << pdf.delete_prefix("#{code}/") if run!("pdftotext", pdf, "-").match?(REFERENCE_PATTERN)
+  end
+else
+  puts "    aviso: pdftotext ausente; os PDFs não foram verificados (brew install poppler)"
+end
+abort "referências restantes:\n#{leftovers.join("\n")}" if leftovers.any?
+
+if with_tests
+  check = File.join(work, "verificacao")
+  step "rodando bin/rails test numa cópia da exportação"
+  FileUtils.cp_r(code, check)
+  FileUtils.cp(File.join(ROOT, ".env"), check) if File.exist?(File.join(ROOT, ".env"))
+  FileUtils.cp(File.join(ROOT, ".mise.toml"), check) if File.exist?(File.join(ROOT, ".mise.toml")) && !File.exist?(File.join(check, ".mise.toml"))
+  puts run!("bin/rails", "db:test:prepare", "test", chdir: check).lines.last(1).join
+  step "subindo a aplicação em modo produção (eager load)"
+  run!("bin/rails", "runner", "puts :ok", chdir: check, env: { "RAILS_ENV" => "production", "SECRET_KEY_BASE_DUMMY" => "1" })
+  FileUtils.rm_rf(check)
+end
+
+step "montando a pasta de artefatos"
+artefacts = File.join(package_dir, "artefatos")
+FileUtils.mkdir_p(artefacts)
+ARTEFACTS.each do |name, source|
+  abort "artefato ausente em #{ref}: #{source}" unless File.exist?(File.join(code, source))
+  FileUtils.cp(File.join(code, source), File.join(artefacts, name))
+end
+FileUtils.cp(video, File.join(artefacts, VIDEO_NAME)) if with_video
+
+step "compactando #{PACKAGE}.ZIP"
+zip = File.join(work, "#{PACKAGE}.ZIP")
+run!("zip", "-q", "-r", "-X", zip, PACKAGE, chdir: work)
+run!("unzip", "-tq", zip)
+unpacked = File.join(work, "descompactado")
+run!("unzip", "-q", zip, "-d", unpacked)
+expected = Dir.glob("**/*", File::FNM_DOTMATCH, base: package_dir).count { |f| File.file?(File.join(package_dir, f)) }
+actual = Dir.glob("**/*", File::FNM_DOTMATCH, base: File.join(unpacked, PACKAGE)).count { |f| File.file?(File.join(unpacked, PACKAGE, f)) }
+abort "descompactação incompleta: #{actual} de #{expected} arquivos" unless actual == expected
+FileUtils.rm_rf(unpacked)
+
+if system("command -v clamscan >/dev/null")
+  step "verificando vírus com clamscan"
+  puts run!("clamscan", "--no-summary", "-r", zip)
+else
+  puts "    aviso: clamscan ausente; a verificação de vírus (instrução 28) não foi feita (brew install clamav)"
+end
+
+puts "\n#{zip} (#{(File.size(zip) / 1024.0 / 1024).round(1)} MB, #{expected} arquivos)"

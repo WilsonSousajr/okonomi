@@ -106,13 +106,28 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: bin/rails db:test:prepare test:system
+      - name: Testes de sistema x6 com registro de eventos (#94, DEPURACAO)
+        env:
+          DEBUG94: "1"
+        run: |
+          bin/rails db:test:prepare
+          fails=0
+          for i in 1 2 3 4 5 6; do
+            echo "::group::rodada $i"
+            bin/rails test:system 2>&1 | tee "tmp/rodada-$i.log" || true
+            echo "::endgroup::"
+            grep -qE ' [1-9][0-9]* (failures|errors)' "tmp/rodada-$i.log" && fails=$((fails+1)) && echo "RODADA $i FALHOU"
+          done
+          echo "falhas: $fails de 6"
+          [ "$fails" -eq 0 ]
       - name: Guardar screenshots de testes de sistema que falharam
         uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
+          path: |
+            ${{ github.workspace }}/tmp/screenshots
+            ${{ github.workspace }}/tmp/rodada-*.log
           if-no-files-found: ignore
 
   # Check único exigido pela proteção do branch main.

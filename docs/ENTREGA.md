@@ -26,7 +26,7 @@ participantes).
 | 5 | Architecture notebook | [`docs/ARQUITETURA.md`](ARQUITETURA.md) | [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 6 | Projeto de interface (storyboards e wireframes) | [`docs/INTERFACE.md`](INTERFACE.md) | [#30](https://github.com/WilsonSousajr/okonomi/issues/30) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 7 | Projeto físico do banco de dados | [`docs/BANCO-DE-DADOS.md`](BANCO-DE-DADOS.md) | [#31](https://github.com/WilsonSousajr/okonomi/issues/31) | José Wilson Barbosa de Sousa Júnior | concluído |
-| 8 | Protótipo e vídeo de teste de sistema | esta aplicação | [#32](https://github.com/WilsonSousajr/okonomi/issues/32) | José Wilson Barbosa de Sousa Júnior | a fazer |
+| 8 | Protótipo e vídeo de teste de sistema | esta aplicação | [#32](https://github.com/WilsonSousajr/okonomi/issues/32) | José Wilson Barbosa de Sousa Júnior | concluído |
 | 9 | Infraestrutura de implantação | [`docs/INFRAESTRUTURA.md`](INFRAESTRUTURA.md) | [#33](https://github.com/WilsonSousajr/okonomi/issues/33) | José Wilson Barbosa de Sousa Júnior | concluído |
 
 A coluna **Situação** acompanha o quadro Kanban: *a fazer* (Backlog ou Sprint

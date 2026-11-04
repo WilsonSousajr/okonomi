@@ -8,6 +8,7 @@ issue [#30](https://github.com/WilsonSousajr/okonomi/issues/30); atende às inst
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 28/10/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | Storyboards 7 (redefinição de senha) e 8 (exclusões e regras); RF01 no título do storyboard 1. |
 
 ## 1. Introdução
 
@@ -30,6 +31,8 @@ os rótulos e os botões. Não há cores finais nem tipografia.
     link secundário;
   - a faixa verde é uma mensagem de sucesso e a vermelha, uma mensagem de erro;
   - a borda vermelha marca o campo que tem erro;
+  - a caixa de borda grossa sobre a tela, com *Cancelar* e *OK*, é a confirmação
+    que o navegador mostra antes de uma exclusão;
   - o texto entre parênteses é uma anotação do esboço, não aparece na tela.
 
 Os rótulos e as mensagens dos esboços são os mesmos da aplicação, para que o
@@ -44,7 +47,7 @@ owner*, *scrum master* ou desenvolvedor), como descrito no
 
 ## 2. Storyboards
 
-### 2.1 Criar conta e autenticar (RF02, RF03)
+### 2.1 Criar conta e autenticar (RF01, RF02, RF03)
 
 **Cenário.** Ana ainda não tem conta. Ela se cadastra e cai direto na sua lista de
 projetos. Depois sai, tenta entrar com a senha errada e recebe uma mensagem genérica,
@@ -135,10 +138,57 @@ estimativas.
 
 ![Storyboard 6](INTERFACE/06-sprint-e-movimentacao.png)
 
+### 2.7 Redefinir a senha (RF03, RNF-06)
+
+**Cenário.** Ana esqueceu a senha. Na tela de entrada ela pede a redefinição,
+recebe uma mensagem que não revela se o e-mail está cadastrado, abre o e-mail com o
+link, escolhe uma senha nova e entra com ela.
+
+1. **Entrar,** com o link *Esqueceu a senha?* ao lado do botão.
+2. **Esqueceu a senha?:** o campo *E-mail* e o botão *Enviar instruções*.
+3. **Mensagem genérica:** de volta à tela de entrada, o aviso "Se existir uma conta
+   com esse e-mail, enviamos as instruções para redefinir a senha." aparece tanto
+   para e-mail cadastrado quanto para e-mail desconhecido.
+4. **E-mail com o link:** assunto "Redefina sua senha do okonomi", o link "nesta
+   página de redefinição" e o prazo "Este link expira em 15 minutos.".
+5. **Redefinir senha:** *Nova senha* (mínimo de 8 caracteres) e *Repita a nova
+   senha*, com o botão *Salvar*. Se as duas não forem iguais, a mensagem é "As senhas
+   não conferem.".
+6. **Entrar com a nova senha:** o aviso "Senha redefinida. Entre com a nova senha."
+   As sessões abertas antes foram encerradas; ao entrar, Ana volta a *Meus projetos*.
+
+![Storyboard 7](INTERFACE/07-redefinicao-de-senha.png)
+
+### 2.8 Exclusões e regras (RF05, RF06, RF10)
+
+**Cenário.** Ana exclui a "Sprint 1" e confere que a história volta ao product
+backlog. Depois tenta criar um segundo product backlog no mesmo projeto e o sistema
+recusa. Por fim exclui o épico "Pagamentos": a história continua existindo, só que
+sem épico.
+
+1. **Página da sprint,** com o botão *Excluir sprint*.
+2. **Confirmação:** "Excluir a sprint? As histórias dela voltam para o product
+   backlog.", com *Cancelar* e *OK*.
+3. **Histórias de volta ao product backlog:** o aviso "Sprint excluída.", a história
+   listada no product backlog sem perder texto, épico, critérios nem estimativas, e
+   "Nenhuma sprint ainda." na seção de sprints.
+4. **Segundo product backlog recusado:** a página do projeto não oferece mais o botão
+   *Criar product backlog*, mas mesmo abrindo o formulário pelo endereço o envio é
+   recusado com "Este projeto já possui um product backlog — só pode existir um por
+   projeto.".
+5. **Excluir épico:** a confirmação "Excluir o épico? As histórias dele continuam
+   existindo, sem épico.".
+6. **Projeto depois da exclusão:** o aviso "Épico excluído.", a história ainda no
+   product backlog e "Nenhum épico ainda." na seção de épicos. Na página da história,
+   o épico aparece como "sem épico".
+
+![Storyboard 8](INTERFACE/08-exclusoes-e-regras.png)
+
 ## 3. Roteiro do vídeo de teste de sistema
 
 O vídeo do artefato 8 (instrução 24) mostra um cenário de sucesso para cada serviço
-do sistema. Os cenários são os mesmos destes storyboards, na mesma ordem:
+do sistema. Os cenários são os mesmos destes storyboards (no vídeo, a redefinição de
+senha vem logo depois da autenticação):
 
 | Trecho do vídeo | Storyboard | Requisitos |
 |---|---|---|
@@ -148,14 +198,16 @@ do sistema. Os cenários são os mesmos destes storyboards, na mesma ordem:
 | 4. Criar épico e vincular a história | 2.4 | RF10, RF11 |
 | 5. Estimar, etiquetar, calcular RICE, filtrar e ordenar | 2.5 | RF14 a RF19 |
 | 6. Criar sprint e mover a história | 2.6 | RF06, RF08 |
+| 7. Redefinir a senha pelo link do e-mail | 2.7 | RF03, RNF-06 |
+| 8. Excluir sprint, recusar segundo product backlog, excluir épico | 2.8 | RF05, RF06, RF10 |
 
 ## 4. Rastreabilidade
 
 | Instrução ou item do Critério 06 | Seção |
 |---|---|
 | Instrução 17: projeto de interface por *storyboards* compostos por *wireframes* | 2 |
-| Instrução 18: cada *wireframe* é um esboço simples de tela | 1 ("Como ler") e 2.1 a 2.6 |
+| Instrução 18: cada *wireframe* é um esboço simples de tela | 1 ("Como ler") e 2.1 a 2.8 |
 | Projeto de interface composto por *storyboards* | 2 |
-| Cada *storyboard* descreve um cenário de uso | 2.1 a 2.6 ("Cenário") |
-| Cada *storyboard* é composto por uma sequência de *wireframes* | 2.1 a 2.6 (quadros numerados) |
-| Cada *wireframe* é um esboço simples de tela | 2.1 a 2.6 (imagens) |
+| Cada *storyboard* descreve um cenário de uso | 2.1 a 2.8 ("Cenário") |
+| Cada *storyboard* é composto por uma sequência de *wireframes* | 2.1 a 2.8 (quadros numerados) |
+| Cada *wireframe* é um esboço simples de tela | 2.1 a 2.8 (imagens) |

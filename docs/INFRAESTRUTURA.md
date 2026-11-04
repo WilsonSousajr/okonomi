@@ -71,7 +71,7 @@ A imagem é gerada pelo `Dockerfile` do repositório a partir de
 | Software | Versão | Papel |
 |---|---|---|
 | Ruby | 3.4.10 | Linguagem da aplicação, com `jemalloc` para reduzir o uso de memória. |
-| Ruby on Rails | 8.1.4 | *Framework* MVC da aplicação. |
+| Ruby on Rails | 8.1.4.1 | *Framework* MVC da aplicação. |
 | Puma | 8.0.2 | Servidor de aplicação HTTP. |
 | Thruster | 0.1.27 | Proxy HTTP/2 na frente do Puma: compressão, *cache* de *assets* e `X-Sendfile`. |
 | Solid Queue | 1.7.0 | Fila de *jobs* (e-mail de redefinição de senha), executada dentro do Puma (`SOLID_QUEUE_IN_PUMA`). |

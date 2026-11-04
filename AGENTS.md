@@ -36,7 +36,7 @@ passes on CI and fails locally.
 
 - **Ruby 3.4.10**, managed by `mise` (`.mise.toml`). The macOS system Ruby is 2.6 and
   cannot run Rails 8.
-- **Rails 8.1.4**, full stack — no API-only split, no separate front-end.
+- **Rails 8.1.4.1**, full stack — no API-only split, no separate front-end.
 - **PostgreSQL 17.** Chosen over SQLite because the domain needs a partial unique index
   (one product backlog per project) and exact `decimal` for RICE Impact.
 - **Hotwire** (Turbo + Stimulus), **Propshaft**, **Importmap**. No bundler, no SPA

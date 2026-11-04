@@ -30,7 +30,7 @@ Dois formatos são impostos pela estrutura de dados, não por convenção:
 | Item | Versão |
 |---|---|
 | Ruby | 3.4.10 |
-| Rails | 8.1.4 |
+| Rails | 8.1.4.1 |
 | PostgreSQL | 17 |
 | CSS | Tailwind CSS v4 |
 | Front-end | Hotwire (Turbo + Stimulus), Propshaft, Importmap |

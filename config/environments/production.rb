@@ -70,7 +70,9 @@ Rails.application.configure do
     password: Rails.application.credentials.dig(:smtp, :password),
     address: ENV["SMTP_ADDRESS"],
     port: 587,
-    authentication: :plain
+    authentication: :plain,
+    # Refuse to send when STARTTLS fails, so the credentials never travel in clear text.
+    enable_starttls: true
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

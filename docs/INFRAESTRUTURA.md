@@ -161,7 +161,7 @@ na interface local do servidor (`127.0.0.1`), nunca para a internet.
 A única mensagem enviada é a de redefinição de senha (#3), entregue por
 Solid Queue. Em produção (`config/environments/production.rb`),
 `config.action_mailer.smtp_settings` aponta para o servidor SMTP da variável
-`SMTP_ADDRESS`, na porta 587, com usuário e senha guardados nas *credentials* do
+`SMTP_ADDRESS`, na porta 587 com STARTTLS obrigatório (`enable_starttls`), com usuário e senha guardados nas *credentials* do
 Rails (`smtp.user_name` e `smtp.password`); `default_url_options` usa o domínio da
 variável `APP_HOST`, para que o link do e-mail aponte para o site real. As duas
 variáveis são declaradas em `env.clear` de `config/deploy.yml`.

@@ -38,6 +38,7 @@ class DemoTest < ApplicationSystemTestCase
   PAUSE_SCALE = 1.5
 
   PASSWORD = "senha-da-demo-2026"
+  NEW_PASSWORD = "nova-senha-da-demo-2026"
 
   setup do
     skip "só roda com DEMO=1 (bin/demo-video)" unless ENV["DEMO"]
@@ -64,6 +65,27 @@ class DemoTest < ApplicationSystemTestCase
     assert_selector "h1", text: "Entrar"
     type "E-mail", "ana@okonomi.dev"
     type "Senha", PASSWORD
+    click_button "Entrar"
+    assert_selector "h1", text: "Meus projetos"
+    pause
+
+    caption "RF02: Redefinição de senha (pedido pelo link \"Esqueceu a senha?\")"
+    within("header") { click_button "Sair" }
+    click_link "Esqueceu a senha?"
+    type "E-mail", "ana@okonomi.dev"
+    click_button "Enviar instruções"
+    assert_text "Se existir uma conta com esse e-mail, enviamos as instruções"
+    pause
+
+    # The e-mail itself is not on screen: the demo opens the link it carries.
+    caption "RF02: Redefinição de senha (link recebido por e-mail)"
+    visit edit_password_path(User.find_by!(email_address: "ana@okonomi.dev").password_reset_token)
+    type "Nova senha", NEW_PASSWORD
+    type "Repita a nova senha", NEW_PASSWORD
+    click_button "Salvar"
+    assert_text "Senha redefinida. Entre com a nova senha."
+    type "E-mail", "ana@okonomi.dev"
+    type "Senha", NEW_PASSWORD
     click_button "Entrar"
     assert_selector "h1", text: "Meus projetos"
     pause
@@ -110,6 +132,14 @@ class DemoTest < ApplicationSystemTestCase
     assert_text "Product backlog criado."
     pause
     project_url = current_url
+
+    caption "RF05: Editar o product backlog"
+    within("#product_backlog") { click_on "Editar" }
+    type "Objetivo", "Tudo o que a loja virtual precisa fazer"
+    click_button "Salvar product backlog"
+    assert_text "Product backlog atualizado."
+    within("#product_backlog") { assert_text "Tudo o que a loja virtual precisa fazer" }
+    pause
     caption "RF05: Um segundo product backlog é recusado"
     visit "#{project_url}/product_backlog/new"
     type "Nome", "Outro product backlog"
@@ -132,12 +162,12 @@ class DemoTest < ApplicationSystemTestCase
     click_button "Criar sprint"
     assert_text "Sprint criada."
     click_on "Editar"
-    type "Nome", "Sprint 2 — catálogo"
+    type "Nome", "Sprint 2: catálogo"
     click_button "Salvar sprint"
-    assert_selector "h1", text: "Sprint 2 — catálogo"
+    assert_selector "h1", text: "Sprint 2: catálogo"
     visit project_url
     within("#sprint_backlogs") { assert_text "Sprint 1" }
-    within("#sprint_backlogs") { assert_text "Sprint 2 — catálogo" }
+    within("#sprint_backlogs") { assert_text "Sprint 2: catálogo" }
     pause
 
     # RF07, RF09
@@ -182,6 +212,13 @@ class DemoTest < ApplicationSystemTestCase
     assert_text "História movida para Sprint 1."
     assert_text "Backlog: Sprint 1"
     pause
+    caption "RF08: Mover de uma sprint para outra"
+    select "Sprint 2: catálogo", from: "Mover para"
+    click_button "Mover"
+    assert_text "História movida para Sprint 2: catálogo."
+    assert_text "Backlog: Sprint 2: catálogo"
+    pause
+    caption "RF08: Devolver a história ao product backlog"
     select "Product backlog", from: "Mover para"
     click_button "Mover"
     assert_text "História movida para Product backlog."
@@ -300,6 +337,77 @@ class DemoTest < ApplicationSystemTestCase
     pause 1
     click_button "Salvar história"
     assert_selector "#error_explanation", text: "Confiança (Confidence) não está incluído na lista"
+    pause 3
+
+    caption "RF19: Com Esforço 0 a pontuação RICE fica indefinida"
+    visit project_url
+    within("#product_backlog") { click_on "Nova história" }
+    type "Como um", "gerente"
+    type "eu quero", "exportar relatórios de vendas"
+    type "para", "acompanhar o faturamento"
+    select "C — Could have (desejável)", from: "MoSCoW"
+    type "Alcance (Reach)", "500"
+    select "3 — massivo", from: "Impacto (Impact)"
+    select "100% — alta", from: "Confiança (Confidence)"
+    select "0", from: "Esforço (Effort)"
+    pause 1
+    click_button "Criar história"
+    assert_text "História criada."
+    assert_selector "[data-field=rice]", text: "indefinida"
+    pause 3
+    report_url = current_url
+
+    caption "RF19: Com Esforço 2 a pontuação passa a (500 × 3 × 1) / 2 = 750"
+    click_on "Editar"
+    select "2", from: "Esforço (Effort)"
+    pause 1
+    click_button "Salvar história"
+    assert_text "História atualizada."
+    assert_selector "[data-field=rice]", text: "750,00"
+    pause 3
+
+    caption "RF16: Filtrar o backlog pela etiqueta MoSCoW (só M)"
+    visit project_url
+    within("#product_backlog") do
+      select "M — Must have (obrigatório)", from: "MoSCoW"
+      click_button "Filtrar"
+    end
+    within("#product_backlog") do
+      assert_text "eu quero pagar com Pix"
+      assert_no_text "exportar relatórios"
+    end
+    pause 3
+
+    caption "RF19: Ordenar o backlog pela pontuação RICE (maior primeiro)"
+    within("#product_backlog") do
+      select "Todas", from: "MoSCoW"
+      select "Maior RICE primeiro", from: "Ordenar"
+      click_button "Filtrar"
+    end
+    within("#product_backlog li:first-child") { assert_text "exportar relatórios" }
+    within("#product_backlog li:last-child") { assert_text "pagar com Pix" }
+    pause 3
+
+    caption "RF06: Excluir uma sprint (as histórias dela voltam ao product backlog)"
+    visit report_url
+    select "Sprint 1", from: "Mover para"
+    click_button "Mover"
+    assert_text "História movida para Sprint 1."
+    visit project_url
+    within("#sprint_backlogs") { click_on "Sprint 1" }
+    assert_selector "h1", text: "Sprint 1"
+    assert_text "exportar relatórios"
+    pause
+    accept_confirm { click_button "Excluir sprint" }
+    assert_text "Sprint excluída."
+    within("#sprint_backlogs") { assert_no_text "Sprint 1" }
+    within("#product_backlog") { assert_text "exportar relatórios" }
+    pause 3
+
+    caption "RF05: Excluir o product backlog (as histórias dele vão junto)"
+    within("#product_backlog") { accept_confirm { click_button "Excluir" } }
+    assert_text "Product backlog excluído."
+    assert_text "Este projeto ainda não tem product backlog."
     pause 3
 
     caption "Fim: todos os serviços demonstrados com sucesso"

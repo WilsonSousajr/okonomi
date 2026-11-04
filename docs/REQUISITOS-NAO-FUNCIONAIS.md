@@ -9,6 +9,7 @@ Rastreado pela issue [#27](https://github.com/WilsonSousajr/okonomi/issues/27); 
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 18/10/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | Nova seção 3.5 (Segurança); procedimentos de medição de RNF-09, RNF-16, RNF-17 e RNF-19; referência de RNF-06 corrigida; direitos do titular pela LGPD detalhados; versões das dependências atualizadas. |
 
 ## 1. Introdução
 
@@ -35,7 +36,7 @@ as histórias respeitam.
 | RNF-03 | **Mensagem de autenticação genérica.** Uma tentativa de entrada malsucedida mostra "E-mail ou senha inválidos.", sem revelar se o e-mail tem conta. | Teste `wrong password and unknown e-mail get the same generic message` (#3). |
 | RNF-04 | **Política de senha.** A senha tem no mínimo **8 caracteres** e no máximo **72 bytes**, o limite do bcrypt (letras acentuadas ocupam 2 bytes). Há confirmação na criação da conta e na redefinição, e cada recusa explica o motivo. | Testes de `User`, de cadastro (#2) e de redefinição (#80, #81). |
 | RNF-05 | **Limite de tentativas.** Entrada, criação de conta e pedido de redefinição de senha aceitam no máximo **10 tentativas a cada 3 minutos** por origem; depois disso o sistema responde "Muitas tentativas. Tente novamente mais tarde." | `rate_limit` nos três controllers. |
-| RNF-06 | **Redefinição de senha por e-mail.** O usuário que esqueceu a senha recebe por e-mail um link que expira em **15 minutos**. A resposta da tela é a mesma exista ou não a conta. Redefinir a senha encerra todas as sessões abertas. | Testes de `PasswordsController` e do e-mail (#1). |
+| RNF-06 | **Redefinição de senha por e-mail.** O usuário que esqueceu a senha recebe por e-mail um link que expira em **15 minutos**. A resposta da tela é a mesma exista ou não a conta. Redefinir a senha encerra todas as sessões abertas. | Testes de `PasswordsController` (fluxo criado no esqueleto, #21, e corrigido em #80 e #81) e teste do e-mail em português (#1). |
 | RNF-07 | **Exclusão sem órfãos.** Excluir um projeto exclui tudo o que ele contém. Excluir uma sprint devolve as histórias dela ao product backlog. Excluir uma história exclui os critérios de aceitação dela. Toda exclusão pede confirmação na interface. | Testes de modelo e de controller (#4, #6, #7). |
 
 ## 3. Qualidades do sistema
@@ -45,7 +46,7 @@ as histórias respeitam.
 | Id | Requisito | Métrica ou verificação |
 |---|---|---|
 | RNF-08 | **Idioma.** Toda a interface, inclusive mensagens de validação, datas e e-mails, está em **português do Brasil**. | Locale padrão `pt-BR` (`LocaleTest`); os testes de cada tela conferem as mensagens em português. Uma chave sem tradução ("translation missing") é tratada como defeito e ganha teste de regressão, como em #81. |
-| RNF-09 | **Acessibilidade.** A interface busca o nível **AA da WCAG 2.2**. Todo campo tem rótulo visível ligado a ele; mensagens de erro e de retorno ficam numa região `role="alert"`/`role="status"`; a navegação funciona só com teclado; o contraste do texto é de pelo menos 4,5:1. | Revisão com as ferramentas de acessibilidade do navegador a cada tela nova; testes de sistema usam os rótulos para preencher os campos. |
+| RNF-09 | **Acessibilidade.** A interface busca o nível **AA da WCAG 2.2**. Todo campo tem rótulo visível ligado a ele; mensagens de erro e de retorno ficam numa região `role="alert"`/`role="status"`; a navegação funciona só com teclado; o contraste do texto é de pelo menos 4,5:1. | Procedimento: auditoria de cada tela com o **Lighthouse** (categoria *Accessibility*) e com a extensão **axe DevTools**, que aplicam as regras automáticas da WCAG; a tela é aceita sem nenhuma violação de nível A ou AA apontada pelo axe. Os itens que as ferramentas não conferem sozinhas (ordem de foco, navegação só com teclado) são verificados à mão, percorrendo a tela com Tab. Os testes de sistema usam os rótulos para preencher os campos, o que garante a ligação rótulo–campo. |
 | RNF-10 | **Responsividade.** Todas as telas funcionam a partir de **375 px** de largura sem rolagem horizontal. | Teste de sistema `no horizontal scroll at 375px` (#1) nas telas públicas; as demais usam o mesmo layout e são conferidas no navegador a cada história. |
 | RNF-11 | **Formatos guiados.** O formulário da história mostra os campos "Como um", "eu quero" e "para", e o do critério de aceitação mostra "Dado", "quando" e "então", para que o usuário não precise conhecer os formatos de antemão. | Histórias RF09 e RF13. |
 | RNF-12 | **Facilidade de aprendizado.** Um membro de equipe ágil que nunca usou o sistema consegue, sem manual, criar a conta, um projeto, o product backlog e a primeira história em até **5 minutos**. | Roteiro do vídeo de teste de sistema (#32). |
@@ -57,15 +58,15 @@ as histórias respeitam.
 | RNF-13 | **Integridade garantida pelo banco.** As regras do domínio (um product backlog por projeto, escalas fechadas, histórias e épicos sempre do mesmo projeto, formatos em colunas obrigatórias) são impostas pelo banco de dados, além do modelo. Nenhum defeito na aplicação consegue gravar um dado que as viole. | Testes que contornam o modelo e esperam o erro do banco; ver o artefato 7, seção 4. |
 | RNF-14 | **Falha sem perda.** Um erro inesperado devolve uma página de erro e não deixa registro gravado pela metade: cada gravação ou exclusão de um registro, com os efeitos colaterais dela (por exemplo, devolver as histórias de uma sprint excluída), acontece numa única transação. | Transações do Active Record; páginas `public/4xx/5xx`. |
 | RNF-15 | **Cópia de segurança.** Em produção, o banco tem cópia de segurança diária mantida por pelo menos 7 dias. Perda máxima aceitável: 24 horas de dados. | Descrito no artefato 9 (infraestrutura, #33). |
-| RNF-16 | **Disponibilidade.** Durante o período de avaliação, a meta é 99% de disponibilidade mensal, com a verificação de saúde em `/up`. | Monitoramento da rota `/up` pelo Kamal. |
+| RNF-16 | **Disponibilidade.** Durante o período de avaliação, a meta é 99% de disponibilidade mensal (no máximo cerca de 7 horas fora do ar por mês), com a verificação de saúde em `/up`. | O Kamal usa `/up` para só liberar uma versão nova que responda 200. A meta mensal é medida por um **monitor externo de disponibilidade** (por exemplo, UptimeRobot) que consulta `https://<domínio>/up` a cada 5 minutos: disponibilidade = verificações com resposta 200 ÷ total de verificações no mês. Este é o procedimento de verificação; o valor só existe depois de um mês com o sistema em produção. |
 
 ### 3.3 Desempenho
 
 | Id | Requisito | Métrica ou verificação |
 |---|---|---|
-| RNF-17 | **Tempo de resposta.** O servidor responde às páginas em até **500 ms no percentil 95**, com projetos de até 200 histórias. | Tempos registrados no log do Rails (`Completed … in N ms`). |
+| RNF-17 | **Tempo de resposta.** O servidor responde às páginas em até **500 ms no percentil 95**, com projetos de até 200 histórias. | Procedimento: com um projeto de 200 histórias, o percentil 95 é calculado sobre as linhas `Completed 200 OK in N ms` do log do Rails em produção (ou em homologação), ordenando os tempos *N* e tomando o valor abaixo do qual ficam 95% das requisições. É um procedimento de verificação, não um resultado já medido. |
 | RNF-18 | **Consultas indexadas.** Toda chave estrangeira tem índice. As listas de backlogs e histórias não fazem uma consulta por linha exibida. | `db/schema.rb`; revisão dos logs de SQL em desenvolvimento. |
-| RNF-19 | **Capacidade.** Um único servidor com 2 vCPUs e 4 GB de RAM atende ao menos 50 usuários simultâneos. | Dimensionamento no artefato 9 (#33). |
+| RNF-19 | **Capacidade.** Um único servidor com 2 vCPUs e 4 GB de RAM atende ao menos 50 usuários simultâneos. | Dimensionamento no artefato 9 (#33). Procedimento: teste de carga em homologação, com a mesma configuração de servidor, usando uma ferramenta como **k6**, `wrk` ou `ab` para simular 50 usuários simultâneos navegando entre projetos, backlogs e histórias; o requisito é atendido se não houver erros 5xx e o percentil 95 continuar dentro de RNF-17. Ainda não executado. |
 
 ### 3.4 Suportabilidade
 
@@ -76,6 +77,27 @@ as histórias respeitam.
 | RNF-22 | **Versões fixadas.** Ruby, Rails, PostgreSQL e as gems têm versões exatas, iguais em `.mise.toml`, `Gemfile.lock` e no CI. | Revisão no PR; Dependabot para atualizações. |
 | RNF-23 | **Padrão de código.** O código segue o `rubocop-rails-omakase`, sem ofensas. | `bin/rubocop` no CI. |
 | RNF-24 | **Instalação reproduzível.** O ambiente de desenvolvimento sobe com `docker compose up -d postgres` e `bin/setup`. A produção é implantada com um único comando do Kamal. | `README.md` e artefato 9. |
+
+### 3.5 Segurança
+
+Esta seção reúne os atributos de segurança que já aparecem em outras partes do
+documento (seções 2, 4.2.3, 6 e 7), classificados pelas subcaracterísticas de
+**segurança** da **ISO/IEC 25010** e relacionados às categorias do **OWASP Top 10**
+(edição 2021) que cada um ajuda a evitar.
+
+| Atributo | O que o okonomi faz | ISO/IEC 25010 | OWASP Top 10 (2021) | Verificação |
+|---|---|---|---|---|
+| Armazenamento da senha | A senha nunca é gravada; o banco guarda só o *digest* **bcrypt** (`has_secure_password`). RNF-43, RNF-48. | Confidencialidade | A02 — Falhas criptográficas | Teste de `User` `stores the password as a digest, never in plain text` (#2). |
+| Política de senha | Mínimo de **8 caracteres** e máximo de 72 bytes, no cadastro e na redefinição. RNF-04. | Autenticidade | A07 — Falhas de identificação e autenticação | Testes de `User`, de cadastro (#2) e de redefinição (#80, #81). |
+| Limite de tentativas | Entrada, cadastro e pedido de redefinição aceitam **10 tentativas a cada 3 minutos** por origem (`rate_limit`). RNF-05. | Autenticidade | A07 | `rate_limit` em `SessionsController`, `RegistrationsController` e `PasswordsController`. |
+| Mensagens que não revelam contas | Falha de login e pedido de redefinição dão a mesma resposta exista ou não o e-mail. RNF-03, RNF-06. | Confidencialidade | A07 | Testes de sessão (#3) e de redefinição. |
+| Cookie de sessão | Assinado, `HttpOnly`, `SameSite=Lax` e, em produção, `Secure`. RNF-39. | Confidencialidade, autenticidade | A07 | `Authentication#session_cookie_options` (#40). |
+| Transporte | Em produção, `force_ssl` redireciona HTTP para HTTPS e envia o cabeçalho HSTS. RNF-38. | Confidencialidade, integridade | A02 | `config/environments/production.rb` (#40). |
+| Controle de acesso | Todo recurso é buscado a partir de `Current.user.projects`; o dado de outro usuário responde **404**, sem confirmar que existe. RNF-01, RNF-02. | Confidencialidade, integridade | A01 — Quebra de controle de acesso | Testes `… is not found` (#3 a #7). |
+| Proteção contra CSRF | Todo formulário leva o *token* de autenticidade do Rails. | Integridade | A01 | Proteção padrão do Rails (`protect_from_forgery`), ligada pelo `config.load_defaults 8.1`. |
+| Segredos fora do código | Nenhuma credencial no repositório. RNF-45. | Confidencialidade | A05 — Configuração incorreta de segurança | GitGuardian em cada commit. |
+| Componentes vulneráveis e código inseguro | **Brakeman** (análise estática) e **bundler-audit** / `importmap audit` (vulnerabilidades conhecidas nas dependências) rodam em todo PR. RNF-21. | Integridade | A03 — Injeção; A06 — Componentes vulneráveis e desatualizados | Check `ci` obrigatório na `main`. |
+| Registro das sessões | Cada sessão guarda IP e navegador; sair apaga a sessão; redefinir a senha encerra todas as sessões abertas. RNF-06. | Responsabilização | A07 | Testes de `SessionsController` e `PasswordsController`. |
 
 ## 4. Interfaces do sistema
 
@@ -164,10 +186,16 @@ Regras do domínio impostas pelo modelo **e** pelo banco (detalhes no artefato 7
     compartilhado com terceiros, exceto o envio de e-mail pelo provedor SMTP.
   - RNF-48 (segurança): a senha nunca é armazenada, só o seu *digest* bcrypt. O
     tráfego é sempre HTTPS (RNF-38).
-  - RNF-49 (direitos do titular): o titular pode pedir acesso, correção ou exclusão
-    dos seus dados ao responsável pelo sistema, listado na seção "Equipe" do `README.md`. Nesta versão
-    a exclusão da conta é feita pelo administrador; uma tela de autoatendimento fica
-    para versão futura. Ao sair, a sessão é apagada.
+  - RNF-49 (direitos do titular, **Art. 18** da LGPD): o titular pode pedir a
+    confirmação de que seus dados são tratados, o acesso a eles, a correção e a
+    **eliminação** dos dados pessoais. O pedido é feito por e-mail ao responsável pelo
+    sistema, listado na seção "Equipe" do `README.md`, a partir do endereço da própria
+    conta. Nesta versão a exclusão da conta é feita pelo administrador: excluir o
+    usuário apaga também as sessões, os projetos e tudo o que eles contêm (RNF-07).
+    O pedido é atendido em até **15 dias** a contar do recebimento, o mesmo prazo que o
+    **Art. 19, II** fixa para a declaração completa ao titular; o titular recebe a
+    confirmação por e-mail. Uma tela de autoatendimento fica para versão futura. Ao
+    sair, a sessão é apagada.
 
 ### 7.2 Normas e padrões aplicáveis
 
@@ -195,29 +223,29 @@ Regras do domínio impostas pelo modelo **e** pelo banco (detalhes no artefato 7
 
 ### 8.2 Licenças das dependências
 
-Versões conforme o `Gemfile.lock` e o `config/importmap.rb` na data desta versão.
+Versões conforme o `Gemfile.lock` em 04/11/2026.
 
 **Incluídas no sistema em produção:**
 
 | Componente | Versão | Licença |
 |---|---|---|
 | Ruby | 3.4.10 | Ruby License / BSD-2-Clause |
-| Ruby on Rails | 8.1.3.1 | MIT |
+| Ruby on Rails | 8.1.4.1 | MIT |
 | PostgreSQL | 17 | PostgreSQL License (permissiva, semelhante à BSD/MIT) |
-| pg (driver do PostgreSQL) | 1.6.3 | BSD-2-Clause |
+| pg (driver do PostgreSQL) | 1.7.0 | BSD-2-Clause |
 | Puma | 8.0.2 | BSD-3-Clause |
-| Thruster | 0.1.26 | MIT |
+| Thruster | 0.1.27 | MIT |
 | Turbo (turbo-rails) | 2.0.23 | MIT |
 | Stimulus (stimulus-rails) | 1.3.4 | MIT |
 | importmap-rails | 2.2.3 | MIT |
 | Propshaft | 1.3.2 | MIT |
 | Tailwind CSS (tailwindcss-rails / tailwindcss-ruby) | 4.6.0 / 4.3.3 | MIT |
-| Solid Queue / Solid Cache / Solid Cable | 1.7.0 / 1.0.10 / 4.0.2 | MIT |
+| Solid Queue / Solid Cache / Solid Cable | 1.7.0 / 1.0.10 / 4.1.0 | MIT |
 | bcrypt | 3.1.22 | MIT |
 | jbuilder | 2.15.1 | MIT |
 | json | 2.21.2 | Ruby License |
 | bootsnap | 1.26.0 | MIT |
-| image_processing | 2.1.0 | MIT |
+| image_processing | 2.2.0 | MIT |
 
 **Usadas só no desenvolvimento, nos testes, no CI ou na implantação** (não
 distribuídas com o sistema):
@@ -227,7 +255,7 @@ distribuídas com o sistema):
 | Kamal | 2.12.0 | MIT |
 | dotenv-rails | 3.2.0 | MIT |
 | Capybara | 3.40.0 | MIT |
-| selenium-webdriver | 4.49.0 | Apache-2.0 |
+| selenium-webdriver | 4.52.0 | Apache-2.0 |
 | RuboCop (rubocop-rails-omakase) | 1.1.0 | MIT |
 | Brakeman | 8.1.0 | Brakeman Public Use License |
 | bundler-audit | 0.9.3 | GPL-3.0-or-later |
@@ -262,9 +290,9 @@ o okonomi, então não afetam a licença MIT do sistema.
 | Instrução ou item do Critério 03 | Seção |
 |---|---|
 | Instrução 3: adotar modelo (*template*): `systemwide_req_spec.odt` | Estrutura do documento inteiro |
-| Instrução 13: informar normas, padrões, métricas etc. | 3 (métricas) e 7.2 (normas e padrões) |
+| Instrução 13: informar normas, padrões, métricas etc. | 3 (métricas e procedimentos de medição), 3.5 (ISO/IEC 25010 e OWASP Top 10) e 7.2 (normas e padrões) |
 | Descritos requisitos funcionais que não foram especificados nas histórias | 2 e 5 |
-| Descritos atributos de qualidade requeridos (usabilidade, desempenho etc.) | 3.1 a 3.4 |
+| Descritos atributos de qualidade requeridos (usabilidade, desempenho etc.) | 3.1 a 3.5 |
 | Descritos requisitos quanto à interface com o usuário | 4.1 |
 | Descritos requisitos quanto à interface com dispositivos externos | 4.2.2 |
 | Descritos requisitos quanto à interface do sistema com outros sistemas | 4.2.1 e 4.2.3 |

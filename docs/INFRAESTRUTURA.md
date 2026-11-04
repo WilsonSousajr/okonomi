@@ -8,6 +8,7 @@ atende à instrução 25 e ao Critério de Avaliação 09.
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 02/11/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | `config/deploy.yml` preenchido conforme este documento; versões atualizadas; procedimento de cópia de segurança detalhado. |
 
 ## 1. Introdução
 
@@ -64,20 +65,21 @@ outro serviço de dados para instalar.
 ### 3.2 Software da aplicação (imagem Docker)
 
 A imagem é gerada pelo `Dockerfile` do repositório a partir de
-`ruby:3.4.10-slim` (Debian). Ela contém:
+`ruby:3.4.10-slim` (Debian). Ela contém (versões conforme o `Gemfile.lock` em
+04/11/2026):
 
 | Software | Versão | Papel |
 |---|---|---|
 | Ruby | 3.4.10 | Linguagem da aplicação, com `jemalloc` para reduzir o uso de memória. |
-| Ruby on Rails | 8.1.3.1 | *Framework* MVC da aplicação. |
+| Ruby on Rails | 8.1.4 | *Framework* MVC da aplicação. |
 | Puma | 8.0.2 | Servidor de aplicação HTTP. |
-| Thruster | 0.1.26 | Proxy HTTP/2 na frente do Puma: compressão, *cache* de *assets* e `X-Sendfile`. |
+| Thruster | 0.1.27 | Proxy HTTP/2 na frente do Puma: compressão, *cache* de *assets* e `X-Sendfile`. |
 | Solid Queue | 1.7.0 | Fila de *jobs* (e-mail de redefinição de senha), executada dentro do Puma (`SOLID_QUEUE_IN_PUMA`). |
 | Solid Cache | 1.0.10 | *Cache* do Rails guardado no PostgreSQL. |
-| Solid Cable | 4.0.2 | *Websockets* do Turbo guardados no PostgreSQL. |
+| Solid Cable | 4.1.0 | *Websockets* do Turbo guardados no PostgreSQL. |
 | Turbo e Stimulus (Hotwire) | 2.0.23 / 1.3.4 | Interface sem SPA, servida por *importmap* (sem Node.js em produção). |
-| Tailwind CSS | 4.6.0 (`tailwindcss-rails`) | CSS compilado na construção da imagem. |
-| `pg` | 1.6.3 | *Driver* do PostgreSQL, com `libpq` e `postgresql-client`. |
+| Tailwind CSS | 4.3.3 (gem `tailwindcss-ruby`, integrada por `tailwindcss-rails` 4.6.0) | CSS compilado na construção da imagem. |
+| `pg` | 1.7.0 | *Driver* do PostgreSQL, com `libpq` e `postgresql-client`. |
 | `bcrypt` | 3.1.22 | Hash das senhas. |
 
 ### 3.3 Banco de dados
@@ -86,8 +88,9 @@ A imagem é gerada pelo `Dockerfile` do repositório a partir de
 |---|---|---|
 | PostgreSQL | 17 (imagem `postgres:17-alpine`) | Único serviço de dados. Guarda quatro bancos: `okonomi_production` (dados), `okonomi_production_cache`, `okonomi_production_queue` e `okonomi_production_cable`. |
 
-O PostgreSQL roda como **acessório** do Kamal no mesmo servidor, com os dados num
-volume Docker persistente. Alternativa equivalente: um PostgreSQL gerenciado
+O PostgreSQL roda como **acessório** do Kamal no mesmo servidor (seção `accessories.db`
+de `config/deploy.yml`), com os dados num diretório persistente do servidor
+(`okonomi-db/data`, montado em `/var/lib/postgresql/data`). Alternativa equivalente: um PostgreSQL gerenciado
 (seção 5.2); basta apontar `DATABASE_URL` para ele.
 
 ### 3.4 Software da máquina de quem implanta
@@ -136,25 +139,32 @@ segundo é acrescentar servidores de aplicação na lista `servers.web` do Kamal
 
 O domínio (por exemplo, `okonomi.exemplo.com.br`) recebe um registro `A` com o IP
 do servidor. Em `config/deploy.yml`, a seção `proxy` declara esse domínio com
-`ssl: true`; o kamal-proxy obtém o certificado do Let's Encrypt na primeira
+`ssl: true` (o arquivo traz um domínio e um IP de exemplo, que são trocados pelos
+reais no passo 3 da seção 6); o kamal-proxy obtém o certificado do Let's Encrypt na primeira
 implantação e o renova sozinho. Como a aplicação usa `assume_ssl` e `force_ssl`,
 todo acesso HTTP é redirecionado para HTTPS e o *cookie* de sessão só trafega
 cifrado (#40).
 
 ### 5.2 Banco de dados
 
-O PostgreSQL é declarado como acessório do Kamal, com a senha em
-`.kamal/secrets` e os dados no volume `okonomi_postgres_data`. A aplicação recebe
-`DATABASE_URL` e cria os quatro bancos com `bin/rails db:prepare`, executado pelo
-`bin/docker-entrypoint` a cada início de contêiner. A porta 5432 não é publicada
-para a internet: só a rede interna do Docker a alcança.
+O PostgreSQL é declarado como o acessório `db` do Kamal (imagem
+`postgres:17-alpine`, usuário `okonomi`), com a senha em `.kamal/secrets` e os
+dados no diretório `okonomi-db/data` do servidor. A aplicação alcança o banco pelo
+nome `okonomi-db` na rede interna do Docker e recebe `DATABASE_URL` sem nome de
+banco: os nomes dos quatro bancos vêm de `config/database.yml`. Os bancos são
+criados e migrados por `bin/rails db:prepare`, executado pelo
+`bin/docker-entrypoint` a cada início de contêiner. A porta 5432 só é publicada
+na interface local do servidor (`127.0.0.1`), nunca para a internet.
 
 ### 5.3 E-mail
 
 A única mensagem enviada é a de redefinição de senha (#3), entregue por
-Solid Queue. Em produção, `config.action_mailer.smtp_settings` aponta para o
-serviço SMTP escolhido, com usuário e senha guardados nas *credentials* do Rails,
-e `default_url_options` recebe o domínio real.
+Solid Queue. Em produção (`config/environments/production.rb`),
+`config.action_mailer.smtp_settings` aponta para o servidor SMTP da variável
+`SMTP_ADDRESS`, na porta 587, com usuário e senha guardados nas *credentials* do
+Rails (`smtp.user_name` e `smtp.password`); `default_url_options` usa o domínio da
+variável `APP_HOST`, para que o link do e-mail aponte para o site real. As duas
+variáveis são declaradas em `env.clear` de `config/deploy.yml`.
 
 ### 5.4 Segredos
 
@@ -165,7 +175,12 @@ quem implanta:
 |---|---|
 | `RAILS_MASTER_KEY` | Decifra `config/credentials.yml.enc` (SMTP e `secret_key_base`). |
 | `KAMAL_REGISTRY_PASSWORD` | Token de acesso ao registro de contêineres. |
-| `POSTGRES_PASSWORD` | Senha do PostgreSQL, usada pelo acessório e na `DATABASE_URL`. |
+| `POSTGRES_PASSWORD` | Senha do PostgreSQL, usada pelo acessório. |
+| `DATABASE_URL` | Montada em `.kamal/secrets` a partir de `POSTGRES_PASSWORD` (`postgres://okonomi:…@okonomi-db:5432`). |
+
+`.kamal/secrets` só referencia variáveis de ambiente e arquivos locais
+(`config/master.key`); nenhum valor é escrito nele, e por isso ele pode ser
+versionado.
 
 ### 5.5 Logs e monitoramento
 
@@ -178,11 +193,18 @@ minuto.
 
 ### 5.6 Cópia de segurança e restauração
 
-- **Diária:** uma tarefa `cron` no servidor executa `pg_dump --format=custom` do
-  banco `okonomi_production`, compacta o arquivo e o envia ao armazenamento de
-  objetos. Os bancos de *cache*, fila e canais são descartáveis e não entram na
-  cópia.
-- **Retenção:** 30 cópias diárias.
+- **Diária:** uma tarefa `cron` do usuário `root` no servidor, criada no passo 6
+  do procedimento de implantação, gera a cópia às 3h e a envia ao armazenamento
+  de objetos (com a ferramenta `rclone`, configurada para o *bucket*):
+
+  ```
+  0 3 * * * docker exec okonomi-db pg_dump -U okonomi --format=custom okonomi_production > /root/backup/okonomi-$(date +\%F).dump && rclone copy /root/backup remoto:okonomi-backup && find /root/backup -name '*.dump' -mtime +1 -delete
+  ```
+
+  O formato `custom` já é compactado. Os bancos de *cache*, fila e canais são
+  descartáveis e não entram na cópia.
+- **Retenção:** 30 cópias diárias, aplicada por uma regra de ciclo de vida do
+  *bucket* que apaga objetos com mais de 30 dias.
 - **Restauração:** `pg_restore --clean --dbname=okonomi_production` a partir da
   cópia escolhida, com a aplicação parada (`bin/kamal app stop`). A restauração é
   testada a cada mudança de versão do PostgreSQL.
@@ -191,13 +213,16 @@ minuto.
 
 1. Contratar o servidor (seção 4), instalar Docker e liberar as portas 22, 80 e 443.
 2. Criar o registro `A` do domínio (seção 5.1).
-3. Preencher `config/deploy.yml`: IP do servidor em `servers.web`, domínio em
-   `proxy.host`, usuário e endereço do registro em `registry`, e o acessório
-   `db` com a imagem `postgres:17-alpine`.
+3. Em `config/deploy.yml`, trocar os valores de exemplo pelos reais: IP do
+   servidor em `servers.web` e `accessories.db.host`, domínio em `proxy.host` e
+   `APP_HOST`, servidor SMTP em `SMTP_ADDRESS`. O registro (`ghcr.io`) e o
+   acessório `db` com `postgres:17-alpine` já estão declarados.
 4. Preencher `.kamal/secrets` com os segredos da seção 5.4.
 5. Executar `bin/kamal setup`: instala o kamal-proxy, sobe o PostgreSQL, constrói
    e envia a imagem e inicia a aplicação.
-6. Verificar `https://<domínio>/up` e criar a primeira conta pela interface.
+6. Verificar `https://<domínio>/up`, criar a primeira conta pela interface e
+   instalar no servidor o `rclone` e a tarefa `cron` de cópia de segurança
+   (seção 5.6).
 7. Nas versões seguintes, `bin/kamal deploy` (troca sem queda) e, se preciso,
    `bin/kamal rollback <versão>`.
 

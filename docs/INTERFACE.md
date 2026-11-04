@@ -138,7 +138,7 @@ estimativas.
 
 ![Storyboard 6](INTERFACE/06-sprint-e-movimentacao.png)
 
-### 2.7 Redefinir a senha (RF03, RNF-06)
+### 2.7 Redefinir a senha (RF02, RNF-06)
 
 **Cenário.** Ana esqueceu a senha. Na tela de entrada ela pede a redefinição,
 recebe uma mensagem que não revela se o e-mail está cadastrado, abre o e-mail com o
@@ -198,7 +198,7 @@ senha vem logo depois da autenticação):
 | 4. Criar épico e vincular a história | 2.4 | RF10, RF11 |
 | 5. Estimar, etiquetar, calcular RICE, filtrar e ordenar | 2.5 | RF14 a RF19 |
 | 6. Criar sprint e mover a história | 2.6 | RF06, RF08 |
-| 7. Redefinir a senha pelo link do e-mail | 2.7 | RF03, RNF-06 |
+| 7. Redefinir a senha pelo link do e-mail | 2.7 | RF02, RNF-06 |
 | 8. Excluir sprint, recusar segundo product backlog, excluir épico | 2.8 | RF05, RF06, RF10 |
 
 ## 4. Rastreabilidade

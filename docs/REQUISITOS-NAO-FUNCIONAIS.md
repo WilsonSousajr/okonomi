@@ -242,10 +242,8 @@ Versões conforme o `Gemfile.lock` em 04/11/2026.
 | Tailwind CSS (tailwindcss-rails / tailwindcss-ruby) | 4.6.0 / 4.3.3 | MIT |
 | Solid Queue / Solid Cache / Solid Cable | 1.7.0 / 1.0.10 / 4.1.0 | MIT |
 | bcrypt | 3.1.22 | MIT |
-| jbuilder | 2.15.1 | MIT |
 | json | 2.21.2 | Ruby License |
 | bootsnap | 1.26.0 | MIT |
-| image_processing | 2.2.0 | MIT |
 
 **Usadas só no desenvolvimento, nos testes, no CI ou na implantação** (não
 distribuídas com o sistema):

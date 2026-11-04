@@ -16,8 +16,6 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails"
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
 
 # Fixado em 2.x: o json 3.0 passou a exigir opcoes como argumentos nomeados em
 # JSON.parse, e ActiveSupport::JSON.decode (Rails 8.1.3.1) ainda passa um hash
@@ -45,14 +43,6 @@ gem "kamal", require: false
 
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# O image_processing 2.0 deixou de arrastar os backends como dependencia
-# transitiva; agora cada um precisa ser declarado. Sem isto o boot quebra com
-# "ImageProcessing::Vips requires the ruby-vips gem" (PR #42). O libvips ja era
-# instalado pela CI e usado antes, entao isto torna explicito o que ja existia.
-gem "ruby-vips", "~> 2.0"
-gem "image_processing", "~> 2.2"
 
 group :development, :test do
   # O Rails 8 nao le arquivos .env. Como nenhuma credencial tem valor padrao no

@@ -34,6 +34,9 @@ class DemoTest < ApplicationSystemTestCase
     })()
   JS
 
+  STEP_PAUSE = 1.2
+  PAUSE_SCALE = 1.5
+
   PASSWORD = "senha-da-demo-2026"
 
   setup do
@@ -43,11 +46,11 @@ class DemoTest < ApplicationSystemTestCase
 
   test "every service of the prototype, one success scenario each" do
     visit root_path
-    caption "Teste de sistema do okonomi — um cenário de sucesso para cada serviço"
+    caption "Teste de sistema do okonomi: um cenário de sucesso para cada serviço"
     pause 3
 
     # RF01, RF02, RF03
-    caption "RF02 — Criação de conta de usuário"
+    caption "RF02: Criação de conta de usuário"
     within("header") { click_link "Criar conta" }
     type "E-mail", "ana@okonomi.dev"
     type "Senha", PASSWORD
@@ -56,7 +59,7 @@ class DemoTest < ApplicationSystemTestCase
     assert_text "Conta criada com sucesso"
     pause
 
-    caption "RF03 — Autenticação: sair e entrar de novo"
+    caption "RF03: Autenticação (sair e entrar de novo)"
     within("header") { click_button "Sair" }
     assert_selector "h1", text: "Entrar"
     type "E-mail", "ana@okonomi.dev"
@@ -66,7 +69,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF04
-    caption "RF04 — CRUD de projetos: criar"
+    caption "RF04: CRUD de projetos (criar)"
     click_on "Novo projeto"
     type "Nome", "Loja virtual"
     type "Descrição", "Vendas online com pagamento por Pix e cartão"
@@ -75,14 +78,14 @@ class DemoTest < ApplicationSystemTestCase
     assert_selector "h1", text: "Loja virtual"
     pause
 
-    caption "RF04 — CRUD de projetos: editar"
+    caption "RF04: CRUD de projetos (editar)"
     click_on "Editar"
     type "Nome", "Loja virtual Okonomi"
     click_button "Salvar projeto"
     assert_selector "h1", text: "Loja virtual Okonomi"
     pause
 
-    caption "RF04 — CRUD de projetos: listar e excluir"
+    caption "RF04: CRUD de projetos (listar e excluir)"
     within("header") { click_on "Projetos" }
     click_on "Novo projeto"
     type "Nome", "Projeto descartável"
@@ -100,14 +103,14 @@ class DemoTest < ApplicationSystemTestCase
     within("#projects") { click_on "Loja virtual Okonomi" }
 
     # RF05
-    caption "RF05 — Product backlog: no máximo um por projeto"
+    caption "RF05: Product backlog (no máximo um por projeto)"
     within("#product_backlog") { click_on "Criar product backlog" }
     type "Nome", "Product backlog"
     click_button "Criar product backlog"
     assert_text "Product backlog criado."
     pause
     project_url = current_url
-    caption "RF05 — Um segundo product backlog é recusado"
+    caption "RF05: Um segundo product backlog é recusado"
     visit "#{project_url}/product_backlog/new"
     type "Nome", "Outro product backlog"
     click_button "Criar product backlog"
@@ -116,7 +119,7 @@ class DemoTest < ApplicationSystemTestCase
     visit project_url
 
     # RF06
-    caption "RF06 — Sprint backlogs: vários por projeto"
+    caption "RF06: Sprint backlogs (vários por projeto)"
     within("#sprint_backlogs") { click_on "Nova sprint" }
     type "Nome", "Sprint 1"
     type "Objetivo", "Pagamento por Pix"
@@ -138,7 +141,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF07, RF09
-    caption "RF07 e RF09 — História no formato \"Como um … eu quero … para …\""
+    caption "RF07 e RF09: História no formato \"Como um … eu quero … para …\""
     within("#product_backlog") { click_on "Nova história" }
     type "Como um", "cliente"
     type "eu quero", "pagar com Pix"
@@ -149,14 +152,14 @@ class DemoTest < ApplicationSystemTestCase
     pause
     story_url = current_url
 
-    caption "RF07 — Editar a história"
+    caption "RF07: Editar a história"
     click_on "Editar"
     type "para", "concluir a compra em segundos"
     click_button "Salvar história"
     assert_selector "h1", text: "para concluir a compra em segundos"
     pause
 
-    caption "RF07 — Excluir uma história"
+    caption "RF07: Excluir uma história"
     visit project_url
     within("#product_backlog") { click_on "Nova história" }
     type "Como um", "visitante"
@@ -171,7 +174,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF08
-    caption "RF08 — Mover a história entre backlogs"
+    caption "RF08: Mover a história entre backlogs"
     visit story_url
     select "Sprint 1", from: "Mover para"
     pause 1
@@ -186,7 +189,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF10
-    caption "RF10 — CRUD de épicos"
+    caption "RF10: CRUD de épicos"
     visit project_url
     within("#epics") { click_on "Novo épico" }
     type "Título", "Pagamentos"
@@ -209,7 +212,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF11
-    caption "RF11 — Vincular a história a um épico"
+    caption "RF11: Vincular a história a um épico"
     visit story_url
     click_on "Editar"
     select "Pagamentos e cobrança", from: "Épico"
@@ -221,7 +224,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF12, RF13
-    caption "RF12 e RF13 — Critério no formato \"Dado … quando … então …\""
+    caption "RF12 e RF13: Critério no formato \"Dado … quando … então …\""
     visit story_url
     click_on "Novo critério"
     type "Dado", "um carrinho com produtos"
@@ -232,7 +235,7 @@ class DemoTest < ApplicationSystemTestCase
     within("#acceptance_criteria") { assert_text "Dado um carrinho com produtos, quando o cliente escolhe Pix, então vê o QR Code para pagar." }
     pause
 
-    caption "RF12 — Editar e excluir critérios"
+    caption "RF12: Editar e excluir critérios"
     within("#acceptance_criteria li:last-child") { click_on "Editar" }
     type "então", "vê o QR Code e o código copia e cola"
     click_button "Salvar critério"
@@ -251,7 +254,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF14, RF15
-    caption "RF14 — Atribuir story points"
+    caption "RF14: Atribuir story points"
     visit "#{story_url}/edit"
     select "8", from: "Story points"
     pause 1
@@ -260,7 +263,7 @@ class DemoTest < ApplicationSystemTestCase
     assert_selector "[data-field=story_points]", text: "8"
     pause
 
-    caption "RF15 — Valor fora da escala 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 é recusado (4)"
+    caption "RF15: Valor fora da escala 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 é recusado (4)"
     visit "#{story_url}/edit"
     force_option "Story points", "4"
     pause 1
@@ -269,7 +272,7 @@ class DemoTest < ApplicationSystemTestCase
     pause 3
 
     # RF16
-    caption "RF16 — Etiqueta MoSCoW"
+    caption "RF16: Etiqueta MoSCoW"
     visit "#{story_url}/edit"
     select "M — Must have (obrigatório)", from: "MoSCoW"
     pause 1
@@ -279,7 +282,7 @@ class DemoTest < ApplicationSystemTestCase
     pause
 
     # RF17, RF18, RF19
-    caption "RF17 e RF19 — RICE e pontuação (R × I × C) / E"
+    caption "RF17 e RF19: RICE e pontuação (R × I × C) / E"
     visit "#{story_url}/edit"
     type "Alcance (Reach)", "1000"
     select "2 — alto", from: "Impacto (Impact)"
@@ -291,7 +294,7 @@ class DemoTest < ApplicationSystemTestCase
     assert_selector "[data-field=rice]", text: "320,00"
     pause 3
 
-    caption "RF18 — Valor fora do domínio de Confidence (100, 80, 50) é recusado (75)"
+    caption "RF18: Valor fora do domínio de Confidence (100, 80, 50) é recusado (75)"
     visit "#{story_url}/edit"
     force_option "Confiança (Confidence)", "75"
     pause 1
@@ -299,7 +302,7 @@ class DemoTest < ApplicationSystemTestCase
     assert_selector "#error_explanation", text: "Confiança (Confidence) não está incluído na lista"
     pause 3
 
-    caption "Fim — todos os serviços demonstrados com sucesso"
+    caption "Fim: todos os serviços demonstrados com sucesso"
     visit project_url
     pause 4
   end
@@ -310,12 +313,21 @@ class DemoTest < ApplicationSystemTestCase
         sessionStorage.setItem("demoCaption", arguments[0]);
         if (window.__renderDemoCaption) window.__renderDemoCaption();
       JS
-      pause 1.5
+      pause 2.5
     end
 
     def type(label, text)
       fill_in label, with: text
-      pause 0.4
+      pause 0.8
+    end
+
+    # Every navigation step waits a moment so each screen can be read in the video.
+    %i[visit click_on click_link click_button select].each do |action|
+      define_method(action) do |*args, **kwargs, &block|
+        result = super(*args, **kwargs, &block)
+        sleep STEP_PAUSE
+        result
+      end
     end
 
     # The form only offers valid values, so the out-of-domain value is added to the
@@ -330,6 +342,6 @@ class DemoTest < ApplicationSystemTestCase
     end
 
     def pause(seconds = 2)
-      sleep seconds
+      sleep seconds * PAUSE_SCALE
     end
 end

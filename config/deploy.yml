@@ -1,62 +1,52 @@
+# Production deployment with Kamal, as described in docs/INFRAESTRUTURA.md (#33):
+# one Linux VPS runs the app container, kamal-proxy (TLS) and PostgreSQL 17.
+#
+# The server address and the domain below are placeholders from documentation
+# ranges (RFC 5737 IP, .exemplo.com.br): replace them with the real ones before
+# the first `bin/kamal setup` (step 3 of the deployment procedure in the doc).
+
 # Name of your application. Used to uniquely configure containers.
 service: okonomi
 
-# Name of the container image (use your-user/app-name on external registries).
-image: okonomi
+# Name of the container image, under the registry user.
+image: wilsonsousajr/okonomi
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
-  # job:
-  #   hosts:
-  #     - 192.168.0.1
-  #   cmd: bin/jobs
+    - 203.0.113.10
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-#
-# proxy:
-#   ssl: true
-#   host: app.example.com
+# kamal-proxy terminates TLS with a Let's Encrypt certificate (docs §5.1). This
+# requires config.assume_ssl and config.force_ssl in production.rb, both on (#40).
+proxy:
+  ssl: true
+  host: okonomi.exemplo.com.br
 
 # Where you keep your container images.
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
-
-  # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  server: ghcr.io
+  username: wilsonsousajr
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    # Points at the db accessory, without a database name: database.yml names the
+    # four databases (primary, cache, queue, cable) on the same server.
+    - DATABASE_URL
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    # The only job is the password reset e-mail, so a separate job host is not needed.
     SOLID_QUEUE_IN_PUMA: true
 
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
+    # Domain used in the links of the password reset e-mail (docs §5.3).
+    APP_HOST: okonomi.exemplo.com.br
 
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use okonomi-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
-
-    # Log everything from Rails
-    # RAILS_LOG_LEVEL: debug
+    # SMTP server of the transactional e-mail service (docs §5.3); user and
+    # password come from the Rails credentials.
+    SMTP_ADDRESS: smtp.exemplo.com.br
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
@@ -66,8 +56,7 @@ aliases:
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
+# Persistent volume for local files written by the app (Active Storage is not used).
 volumes:
   - "okonomi_storage:/rails/storage"
 
@@ -80,40 +69,19 @@ asset_path: /rails/public/assets
 builder:
   arch: amd64
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: ruby-3.4.10
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
-
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+# PostgreSQL 17 on the same server (docs §3.3, §5.2). Port 5432 is bound to the
+# loopback interface only: the app reaches it through Kamal's Docker network as
+# okonomi-db, and nothing on the internet can.
+accessories:
+  db:
+    image: postgres:17-alpine
+    host: 203.0.113.10
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_USER: okonomi
+        POSTGRES_DB: okonomi_production
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data

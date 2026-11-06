@@ -1,10 +1,51 @@
-# Descrição do processo de gerenciamento
+# Descrição do processo de gerenciamento — plano de projeto
 
 **Artefato 1** do Trabalho Prático de Engenharia de Software (2026.2) — okonomi.
 Rastreado pela issue [#25](https://github.com/WilsonSousajr/okonomi/issues/25).
 Atende às instruções 8 a 12 da seção 4 e ao Critério de Avaliação 01 do enunciado.
 
-## 1. Método adotado: Kanban
+| Versão | Data | Autor | Descrição |
+|---|---|---|---|
+| 1.0 | 29/09/2026 | José Wilson Barbosa de Sousa Júnior | Processo Kanban, quadro e cartões. |
+| 1.1 | 06/11/2026 | José Wilson Barbosa de Sousa Júnior | Inventário e capturas do quadro atualizados. |
+| 2.0 | 06/11/2026 | José Wilson Barbosa de Sousa Júnior | Reorganizado segundo os modelos de plano de projeto e de plano de iteração; plano e avaliação de cada marco; medições e lições aprendidas. |
+
+## 1. Introdução
+
+Este documento descreve como o projeto okonomi foi gerenciado: a organização da
+equipe, as práticas de gestão e de engenharia, o quadro e os cartões Kanban, o
+plano e a avaliação de cada iteração e as lições aprendidas.
+
+**Modelos adotados (instrução 3).** A estrutura segue o modelo de plano de
+projeto fornecido (`project_plan_tpl.odt`): Introdução, Organização do projeto,
+Práticas e medições, Marcos e objetivos, Implantação e Lições aprendidas. Cada
+marco (iteração) é planejado e avaliado com as seções do modelo de plano de
+iteração (`iteration_plan_tpl.odt`): datas, objetivos, itens de trabalho,
+critérios de avaliação e avaliação do planejado em relação ao realizado. O
+modelo não traz seção própria para o quadro Kanban, exigido pelas instruções 8
+a 12; ele é descrito dentro de Práticas (seção 3), que é onde o modelo pede a
+descrição das práticas de gestão.
+
+## 2. Organização do projeto
+
+O trabalho é **individual** (a instrução 1 permite de um a cinco participantes).
+O único membro acumula todos os papéis:
+
+| Papel | Responsabilidade | Membro |
+|---|---|---|
+| Dono do produto | Traduz o enunciado em cartões, define critérios de aceitação e prioridade (MoSCoW). | José Wilson Barbosa de Sousa Júnior (matrícula 241024259) |
+| Desenvolvedor | Implementa o protótipo com TDD e escreve os artefatos. | idem |
+| Revisor | Revisa cada pull request contra os critérios de aceitação e a rotina de revisão (ortografia, clareza, consistência, links). | idem |
+| Gestor do processo | Mantém o quadro fiel ao estado real do trabalho e conduz a avaliação de cada marco. | idem |
+
+As **áreas de trabalho** são as labels `area:*` dos cartões (autenticação,
+projetos, backlogs, histórias, épicos, critérios, estimativa, priorização,
+interface, banco e infraestrutura). Quem construiu cada artefato está em
+[`ENTREGA.md`](ENTREGA.md) (instrução 6).
+
+## 3. Práticas e medições do projeto
+
+### 3.1 Método de gerenciamento: Kanban
 
 O projeto é gerenciado pelo método **Kanban**. O trabalho é representado por
 cartões em um quadro visível a todos; cada cartão atravessa colunas que
@@ -29,10 +70,10 @@ Regras do fluxo:
 | **Limite de WIP** | No máximo **1 cartão por pessoa** na coluna Doing. Antes de puxar outro, o atual vai para Review. |
 | **Tudo nasce de uma issue** | Nenhum commit, branch ou PR existe sem uma issue que lhe dê contexto. Trabalho descoberto no meio do caminho (por exemplo, um defeito) vira uma issue nova antes de ser feito. |
 | **Mover na hora** | O cartão muda de coluna quando o estado muda, nunca em lote no fim. |
-| **Política explícita de saída** | Cada coluna tem um critério de saída (seção 2). Um cartão só avança quando o cumpre. |
+| **Política explícita de saída** | Cada coluna tem um critério de saída (seção 3.2). Um cartão só avança quando o cumpre. |
 | **Iterações por marco** | O trabalho é agrupado em seis marcos (*milestones*), M0 a M5, que funcionam como iterações do processo iterativo e incremental pedido na introdução do enunciado. |
 
-## 2. O quadro
+### 3.2 O quadro
 
 Quadro: **[okonomi — GitHub Projects](https://github.com/users/WilsonSousajr/projects/14)**,
 na visão *Board*, agrupado pelo campo **Status**.
@@ -54,24 +95,13 @@ O processo continua sendo Kanban: não há reuniões nem duração fixa de sprin
 fluxo é puxado e limitado por WIP, e "sprint" aqui significa apenas o marco em
 andamento.
 
-### Marcos (iterações)
-
-| Marco | Conteúdo | Critério de Avaliação |
-|---|---|---|
-| **M0 — Fundação** | Repositório, quadro, esqueleto Rails 8 + PostgreSQL, CI e modelo de domínio. | — |
-| **M1 — Gestão do Projeto** | Artefato 1, equipe e autoria. | 01 |
-| **M2 — Requisitos** | Artefatos 2, 3 e 4. | 02, 03, 04 |
-| **M3 — Projeto** | Artefatos 5, 6 e 7. | 05, 06, 07 |
-| **M4 — Protótipo** | RF01 a RF19 e artefato 8 (protótipo e vídeo). | 08 |
-| **M5 — Implantação e Entrega** | Artefato 9 e empacotamento da entrega. | 09 |
-
-## 3. Os cartões
+### 3.3 Os cartões
 
 Cada cartão do quadro é uma **issue** do repositório
 [WilsonSousajr/okonomi](https://github.com/WilsonSousajr/okonomi). Pull requests
 também aparecem no quadro, ligados à issue que fecham.
 
-### Informação presente em cada cartão
+#### Informação presente em cada cartão
 
 | Campo | Conteúdo | Exemplo |
 |---|---|---|
@@ -94,7 +124,7 @@ Três modelos de issue padronizam a criação dos cartões:
 [`artefato.md`](../.github/ISSUE_TEMPLATE/artefato.md) e
 [`defeito.md`](../.github/ISSUE_TEMPLATE/defeito.md).
 
-### Tipos de cartão
+#### Tipos de cartão
 
 | Tipo | Quantidade | Origem |
 |---|---|---|
@@ -105,7 +135,7 @@ Três modelos de issue padronizam a criação dos cartões:
 | Defeito (`regression`) | 12 | Encontrados durante o trabalho, cada um com teste de regressão (#36, #40, #52, #68, #80–#82, #94, #102–#104, #117). |
 | Manutenção | 6 | Documentação de apoio e atualização de dependências com avisos de segurança (#46, #48, #66, #85, #108, #114). |
 
-## 4. Ciclo de vida de um cartão
+### 3.4 Ciclo de vida de um cartão
 
 ```
  Backlog ──► Sprint Backlog ──► Doing ──────────► Review ──────────► Done
@@ -129,6 +159,134 @@ Três modelos de issue padronizam a criação dos cartões:
 5. **Conclusão.** Após o merge, a issue fecha, o cartão vai para **Done** e os
    critérios de aceitação são marcados com a evidência.
 
+### 3.5 Práticas de engenharia
+
+| Prática | Como é aplicada |
+|---|---|
+| **Desenvolvimento iterativo e incremental** | Seis marcos (M0–M5), cada um entregando artefatos ou funcionalidades utilizáveis (seção 4). |
+| **TDD** | O teste que falha vem antes do código. Todo critério de aceitação *Dado … quando … então …* de um cartão `RF` vira um teste. |
+| **Teste de regressão para todo defeito** | Cada defeito vira um cartão `regression`; o teste que reproduz o defeito falha antes da correção e passa depois. |
+| **Integração contínua** | GitHub Actions roda RuboCop, Brakeman, auditoria de dependências (gems e JavaScript), testes de unidade e controller e testes de sistema em cada pull request. |
+| **`main` protegido** | Merge só por pull request e com o check `ci` verde; *force-push* e exclusão recusados. |
+| **Padrão de commit e de branch** | `tipo(#N): mensagem` e `tipo/issue-N-resumo`, validados pelo hook `.githooks/commit-msg`. |
+| **Documentos como código** | Os artefatos são Markdown versionado; o PDF é gerado por `bin/docs-pdf` no mesmo pull request. |
+
+### 3.6 Medições
+
+| Medida | Como é obtida | Valor em 06/11/2026 |
+|---|---|---|
+| Pontos concluídos por marco (velocidade) | Soma do campo Story Points dos cartões fechados de cada marco. | Tabela da seção 4 |
+| Escopo planejado × realizado | Cartões do marco na sua abertura × cartões fechados ao fim. | Seção 4.1 |
+| Cartões em execução (WIP) | Cartões na coluna Doing. | 1 (limite: 1 por pessoa) |
+| Vazão | Pull requests mesclados no `main`. | 62 PRs, de 16/09 a 06/11 |
+| Defeitos encontrados | Cartões com label `regression`. | 12, todos com teste de regressão; 11 corrigidos |
+| Saúde da integração | Check `ci` obrigatório em todo merge. | Nenhum merge sem `ci` verde |
+| Testes automatizados | `bin/rails test` e `bin/rails test:system`. | 217 testes de unidade e controller (816 asserções) e 11 arquivos de testes de sistema |
+
+## 4. Marcos e objetivos
+
+Cada marco é uma iteração. Os períodos vão da primeira à última entrega do
+marco, segundo a data de fechamento dos cartões; M3 e M4 se sobrepuseram de
+propósito, porque o modelo de dados (M0) já permitia começar o protótipo
+enquanto a arquitetura era escrita. Cartões de manutenção acrescentados depois
+(por exemplo, atualizações de segurança) não alongam o período.
+
+| Iteração | Objetivos principais | Período | Pontos planejados | Pontos concluídos | Critério de Avaliação |
+|---|---|---|---|---|---|
+| **M0 — Fundação** | Repositório, quadro, esqueleto Rails 8 + PostgreSQL, CI e modelo de domínio com as invariantes do enunciado. | 16/09 a 29/09 | 31 | 31 | — |
+| **M1 — Gestão do Projeto** | Processo Kanban (artefato 1), equipe e autoria, geração de PDF. | 17/09 a 29/09 | 8 | 8 | 01 |
+| **M2 — Requisitos** | Visão (2), requisitos não funcionais (3) e histórias de usuário (4). | 29/09 a 18/10 | 18 | 18 | 02, 03, 04 |
+| **M3 — Projeto** | Arquitetura (5), interface (6) e banco de dados (7). | 18/10 a 29/10 | 26 | 26 | 05, 06, 07 |
+| **M4 — Protótipo** | RF01 a RF19 funcionando de ponta a ponta e vídeo do teste de sistema (8). | 18/10 a 02/11 | 81 | 79 | 08 |
+| **M5 — Implantação e Entrega** | Infraestrutura (9), auditoria final contra o enunciado e pacote ZIP. | 02/11 a 08/11 | 11 | 8 | 09 |
+
+Os pontos planejados incluem os cartões acrescentados durante o marco (defeitos
+e atualizações de segurança), descritos na avaliação de cada um.
+
+### 4.1 Planos e avaliações das iterações
+
+Cada marco segue o modelo de plano de iteração. Os itens de trabalho de cada um
+estão no inventário (seção 7), filtrando pela coluna Marco; o estado do projeto
+usa a escala do modelo (verde, amarelo, vermelho).
+
+#### M0 — Fundação
+
+- **Objetivos:** repositório com controle de versões, quadro e convenções;
+  aplicação Rails rodando com PostgreSQL; CI obrigatória; modelo de domínio com
+  as invariantes do enunciado no modelo e no banco.
+- **Critérios de avaliação:** `bin/setup` sobe o ambiente do zero; a CI bloqueia
+  merge vermelho; cada invariante tem teste que prova a rejeição do valor inválido.
+- **Planejado × realizado:** 5 cartões na abertura (#20–#24), concluídos entre
+  17/09 e 29/09. Foram acrescentados 8 cartões: 3 defeitos e ajustes achados
+  logo no início (#36, #40, #46) e 5 de manutenção registrados aqui por serem de
+  fundação (#48, #52, #66, #68, #85), o último concluído em 02/11.
+- **Avaliação:** verde. Desvio: dois defeitos de ambiente apareceram logo no
+  início (#36, `json 3.0` quebrando os cookies; #52, testes paralelos travando
+  no macOS) e viraram cartões com teste de regressão.
+
+#### M1 — Gestão do Projeto
+
+- **Objetivos:** processo Kanban descrito com quadro, colunas e cartões; equipe e
+  autoria registradas; artefatos textuais em PDF.
+- **Critérios de avaliação:** cada item do Critério 01 ligado a uma seção do
+  documento; PDF gerado no mesmo PR do Markdown.
+- **Planejado × realizado:** 2 cartões planejados e 1 acrescentado (#58, geração
+  de PDF, quando a instrução 7 foi revista); os 3 concluídos em 29/09.
+- **Avaliação:** verde.
+
+#### M2 — Requisitos
+
+- **Objetivos:** visão e escopo, requisitos não funcionais com normas e
+  métricas, e as 19 histórias de usuário no formato *Como … eu quero … para …*.
+- **Critérios de avaliação:** cada requisito da seção 2 do enunciado coberto por
+  uma história; cada RNF verificável.
+- **Planejado × realizado:** 3 de 3 cartões, entre 29/09 e 18/10.
+- **Avaliação:** verde. Desvio: a auditoria de 04/11 encontrou números
+  divergentes entre visão e RNF (largura mínima de tela, desempenho) e critérios
+  escritos do ponto de vista do desenvolvedor; corrigidos no PR #116.
+
+#### M3 — Projeto
+
+- **Objetivos:** architecture notebook, storyboards com wireframes e projeto
+  físico do banco.
+- **Critérios de avaliação:** documentos coerentes com o código (rotas, tabelas,
+  colunas e chaves conferidas com `db/schema.rb`).
+- **Planejado × realizado:** 3 de 3 cartões, entre 18/10 e 29/10.
+- **Avaliação:** verde. Desvio: a auditoria de 04/11 encontrou rotas
+  desatualizadas na arquitetura e serviços sem storyboard (redefinição de senha,
+  exclusões); corrigidos no PR #119, com dois storyboards novos.
+
+#### M4 — Protótipo
+
+- **Objetivos:** os 19 requisitos funcionais implementados e testados; vídeo com
+  um cenário de sucesso para cada serviço.
+- **Critérios de avaliação:** todo critério de aceitação com teste verde; fluxo
+  exercitado no navegador; vídeo gerado pelo teste de sistema.
+- **Planejado × realizado:** 20 cartões planejados (RF01–RF19 e o vídeo) e 7
+  defeitos acrescentados ao longo do marco (#80–#82, #94, #102–#104); 26 de 27
+  concluídos (79 de 81 pontos). Fica aberto o #94 (testes de sistema
+  intermitentes no CI), que não afeta o protótipo.
+- **Avaliação:** amarelo, por causa do #94. A instabilidade faz o CI precisar de
+  nova execução às vezes; o vídeo e o pacote de entrega não dependem dela.
+
+#### M5 — Implantação e Entrega
+
+- **Objetivos:** infraestrutura de implantação; auditoria de todos os artefatos
+  contra o enunciado; pacote `ESW-241024259.ZIP`.
+- **Critérios de avaliação:** cada item dos nove critérios de avaliação atendido
+  e rastreado; pacote descompacta, passa nos testes e no antivírus.
+- **Planejado × realizado:** 2 cartões planejados e 3 acrescentados (#108 e #114,
+  avisos de segurança em dependências; #117, páginas de erro em inglês); 4 de 5
+  concluídos. O #35 (entrega final) fecha com o envio, até 08/11.
+- **Avaliação:** verde. A auditoria de 04/11 gerou os PRs #112, #113, #115, #116,
+  #118, #119 e #122.
+
+### 4.2 Implantação
+
+A estratégia de implantação (servidor, serviços, Kamal e procedimento passo a
+passo) está no [artefato 9](INFRAESTRUTURA.md). A entrega à disciplina é o
+pacote ZIP descrito em [`ENTREGA.md`](ENTREGA.md) e rastreado no cartão #35.
+
 ## 5. Atividades de gerenciamento realizadas
 
 | Atividade | Evidência |
@@ -137,9 +295,9 @@ Três modelos de issue padronizam a criação dos cartões:
 | Criação do quadro Kanban com cinco colunas e descrição de cada uma (instruções 9 e 10). | [Projeto 14](https://github.com/users/WilsonSousajr/projects/14) |
 | Criação dos campos de cartão Story Points, MoSCoW e RICE. | Campos do projeto |
 | Decomposição do enunciado em cartões: 19 RF, 9 artefatos, gestão e entrega (instrução 11). | Issues #1–#35 |
-| Rastreamento de cada instrução (seção 4) e de cada item de critério (seção 5) como caixa de seleção dentro de um cartão. | Issues de artefato, #34 e #35 |
+| Rastreamento de cada instrução (seção 4 do enunciado) e de cada item de critério (seção 5 do enunciado) como caixa de seleção dentro de um cartão. | Issues de artefato, #34 e #35 |
 | Criação de labels de tipo, área, artefato e sinalização, e dos marcos M0–M5. | [Labels](https://github.com/WilsonSousajr/okonomi/labels), [Marcos](https://github.com/WilsonSousajr/okonomi/milestones) |
-| Estimativa (story points) e priorização (MoSCoW) de todos os cartões. | Campos no quadro; inventário na seção 6 |
+| Estimativa (story points) e priorização (MoSCoW) de todos os cartões. | Campos no quadro; inventário na seção 7 |
 | Definição do padrão de commit e de branch, com validação automática. | `.githooks/commit-msg`, `AGENTS.md` |
 | Proteção do `main`: PR obrigatório, check `ci` obrigatório, sem *force-push*. | Regras da branch |
 | Integração contínua com análise estática e testes. | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
@@ -149,7 +307,18 @@ Três modelos de issue padronizam a criação dos cartões:
 | Auditoria de todos os artefatos contra o enunciado (04/11/2026): cada item dos critérios de avaliação conferido com o documento e com o código, e as divergências corrigidas em PRs próprios. | PRs #112, #113, #115, #116, #118, #119 |
 | Revisão do quadro (06/11/2026): todos os PRs incluídos, cartões fechados movidos para Done, responsável atribuído e estimativa preenchida nos cartões que não tinham. | [Projeto 14](https://github.com/users/WilsonSousajr/projects/14) |
 
-## 6. Inventário de cartões
+## 6. Lições aprendidas
+
+| Lição | Ação tomada ou recomendada |
+|---|---|
+| **O quadro desatualiza se só for revisto no fim.** O inventário e as capturas ficaram de 29/09 a 06/11 sem atualização, PRs não entraram no quadro e cartões fechados ficaram em Review. | Revisão do quadro como passo obrigatório da avaliação de cada marco, e não só da entrega. |
+| **Documento e código divergem em silêncio.** Versões de gems, rotas e o `config/deploy.yml` descritos nos documentos já não batiam com o repositório. | Auditoria dos artefatos contra o enunciado e contra o código ao fim de cada marco; versões citadas "conforme o `Gemfile.lock`" com data. |
+| **Avisos de segurança chegam sem aviso e travam todos os PRs.** Isso aconteceu quatro vezes (#68, #85, #108, #114). | Atualização da dependência em PR próprio, antes de qualquer outro merge. |
+| **Testes de sistema instáveis custam tempo de merge.** O #94 exigiu de uma a três novas execuções por PR na última semana. | Próximo passo registrado no #94: esperar a pintura da página antes de cada ação ou trocar o *driver* (Cuprite). |
+| **A regra "todo defeito vira teste" funcionou.** Os 12 defeitos encontrados têm teste de regressão, e nenhum voltou. | Manter a regra. |
+| **O RICE no quadro só é útil com disputa por WIP.** Com um único participante e a ordem ditada pelas dependências, o campo nunca foi necessário. | Em equipe, preencher o RICE ao montar o Sprint Backlog de cada marco. |
+
+## 7. Inventário de cartões
 
 Retrato do quadro em **06/11/2026**, gerado pela API do GitHub Projects
 (`gh api graphql`, campos Status, Story Points e MoSCoW de cada item). O estado
@@ -218,7 +387,7 @@ Review enquanto abertos e vão para Done após o merge. Foram omitidos do
 inventário para não duplicar cartões. PRs fechados sem merge (por exemplo,
 atualizações do Dependabot descartadas) não ficam no quadro.
 
-## 7. Evidência
+## 8. Evidência
 
 Visão *Board* do quadro, com as cinco colunas:
 
@@ -228,18 +397,19 @@ Detalhe de um cartão ([#24](https://github.com/WilsonSousajr/okonomi/issues/24)
 
 ![Detalhe de um cartão no quadro](PROCESSO/cartao.png)
 
-## 8. Rastreabilidade com o enunciado
+## 9. Rastreabilidade com o enunciado
 
 | Enunciado | Seção deste documento |
 |---|---|
-| Instrução 8 — adotar método Kanban | 1 |
-| Instrução 9 — quadro com colunas apropriadas | 2 |
-| Instrução 10 — propósito de cada coluna | 2 |
-| Instrução 11 — criar cartões | 3, 6 |
-| Instrução 12 — informação sobre cada cartão | 3, 6 |
-| Critério 01 — atividades de gerenciamento realizadas | 4, 5 |
-| Critério 01 — método Kanban adotado | 1 |
-| Critério 01 — quadro com colunas apropriadas | 2, 7 |
-| Critério 01 — propósito de cada coluna | 2 |
-| Critério 01 — cartões criados | 3, 6, 7 |
-| Critério 01 — informação sobre cada cartão | 3, 6 |
+| Instrução 3 — adotar modelos | 1 |
+| Instrução 8 — adotar método Kanban | 3.1 |
+| Instrução 9 — quadro com colunas apropriadas | 3.2, 8 |
+| Instrução 10 — propósito de cada coluna | 3.2 |
+| Instrução 11 — criar cartões | 3.3, 7 |
+| Instrução 12 — informação sobre cada cartão | 3.3, 7 |
+| Critério 01 — atividades de gerenciamento realizadas | 3.4, 4.1, 5 |
+| Critério 01 — método Kanban adotado | 3.1 |
+| Critério 01 — quadro com colunas apropriadas | 3.2, 8 |
+| Critério 01 — propósito de cada coluna | 3.2 |
+| Critério 01 — cartões criados | 3.3, 7, 8 |
+| Critério 01 — informação sobre cada cartão | 3.3, 7 |

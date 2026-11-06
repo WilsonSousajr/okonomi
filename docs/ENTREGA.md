@@ -55,7 +55,7 @@ Cada documento é entregue também em **PDF** (instrução 7), em
 | `vision_tpl.odt` | Artefato 2 — visão e escopo |
 | `systemwide_req_spec.odt` | Artefato 3 — requisitos não funcionais |
 | `architecture-notebook.odt` | Artefato 5 — architecture notebook |
-| `project_plan_tpl.odt`, `iteration_plan_tpl.odt` | Artefato 1 — a organização em marcos (iterações) e o quadro fazem o papel do plano de projeto e dos planos de iteração |
+| `project_plan_tpl.odt`, `iteration_plan_tpl.odt` | Artefato 1 — o documento segue as seções do plano de projeto (introdução, organização, práticas e medições, marcos e objetivos, implantação, lições aprendidas), e cada marco tem plano e avaliação nas seções do plano de iteração |
 | `uc_specification_tpl.odt` | Não adotado: o enunciado pede requisitos funcionais por **histórias de usuário** (artefato 4), não por casos de uso. As histórias seguem o modelo *Como … eu quero … para …* (instrução 14). |
 
 ### Rotina de revisão (instrução 5)

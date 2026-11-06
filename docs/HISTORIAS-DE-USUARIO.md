@@ -8,6 +8,7 @@ e ao Critério de Avaliação 04.
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 18/10/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | Histórias de RF05, RF06, RF07, RF10 e RF12 com as quatro operações explícitas; critério de consulta em RF12; critérios reescritos do ponto de vista do usuário (RF01, RF02, RF03, RF15, RF16, RF18); história complementar de redefinição de senha. |
 
 ## 1. Introdução
 
@@ -18,8 +19,9 @@ linguagem informal, no modelo **Como um … eu quero … para …**.
 
 Cada história é também uma issue do projeto no GitHub, com o rótulo `RF`. A issue é
 o cartão do quadro Kanban (artefato 1): é por ela que a história é priorizada,
-estimada, implementada e verificada. As seções da 3 em diante são geradas a partir
-dessas issues, e por isso o documento e o quadro dizem sempre a mesma coisa.
+estimada, implementada e verificada. A seção 3 foi derivada dessas issues: a
+história e os critérios de cada RF foram transcritos da issue correspondente e
+revisados para este documento, e qualquer mudança é feita nos dois lugares.
 
 O que **não** cabe numa história, como os atributos de qualidade, as restrições e o
 licenciamento, está no artefato 3, `REQUISITOS-NAO-FUNCIONAIS.md`
@@ -78,10 +80,10 @@ Optamos por **interface gráfica web**, servida por uma aplicação Ruby on Rail
 
 **Critérios de aceitação:**
 
-1. **Dado** que o servidor está no ar, **quando** eu acesso a raiz da aplicação, **então** recebo uma página HTML renderizada com o layout da aplicação.
+1. **Dado** que o servidor está no ar, **quando** eu acesso a raiz da aplicação, **então** vejo a página inicial do okonomi, com cabeçalho, conteúdo e rodapé, sem precisar instalar nada.
 2. **Dado** que estou em qualquer página do sistema, **quando** eu observo a navegação, **então** vejo o mesmo cabeçalho, rodapé e identidade visual.
 3. **Dado** que acesso de um dispositivo de 375px de largura, **quando** a página carrega, **então** o conteúdo permanece legível e utilizável sem rolagem horizontal.
-4. **Dado** que ocorre um erro de validação, **quando** a página é re-renderizada, **então** as mensagens aparecem em um componente padronizado e acessível.
+4. **Dado** que preencho um formulário com algum dado inválido, **quando** o envio, **então** vejo as mensagens de erro reunidas em um quadro padronizado no topo do formulário, no mesmo formato em todas as telas.
 
 ### RF02 — Criação de conta de usuário
 
@@ -102,7 +104,33 @@ Esta issue cobre a **criação da conta**. A autenticação em si é #3.
 1. **Dado** que estou na tela de cadastro, **quando** informo e-mail válido e senha que atende à política mínima, **então** minha conta é criada e sou levado ao sistema autenticado.
 2. **Dado** que informo um e-mail já cadastrado, **quando** submeto o formulário, **então** a conta não é criada e recebo mensagem indicando o conflito.
 3. **Dado** que informo e-mail em formato inválido ou senha fraca, **quando** submeto o formulário, **então** a conta não é criada e vejo a mensagem de validação no campo correspondente.
-4. **Dado** que uma conta foi criada, **quando** inspeciono o banco de dados, **então** a senha está armazenada como *digest*, nunca em texto puro.
+4. **Dado** que criei minha conta, **quando** saio e entro de novo com o mesmo e-mail e a mesma senha, **então** acesso o sistema normalmente, e a senha nunca é exibida em nenhuma tela. (Que a senha é guardada só como *digest* bcrypt é um requisito não funcional: RNF-48 e seção 3.5 do artefato 3.)
+
+### RF02 (complementar) — Redefinição de senha
+
+História complementar a RF02: o enunciado não pede a redefinição de senha, mas sem
+ela quem esquece a senha perde a conta. O fluxo veio do gerador de autenticação do
+Rails no esqueleto do projeto ([#21](https://github.com/WilsonSousajr/okonomi/issues/21)),
+foi traduzido em [#1](https://github.com/WilsonSousajr/okonomi/issues/1) e corrigido em
+[#80](https://github.com/WilsonSousajr/okonomi/issues/80) e
+[#81](https://github.com/WilsonSousajr/okonomi/issues/81). As regras de segurança
+estão em RNF-05 e RNF-06 do artefato 3.
+
+**História.** **Como um** usuário cadastrado que esqueceu a senha **eu quero** receber por e-mail um link para cadastrar uma senha nova **para** voltar a acessar meus projetos sem perder a conta.
+
+| Prioridade (MoSCoW) | Story points | Issue |
+|---|---|---|
+| S — Should have | — (sem cartão próprio no quadro) | [#21](https://github.com/WilsonSousajr/okonomi/issues/21), [#80](https://github.com/WilsonSousajr/okonomi/issues/80), [#81](https://github.com/WilsonSousajr/okonomi/issues/81) |
+
+**Critérios de aceitação:**
+
+1. **Dado** que estou na tela de entrada, **quando** clico em "Esqueceu a senha?", informo o e-mail da minha conta e clico em "Enviar instruções", **então** volto à tela de entrada com a mensagem "Se existir uma conta com esse e-mail, enviamos as instruções para redefinir a senha." e recebo um e-mail, em português, com o link de redefinição.
+2. **Dado** que informo um e-mail que não tem conta, **quando** clico em "Enviar instruções", **então** vejo a mesma mensagem e nenhum e-mail é enviado, sem revelar se o e-mail está cadastrado.
+3. **Dado** que abro o link do e-mail em até 15 minutos, **quando** informo em "Nova senha" uma senha com pelo menos 8 caracteres, repito-a em "Repita a nova senha" e clico em "Salvar", **então** vejo "Senha redefinida. Entre com a nova senha." e consigo entrar com a senha nova.
+4. **Dado** que estou na tela "Redefinir senha", **quando** informo uma senha com menos de 8 caracteres, **então** a senha não muda e vejo "Senha é muito curto (mínimo: 8 caracteres)".
+5. **Dado** que estou na tela "Redefinir senha", **quando** a repetição não confere com a nova senha, **então** a senha não muda e vejo "As senhas não conferem."
+6. **Dado** que o link expirou ou foi alterado, **quando** o abro, **então** volto à tela "Esqueceu a senha?" com a mensagem "O link de redefinição é inválido ou expirou."
+7. **Dado** que eu estava com a conta aberta em outro dispositivo, **quando** redefino a senha, **então** essa sessão é encerrada e o outro dispositivo precisa entrar de novo.
 
 ### RF03 — Autenticação e acesso aos serviços
 
@@ -123,7 +151,7 @@ Esta issue cobre a **criação da conta**. A autenticação em si é #3.
 2. **Dado** que informo credenciais incorretas, **quando** submeto o formulário, **então** permaneço não autenticado e recebo mensagem genérica, sem revelar se o e-mail existe.
 3. **Dado** que **não** estou autenticado, **quando** acesso qualquer rota de serviço do sistema, **então** sou redirecionado para a tela de entrada.
 4. **Dado** que estou autenticado, **quando** aciono "sair", **então** a sessão é encerrada e o acesso às rotas protegidas volta a ser negado.
-5. **Dado** que estou autenticado, **quando** acesso um recurso de outro usuário, **então** recebo negação de acesso.
+5. **Dado** que estou autenticado, **quando** tento abrir o endereço de um projeto, backlog, história ou critério de outro usuário, **então** vejo a página de erro "página não encontrada" (404), como se o recurso não existisse, e nenhum dado dele é exibido.
 
 ### RF04 — CRUD de projetos
 
@@ -151,7 +179,7 @@ Esta issue cobre a **criação da conta**. A autenticação em si é #3.
 
 > **(5)** possibilitar criação leitura, atualização e exclusão de *product backlogs*, (pode existir só um *product backlog* por projeto)
 
-**História.** **Como um** usuário autenticado dono de um projeto **eu quero** manter o product backlog do projeto **para** ter um único repositório priorizado de tudo que o produto precisa.
+**História.** **Como um** usuário autenticado dono de um projeto **eu quero** criar, consultar, alterar e excluir o product backlog do projeto **para** ter um único repositório priorizado de tudo que o produto precisa.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
@@ -173,7 +201,7 @@ Esta issue cobre a **criação da conta**. A autenticação em si é #3.
 
 > **(6)** possibilitar criação leitura, atualização e exclusão de *sprint backlogs* (podem existir vários *sprint backlogs* por projeto)
 
-**História.** **Como um** usuário autenticado dono de um projeto **eu quero** criar vários sprint backlogs no mesmo projeto **para** separar o que será feito em cada iteração do que continua no product backlog.
+**História.** **Como um** usuário autenticado dono de um projeto **eu quero** criar, consultar, alterar e excluir os sprint backlogs do projeto, quantos forem necessários, **para** separar o que será feito em cada iteração do que continua no product backlog.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
@@ -193,7 +221,7 @@ Esta issue cobre a **criação da conta**. A autenticação em si é #3.
 
 > **(7)** possibilitar criação leitura, atualização e exclusão de histórias de usuário (ao ser criada, história de usuário deve ser associada a *product backlog*)
 
-**História.** **Como um** usuário autenticado **eu quero** manter histórias de usuário dentro do product backlog do projeto **para** registrar as necessidades do produto de forma rastreável.
+**História.** **Como um** usuário autenticado **eu quero** criar, consultar, alterar e excluir histórias de usuário no product backlog do projeto **para** registrar as necessidades do produto de forma rastreável.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
@@ -258,7 +286,7 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 > **(10)** possibilitar criação leitura, atualização e exclusão de épicos
 
-**História.** **Como um** usuário autenticado **eu quero** manter épicos no projeto **para** agrupar histórias relacionadas sob um objetivo maior do produto.
+**História.** **Como um** usuário autenticado **eu quero** criar, consultar, alterar e excluir épicos no projeto **para** agrupar histórias relacionadas sob um objetivo maior do produto.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
@@ -297,7 +325,7 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 > **(12)** possibilitar criação leitura, atualização e exclusão de critérios de aceitação de histórias de usuário
 
-**História.** **Como um** usuário autenticado **eu quero** manter os critérios de aceitação de cada história **para** deixar explícito e verificável o que precisa ser verdade para a história ser considerada pronta.
+**História.** **Como um** usuário autenticado **eu quero** criar, consultar, alterar e excluir os critérios de aceitação de cada história **para** deixar explícito e verificável o que precisa ser verdade para a história ser considerada pronta.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
@@ -306,10 +334,11 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 **Critérios de aceitação:**
 
 1. **Dado** uma história existente, **quando** crio um critério de aceitação, **então** ele é persistido vinculado àquela história.
-2. **Dado** uma história, **quando** adiciono vários critérios, **então** todos são aceitos e exibidos na ordem em que foram criados.
-3. **Dado** um critério existente, **quando** o edito, **então** as mudanças são persistidas.
-4. **Dado** um critério existente, **quando** o excluo, **então** ele deixa de existir e a história permanece intacta.
-5. **Dado** que excluo a história, **quando** a exclusão é confirmada, **então** seus critérios de aceitação também deixam de existir.
+2. **Dado** uma história, **quando** adiciono vários critérios, **então** todos são aceitos.
+3. **Dado** uma história com critérios de aceitação, **quando** abro a página da história, **então** vejo a seção "Critérios de aceitação" com todos os critérios dela, cada um no formato *Dado … quando … então …*, na ordem em que foram criados; sem critérios, vejo "Nenhum critério de aceitação ainda."
+4. **Dado** um critério existente, **quando** o edito, **então** as mudanças são persistidas.
+5. **Dado** um critério existente, **quando** o excluo, **então** ele deixa de existir e a história permanece intacta.
+6. **Dado** que excluo a história, **quando** a exclusão é confirmada, **então** seus critérios de aceitação também deixam de existir.
 
 ### RF13 — Formato padrão do critério: Dado … quando … então …
 
@@ -367,7 +396,7 @@ O domínio de valores permitidos é tratado em #15.
 **Critérios de aceitação:**
 
 1. **Dado** o formulário de estimativa, **quando** ele é exibido, **então** oferece somente os valores 0, 1, 2, 3, 5, 8, 13, 21, 34 e 55.
-2. **Dado** que submeto um valor fora da escala (por exemplo 4, 7, 100 ou -1), **quando** a requisição chega ao servidor, **então** ela é recusada com mensagem de validação, mesmo que o formulário tenha sido contornado.
+2. **Dado** que um valor fora da escala (por exemplo 4, 7, 100 ou -1) é enviado, mesmo contornando a lista do formulário, **quando** salvo a história, **então** a história não é salva e vejo uma mensagem de erro explicando que o valor de story points não é aceito.
 3. **Dado** o mesmo conjunto de valores, **quando** o campo Effort do critério RICE é preenchido (#18), **então** ele usa exatamente esta escala.
 
 > **Invariante:** a escala é validada no *model*, não apenas no formulário. É o mesmo conjunto usado por Effort em RICE.
@@ -388,7 +417,7 @@ O domínio de valores permitidos é tratado em #15.
 
 1. **Dado** uma história, **quando** atribuo uma etiqueta MoSCoW, **então** o valor é persistido e exibido junto da história.
 2. **Dado** o formulário, **quando** ele é exibido, **então** oferece exatamente as quatro opções M, S, C e W, com o significado de cada uma visível.
-3. **Dado** que submeto um valor fora do conjunto, **quando** a requisição chega ao servidor, **então** ela é recusada com mensagem de validação.
+3. **Dado** que um valor fora do conjunto M, S, C, W é enviado, mesmo contornando o formulário, **quando** salvo a história, **então** a história não é salva e vejo uma mensagem de erro explicando que a etiqueta não é aceita.
 4. **Dado** um backlog etiquetado, **quando** o acesso, **então** posso filtrar as histórias por etiqueta MoSCoW.
 5. **Dado** uma história, **quando** não atribuo etiqueta, **então** ela permanece válida — a etiqueta é opcional.
 
@@ -427,10 +456,10 @@ Os domínios de cada valor estão em #18; o cálculo da pontuação está em #19
 
 **Critérios de aceitação:**
 
-1. **Dado** o campo Reach, **quando** submeto valor negativo ou não inteiro, **então** a requisição é recusada com mensagem de validação.
-2. **Dado** o campo Impact, **quando** submeto valor fora de {3, 2, 1, 0.5, 0.25}, **então** a requisição é recusada.
-3. **Dado** o campo Confidence, **quando** submeto valor fora de {100, 80, 50}, **então** a requisição é recusada.
-4. **Dado** o campo Effort, **quando** submeto valor fora da escala de pontos de história, **então** a requisição é recusada.
+1. **Dado** o campo Reach, **quando** salvo a história com um valor negativo ou não inteiro, **então** a história não é salva e vejo uma mensagem de erro no campo Reach.
+2. **Dado** o campo Impact, **quando** salvo a história com um valor fora de {3, 2, 1, 0,5, 0,25}, **então** a história não é salva e vejo uma mensagem de erro.
+3. **Dado** o campo Confidence, **quando** salvo a história com um valor fora de {100, 80, 50}, **então** a história não é salva e vejo uma mensagem de erro.
+4. **Dado** o campo Effort, **quando** salvo a história com um valor fora da escala de pontos de história, **então** a história não é salva e vejo uma mensagem de erro.
 5. **Dado** os formulários de Impact, Confidence e Effort, **quando** exibidos, **então** oferecem apenas as opções do domínio, com o rótulo textual (massivo, alto, médio…) visível.
 
 > **Decisão de projeto:** *Impact* é armazenado em coluna decimal (não *float*) para que 0.25 e 0.5 sejam exatos. *Confidence* é armazenado como **inteiro percentual** e convertido para fração no cálculo (#19). As validações vivem no *model*.
@@ -456,6 +485,7 @@ Os domínios de cada valor estão em #18; o cálculo da pontuação está em #19
 5. **Dado** que altero qualquer campo RICE, **quando** salvo, **então** a pontuação exibida reflete imediatamente o novo valor.
 
 > **Decisão de projeto:** *Confidence* é percentual e entra na fórmula como `C / 100.0`. `Effort = 0` produz pontuação `nil` (indefinida), nunca divisão por zero — o enunciado não define este caso e a escolha está registrada aqui e no `AGENTS.md`.
+
 ## 4. Glossário
 
 | Termo | Significado |
@@ -497,12 +527,19 @@ Cada requisito funcional da seção 2 do enunciado tem exatamente uma história 
 | RF18 | Domínios dos valores RICE | [#18](https://github.com/WilsonSousajr/okonomi/issues/18) | M | 2 |
 | RF19 | Cálculo da pontuação RICE pela fórmula (R × I × C) / E | [#19](https://github.com/WilsonSousajr/okonomi/issues/19) | M | 3 |
 
+Além das 19, a seção 3 traz uma história **complementar**, que não corresponde a um
+requisito do enunciado e por isso não entra na contagem 1:1 acima:
+
+| Complementa | História | Issues | MoSCoW | Story points |
+|---|---|---|---|---|
+| RF02 | Redefinição de senha | [#21](https://github.com/WilsonSousajr/okonomi/issues/21), [#80](https://github.com/WilsonSousajr/okonomi/issues/80), [#81](https://github.com/WilsonSousajr/okonomi/issues/81) | S | — |
+
 ### 5.2 Instruções e Critério de Avaliação 04
 
 | Instrução ou item do Critério 04 | Onde é atendido |
 |---|---|
 | Instrução 3: adotar modelo (*template*) | Seção 1.1: o modelo `uc_specification_tpl.odt` adaptado a histórias |
-| Instrução 14: criar histórias adotando o modelo *Como … Eu quero … Para …* | Seção 3, as 19 histórias |
+| Instrução 14: criar histórias adotando o modelo *Como … Eu quero … Para …* | Seção 3: as 19 histórias e a história complementar de redefinição de senha |
 | Cada requisito funcional descrito por história de usuário | Seção 5.1: RF01 a RF19, uma história cada |
 | Cada história de usuário é descrição segundo a perspectiva do usuário final | Seção 3: todas começam pelo papel de quem usa o sistema (seção 2) |
 | Cada história de usuário escrita em linguagem informal | Seção 3: frases do dia a dia, sem termos de implementação na história |

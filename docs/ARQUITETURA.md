@@ -1,4 +1,4 @@
-# okonomi — Architecture notebook
+# okonomi — Architecture notebook (Caderno de arquitetura)
 
 **Artefato 5** do Trabalho Prático de Engenharia de Software (2026.2): descrição da
 arquitetura do software. Rastreado pela issue
@@ -9,6 +9,7 @@ Critério de Avaliação 05.
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 28/10/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | Versões das dependências conforme `Gemfile.lock`, rotas corrigidas, *helpers* e *mailers* na seção 8, nota sobre as seções além do modelo. |
 
 ## 1. Propósito
 
@@ -54,19 +55,22 @@ de produção no artefato 9 ([#33](https://github.com/WilsonSousajr/okonomi/issu
 
 **Dependências**
 
+Versões conforme `Gemfile.lock` em 04/11/2026.
+
 | Dependência | Versão | Papel na arquitetura |
 |---|---|---|
 | Ruby | 3.4.10 | Linguagem da aplicação. |
-| Ruby on Rails | 8.1 | Framework MVC: rotas, *controllers*, *views*, Active Record, Active Job, Action Mailer. |
-| PostgreSQL | 17 | Banco de dados único: dados do domínio, cache, fila de jobs e canais. |
-| Hotwire (Turbo + Stimulus) | turbo-rails, stimulus-rails | Navegação e atualizações parciais sem SPA. |
-| Tailwind CSS | v4 (tailwindcss-rails) | Estilo por classes utilitárias, compilado no servidor. |
-| Importmap | importmap-rails | JavaScript sem *bundler* nem Node em produção. |
-| Solid Cache, Solid Queue, Solid Cable | Rails 8 | Cache, jobs e websockets guardados no PostgreSQL. |
-| bcrypt | 3.1 | Hash das senhas (`has_secure_password`). |
-| Puma + Thruster | — | Servidor de aplicação e *proxy* HTTP na frente dele. |
-| Kamal + Docker | — | Empacotamento e implantação (artefato 9). |
-| Minitest, Capybara, Selenium | — | Testes de unidade, de integração e de sistema no Chrome. |
+| Ruby on Rails | 8.1.4.1 | Framework MVC: rotas, *controllers*, *views*, Active Record, Active Job, Action Mailer. |
+| PostgreSQL (gem `pg`) | 17 (pg 1.7.0) | Banco de dados único: dados do domínio, cache, fila de jobs e canais. |
+| Hotwire (Turbo + Stimulus) | turbo-rails 2.0.23, stimulus-rails 1.3.4 | Navegação e atualizações parciais sem SPA. |
+| Tailwind CSS | tailwindcss-rails 4.6.0 (Tailwind 4, tailwindcss-ruby 4.3.3) | Estilo por classes utilitárias, compilado no servidor. |
+| Importmap | importmap-rails 2.2.3 | JavaScript sem *bundler* nem Node em produção. |
+| Propshaft | 1.3.2 | *Pipeline* de *assets*: serve CSS, JavaScript e imagens com nome versionado (*digest*). |
+| Solid Cache, Solid Queue, Solid Cable | 1.0.10, 1.7.0, 4.1.0 | Cache, jobs e websockets guardados no PostgreSQL. |
+| bcrypt | 3.1.22 | Hash das senhas (`has_secure_password`). |
+| Puma + Thruster | 8.0.2 + 0.1.27 | Servidor de aplicação e *proxy* HTTP na frente dele. |
+| Kamal + Docker | Kamal 2.12.0 | Empacotamento e implantação (artefato 9). |
+| Minitest, Capybara, Selenium | 6.0.6, 3.40.0, selenium-webdriver 4.52.0 | Testes de unidade, de integração e de sistema no Chrome. |
 
 ## 4. Requisitos arquiteturalmente significativos
 
@@ -182,11 +186,12 @@ dentro do Puma (`SOLID_QUEUE_IN_PUMA`), sem processo separado.
 
 | Camada | Elementos | Depende de |
 |---|---|---|
-| Apresentação | *Views* ERB, *partials*, layout, Tailwind, Turbo e Stimulus no navegador | Controladores (dados prontos para exibir) |
+| Apresentação | *Views* ERB, *partials*, layout, Tailwind, Turbo e Stimulus no navegador | Controladores (dados prontos para exibir) e *helpers* |
+| *Helpers* de apresentação | `app/helpers/*`: `BacklogsHelper` (filtro por MoSCoW e ordenação por RICE da lista de histórias) e `UserStoriesHelper` (opções e textos de MoSCoW e RICE) | Modelos (só leitura) e locale `pt-BR` |
 | Controle | Rotas e *controllers* REST, concerns `Authentication` e `ProjectScoped`, *strong parameters* | Modelos |
 | Domínio | *Models* Active Record com associações, validações, *callbacks* e cálculos (`to_s`, `rice_score`) | Persistência |
 | Persistência | PostgreSQL com *migrations*, índices e restrições | — |
-| Serviços de suporte | Active Job + Solid Queue, Action Mailer, Solid Cache, Solid Cable | PostgreSQL |
+| Serviços de suporte | *Mailers* (`PasswordsMailer`, o e-mail de redefinição de senha), Active Job + Solid Queue, Solid Cache, Solid Cable | Modelos e PostgreSQL |
 
 Cada camada só chama a de baixo. *Controllers* são finos: recebem parâmetros
 permitidos, chamam o *model* e escolhem a resposta. As regras ficam no *model*.
@@ -200,13 +205,17 @@ rotas seguem REST e são aninhadas sob o projeto, o que deixa explícito a quem
 cada recurso pertence:
 
 ```
-/projects/:project_id/product_backlog                 (um por projeto)
+/projects/:project_id/product_backlog                          (um por projeto)
 /projects/:project_id/sprint_backlogs/:id
 /projects/:project_id/epics/:id
 /projects/:project_id/user_stories/:id
-/projects/:project_id/user_stories/:id/move           (RF08)
-/projects/:project_id/user_stories/:id/acceptance_criteria/:id
+POST /projects/:project_id/user_stories/:user_story_id/move    (RF08)
+/projects/:project_id/user_stories/:user_story_id/acceptance_criteria/:id
 ```
+
+Fora do projeto ficam `/session` (login e logout), `/registration` (cadastro),
+`/passwords/:token` (redefinição de senha), `/projects` e a raiz `/`. A lista
+completa sai de `bin/rails routes`.
 
 ### 9.2 Visão de processo
 
@@ -237,6 +246,12 @@ Tabelas, colunas, chaves e restrições estão no
 diagrama entidade-relacionamento.
 
 ## 10. Impacto das ferramentas na arquitetura (instrução 16)
+
+> As seções 10 e 11 vão além das seções do modelo `architecture-notebook.odt`
+> (que termina em *Architectural views*). A seção 10 existe porque a instrução 16
+> pede o impacto das ferramentas; a seção 11 liga cada item do Critério 05 à
+> seção que o atende.
+
 
 | Ferramenta | Impacto |
 |---|---|

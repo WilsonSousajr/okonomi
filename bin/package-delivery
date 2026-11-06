@@ -39,7 +39,9 @@ REFERENCE_EDITS = {
   "docs/PROCESSO.md" => [
     [ "| `.githooks/commit-msg`, `AGENTS.md` |", "| `.githooks/commit-msg` |" ],
     [ "| docs: CLAUDE.md duplica regras que pertencem só ao AGENTS.md |",
-      "| docs: arquivo de instruções duplica regras do guia de contribuição |" ]
+      "| docs: arquivo de instruções duplica regras do guia de contribuição |" ],
+    [ "| docs: documentar o uso do ai-memory no AGENTS.md |",
+      "| docs: documentar a memória de longo prazo no guia de contribuição |" ]
   ],
   "docs/HISTORIAS-DE-USUARIO.md" => [
     [ "a escolha está registrada aqui e no `AGENTS.md`.",

@@ -1,4 +1,4 @@
-# okonomi — Architecture notebook (Caderno de arquitetura)
+# okonomi: Architecture notebook (Caderno de arquitetura)
 
 **Artefato 5** do Trabalho Prático de Engenharia de Software (2026.2): descrição da
 arquitetura do software. Rastreado pela issue
@@ -15,7 +15,7 @@ Critério de Avaliação 05.
 
 Este documento descreve a filosofia, as decisões, as restrições, os elementos
 significativos e os mecanismos que dão forma ao okonomi, uma aplicação web para
-gerenciar requisitos de software com histórias de usuário. Ele serve a quem vai
+gerenciar requisitos de software com histórias de usuário. Destina-se a quem vai
 manter ou estender o sistema: explica **por que** o código está organizado como
 está, e não só o que ele faz. O esquema do banco é detalhado à parte, no
 [projeto físico do banco de dados](BANCO-DE-DADOS.md) (artefato 7), e o ambiente
@@ -38,8 +38,8 @@ de produção no artefato 9 ([#33](https://github.com/WilsonSousajr/okonomi/issu
    recebe HTML. Não existe uma segunda cópia das regras em JavaScript para manter
    em sincronia.
 5. **Privacidade por padrão.** Cada usuário enxerga apenas os próprios dados. O
-   isolamento é estrutural (toda consulta parte do usuário atual), não uma
-   verificação que pode ser esquecida.
+   isolamento é estrutural: toda consulta parte do usuário atual, então ele não
+   depende de uma verificação que alguém poderia esquecer.
 
 ## 3. Suposições e dependências
 
@@ -94,8 +94,8 @@ sem exigir decisões novas. A lista completa está nos
 | # | Decisão | Justificativa | Alternativa descartada |
 |---|---|---|---|
 | D1 | **Monólito Rails MVC**, uma única aplicação. | Uma pessoa, seis semanas, um domínio pequeno. O MVC do Rails já separa responsabilidades sem custo de integração. | Backend de API + SPA: duas bases de código, duas implantações, regras duplicadas. |
-| D2 | **Hotwire em vez de SPA.** O servidor renderiza HTML; o Turbo Drive troca o `<body>` sem recarregar a página. | Mantém o estado e as regras num só lugar (servidor) e entrega a fluidez de uma SPA com quase nenhum JavaScript próprio. | React/Vue: exigiria API JSON, *bundler* e validação repetida no cliente. |
-| D3 | **Regras de domínio no Active Record, repetidas no banco.** | O *model* dá mensagens claras ao usuário; o banco garante a regra mesmo fora da aplicação (console, script, defeito). | Só validação no *model*: um `update_columns` ou um SQL manual passariam por cima. |
+| D2 | **Hotwire em vez de SPA.** O servidor renderiza HTML; o Turbo Drive troca o `<body>` sem recarregar a página. | Mantém o estado e as regras num só lugar (servidor) e dá uma navegação próxima à de uma SPA com quase nenhum JavaScript próprio. | React/Vue: exigiria API JSON, *bundler* e validação repetida no cliente. |
+| D3 | **Regras de domínio no Active Record, repetidas no banco.** | O *model* dá mensagens claras ao usuário; o banco impõe a regra mesmo fora da aplicação (console, script, defeito). | Só validação no *model*: um `update_columns` ou um SQL manual passariam por cima. |
 | D4 | **PostgreSQL como único serviço de dados.** Cache, fila e websockets usam Solid Cache, Solid Queue e Solid Cable. | Um só serviço para instalar, copiar e monitorar. O volume de jobs (e-mail de senha) é mínimo. | Redis + Sidekiq: mais um serviço sem ganho real nessa escala. |
 | D5 | **PostgreSQL em vez de SQLite.** | O domínio precisa de índice único parcial, FKs compostas, `CHECK` e `decimal` exato, todos maduros no PostgreSQL. | SQLite: mais simples de rodar, mas mais fraco em restrições compostas e concorrência de escrita. |
 | D6 | **Índice único parcial** `backlogs(project_id) WHERE kind = 'product'`. | Expressa exatamente "no máximo um product backlog" sem limitar sprints. | Coluna `product_backlog_id` em `projects`: separaria o product backlog das sprints e complicaria a movimentação. |
@@ -121,7 +121,7 @@ sem exigir decisões novas. A lista completa está nos
 Active Record mapeia cada tabela para uma classe. O esquema evolui só por
 *migrations*, e `db/schema.rb` é a fonte de verdade do banco. As restrições de
 integridade (seção 5, D3, D6 e D8) são criadas nas próprias *migrations*, então
-todo ambiente (desenvolvimento, teste, CI, produção) tem as mesmas garantias.
+todo ambiente (desenvolvimento, teste, CI, produção) tem as mesmas restrições.
 
 ### 6.2 Autenticação e sessão
 
@@ -139,7 +139,7 @@ Não existe uma tabela de permissões. Cada consulta parte do usuário atual:
 `ProjectScoped` faz `Current.user.projects.find(params[:project_id])`, e os
 recursos aninhados seguem o mesmo caminho (`@project.user_stories.find`,
 `@project.backlogs.find`, `@user_story.acceptance_criteria.find`). Um ID de outro
-usuário ou de outro projeto simplesmente não é encontrado, e o Rails responde 404.
+usuário ou de outro projeto não é encontrado, e o Rails responde 404.
 
 ### 6.4 Validação em duas camadas
 
@@ -151,7 +151,7 @@ usuário ou de outro projeto simplesmente não é encontrado, e o Rails responde
 | Um product backlog por projeto | `uniqueness` condicional | índice único parcial |
 | Backlog e épico do mesmo projeto | `backlog_in_same_project`, `epic_in_same_project` | FKs compostas |
 
-A camada 1 gera a mensagem que o usuário lê. A camada 2 é a garantia final.
+A camada 1 gera a mensagem que o usuário lê. A camada 2 impede a gravação mesmo quando a camada 1 é contornada.
 
 ### 6.5 Mensagens e acessibilidade
 
@@ -190,7 +190,7 @@ dentro do Puma (`SOLID_QUEUE_IN_PUMA`), sem processo separado.
 | *Helpers* de apresentação | `app/helpers/*`: `BacklogsHelper` (filtro por MoSCoW e ordenação por RICE da lista de histórias) e `UserStoriesHelper` (opções e textos de MoSCoW e RICE) | Modelos (só leitura) e locale `pt-BR` |
 | Controle | Rotas e *controllers* REST, concerns `Authentication` e `ProjectScoped`, *strong parameters* | Modelos |
 | Domínio | *Models* Active Record com associações, validações, *callbacks* e cálculos (`to_s`, `rice_score`) | Persistência |
-| Persistência | PostgreSQL com *migrations*, índices e restrições | — |
+| Persistência | PostgreSQL com *migrations*, índices e restrições | nenhuma |
 | Serviços de suporte | *Mailers* (`PasswordsMailer`, o e-mail de redefinição de senha), Active Job + Solid Queue, Solid Cache, Solid Cable | Modelos e PostgreSQL |
 
 Cada camada só chama a de baixo. *Controllers* são finos: recebem parâmetros
@@ -258,7 +258,7 @@ diagrama entidade-relacionamento.
 | **Ruby on Rails (MVC)** | Define a decomposição em camadas e onde cada coisa mora (`app/models`, `app/controllers`, `app/views`). As convenções de nomes ligam rota, *controller*, *view* e tabela sem configuração. Os geradores criaram a autenticação, as *migrations* e o esqueleto de testes. |
 | **Active Record** | É o mecanismo de persistência e o lugar das regras de domínio (validações, associações, *callbacks*). `normalizes` limpa espaços antes de validar; `enum` com `validate: true` dá o tipo de backlog. |
 | **Hotwire (Turbo + Stimulus)** | Substitui uma SPA. Não existe API JSON nem estado no cliente: o servidor responde HTML e o Turbo Drive troca a página. Por isso todas as regras ficam no Ruby, e os testes de sistema exercitam o comportamento real. |
-| **PostgreSQL** | Viabiliza as restrições que o domínio exige: índice único parcial (RF05), chaves estrangeiras compostas (RF08, RF11), `CHECK` de domínio (RF15, RF16, RF18) e `decimal` exato (RF18, RF19). |
+| **PostgreSQL** | Oferece as restrições que o domínio exige: índice único parcial (RF05), chaves estrangeiras compostas (RF08, RF11), `CHECK` de domínio (RF15, RF16, RF18) e `decimal` exato (RF18, RF19). |
 | **Solid Queue, Solid Cache, Solid Cable** | Eliminam o Redis. Jobs, cache e websockets ficam em bancos do mesmo PostgreSQL, então há um único serviço de dados para operar. |
 | **Importmap + Propshaft** | JavaScript e CSS servidos sem *bundler* nem Node em produção. A imagem Docker fica menor e não há etapa de *build* de frontend além do Tailwind. |
 | **Tailwind CSS** | Estilo por classes nas próprias *views*, sem folhas de estilo por página. O layout responsivo vem de utilitários (`max-w-5xl`, `flex-wrap`, `break-words`). |

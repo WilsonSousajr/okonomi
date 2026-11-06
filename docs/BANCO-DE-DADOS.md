@@ -1,4 +1,4 @@
-# okonomi — Projeto físico do banco de dados
+# okonomi: Projeto físico do banco de dados
 
 **Artefato 7** do Trabalho Prático de Engenharia de Software (2026.2): projeto físico
 do banco de dados, em diagrama e texto. Rastreado pela issue
@@ -166,7 +166,7 @@ e mover uma história entre eles
 - **Chave estrangeira:** `project_id` → `projects.id`.
 - **Chaves únicas:**
   - `index_backlogs_one_product_per_project`: índice único **parcial** em
-    `project_id` com `WHERE kind = 'product'`. É o que garante no banco o "no
+    `project_id` com `WHERE kind = 'product'`. Impõe no banco o "no
     máximo um product backlog por projeto" (seção 4.1).
   - `index_backlogs_on_project_id_and_id` em `(project_id, id)`. É o alvo da chave
     estrangeira composta de `user_stories` (seção 4.3).
@@ -200,7 +200,7 @@ projeto e só pode receber histórias desse mesmo projeto
 
 ### 3.6 `user_stories`
 
-**Propósito.** É o centro do sistema: cada linha é uma história de usuário
+**Propósito.** Tabela central do sistema: cada linha é uma história de usuário
 ([RF07](https://github.com/WilsonSousajr/okonomi/issues/7)) no formato
 "Como um [papel] eu quero [ação] para [benefício]"
 ([RF09](https://github.com/WilsonSousajr/okonomi/issues/9)), com estimativa em story
@@ -209,8 +209,8 @@ points ([RF14](https://github.com/WilsonSousajr/okonomi/issues/14),
 RICE ([RF16](https://github.com/WilsonSousajr/okonomi/issues/16) a
 [RF19](https://github.com/WilsonSousajr/okonomi/issues/19)).
 
-O formato da história vira **três colunas obrigatórias**, nunca um texto livre. Com
-isso é impossível gravar uma história fora do padrão.
+O formato da história ocupa **três colunas obrigatórias**, e não um texto livre, de
+modo que não é possível gravar uma história fora do padrão.
 
 | Coluna | Tipo | Nulo | Descrição |
 |---|---|---|---|
@@ -260,7 +260,7 @@ pontuação fica indefinida e a aplicação mostra "—".
 ([RF12](https://github.com/WilsonSousajr/okonomi/issues/12)) no formato
 "Dado [contexto] quando [ação] então [resultado]"
 ([RF13](https://github.com/WilsonSousajr/okonomi/issues/13)). Assim como a história,
-o formato vira três colunas obrigatórias.
+o formato ocupa três colunas obrigatórias.
 
 | Coluna | Tipo | Nulo | Descrição |
 |---|---|---|---|

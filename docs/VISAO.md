@@ -9,6 +9,7 @@ Avaliação 02.
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 28/09/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | Plataforma e metas de compatibilidade e desempenho alinhadas ao artefato 3 (RNF-10, RNF-17, RNF-36); comparação com as ferramentas concorrentes na seção 2.2. |
 
 ## 1. Introdução
 
@@ -45,6 +46,28 @@ demais artefatos: histórias de usuário (artefato 4), requisitos não funcionai
 | **diferente de** | ferramentas de gestão de projetos de propósito geral, como Jira, Trello e planilhas, que tratam uma história como um cartão de texto livre e deixam formato, escala e priorização a cargo da disciplina de cada pessoa |
 | **nosso produto** | é focado apenas em requisitos ágeis, é simples de aprender e calcula a pontuação RICE de cada história, ordenando o backlog por um critério explícito |
 
+**Comparação com as alternativas.** As ferramentas mais usadas por equipes ágeis
+resolvem um problema mais amplo, a gestão do projeto inteiro, e por isso tratam a
+história de usuário como mais um tipo de item:
+
+| Ferramenta | Como trata histórias e priorização | Custo e complexidade |
+|---|---|---|
+| **Jira** (Atlassian) | História é um tipo de *issue* com texto livre; story points são um número qualquer; MoSCoW e RICE só com campos personalizados ou extensões pagas. | Gratuito até 10 usuários, pago acima disso; muitas configurações, curva de aprendizado alta. |
+| **Trello** (Atlassian) | Cartões genéricos em colunas; não há conceito de história, critério de aceitação, backlog ou sprint sem *Power-Ups*. | Plano gratuito limitado; simples, mas sem nenhuma regra de requisitos. |
+| **Taiga** | Tem histórias, épicos, sprints e pontos, mais próximo do okonomi; critérios de aceitação são texto livre e não há MoSCoW nem RICE. | Código aberto; hospedagem própria ou plano pago; voltado a vários times e papéis. |
+| **Azure Boards** (Microsoft) | *Work items* configuráveis por processo (Agile, Scrum, CMMI); prioridade é um número de 1 a 4; RICE só com campos e consultas personalizadas. | Gratuito até 5 usuários; integrado ao ecossistema Azure DevOps, pesado para quem só quer o backlog. |
+
+O okonomi ocupa o espaço que essas ferramentas deixam aberto:
+
+- **gratuito e de código aberto** (licença MIT), sem limite de usuários;
+- **focado só em histórias de usuário**: formato *Como um … eu quero … para …* e
+  critérios *Dado … quando … então …* garantidos pela estrutura dos dados, e não por
+  disciplina;
+- **MoSCoW e RICE nativos**, com domínios fechados e cálculo automático da pontuação,
+  sem extensões nem campos personalizados;
+- **simples, para um único time**: cada pessoa mantém os próprios projetos, sem
+  configuração de fluxos, permissões ou esquemas de campos.
+
 O okonomi não pretende competir com as ferramentas completas de gestão de
 projetos. Seu espaço é o de uma ferramenta **especializada e didática**: pequena o
 bastante para ser adotada em uma tarde, rigorosa o bastante para ensinar a forma
@@ -70,9 +93,12 @@ correta de escrever e priorizar requisitos.
   backlog para o sprint backlog; durante a sprint, histórias e critérios são
   consultados e refinados. Uma sessão típica dura de alguns minutos (ajustar uma
   estimativa) a uma hora (refinamento do backlog).
-- **Plataforma.** Navegador web moderno (Chrome, Firefox, Safari ou Edge) em
-  computador de mesa ou notebook, com acesso à internet. Não há instalação no
-  computador do usuário nem aplicativo móvel.
+- **Plataforma.** Navegador web atual (Chrome, Edge, Firefox ou Safari), no
+  computador ou no celular, com acesso à internet. O uso principal é no computador
+  de mesa ou notebook, mas todas as telas funcionam a partir de 375 px de largura,
+  sem rolagem horizontal (RNF-10 e RNF-36 do artefato 3). Não há instalação no
+  dispositivo do usuário nem aplicativo móvel nativo: no celular, o acesso é pelo
+  próprio navegador.
 - **Restrições do ambiente.** Uso em escritório ou em casa; nenhuma restrição
   especial de mobilidade, conectividade intermitente ou ambiente externo.
 - **Outras aplicações.** As equipes costumam usar também um repositório de código
@@ -112,8 +138,8 @@ métricas e licenças, é o artefato 3
 | **Usabilidade** — um usuário novo cria um projeto, uma história e um critério sem consultar manual; mensagens de erro em português, junto ao campo com problema. | M | M4 |
 | **Segurança** — senhas guardadas como *hash* (bcrypt); cookie de sessão `secure`, `httponly` e `SameSite=Lax`; HTTPS obrigatório em produção; cada usuário acessa apenas os próprios dados; mensagem de falha de login não revela se o e-mail existe. | M | M4 |
 | **Integridade dos dados** — os formatos e domínios dos requisitos funcionais são garantidos pelo banco de dados, não só pela interface. | M | M0 (concluído em [#24](https://github.com/WilsonSousajr/okonomi/issues/24)) |
-| **Compatibilidade** — funciona nas versões atuais de Chrome, Firefox, Safari e Edge, em telas a partir de 1280 px de largura. | M | M4 |
-| **Desempenho** — páginas respondem em menos de 1 segundo com até mil histórias por projeto. | S | M4 |
+| **Compatibilidade** — funciona nas versões atuais de Chrome, Edge, Firefox e Safari, no computador ou no celular, em telas a partir de 375 px de largura, sem rolagem horizontal (RNF-10, RNF-36). | M | M4 |
+| **Desempenho** — o servidor responde às páginas em até 500 ms no percentil 95, com projetos de até 200 histórias (RNF-17). | S | M4 |
 | **Conformidade** — dados pessoais (e-mail) tratados conforme a LGPD; acessibilidade orientada pela WCAG 2.2. | S | M4 |
 | **Licenciamento** — apenas dependências de código aberto com licenças permissivas (MIT, BSD, PostgreSQL License). | M | M5 |
 | **Documentação** — README com instruções de instalação e execução; artefatos 1 a 9 entregues em PDF. | M | M5 |

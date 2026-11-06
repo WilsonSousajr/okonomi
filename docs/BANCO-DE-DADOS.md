@@ -8,12 +8,14 @@ e 21 e ao Critério de Avaliação 07.
 | Versão | Data | Autor | Descrição |
 |---|---|---|---|
 | 1.0 | 18/10/2026 | José Wilson Barbosa de Sousa Júnior | Versão inicial. |
+| 1.1 | 04/11/2026 | José Wilson Barbosa de Sousa Júnior | Seção 5 sobre os bancos auxiliares (Solid Cache, Solid Queue, Solid Cable), índices das chaves estrangeiras esclarecidos, `not null` marcado no diagrama. |
 
 ## 1. Introdução
 
-O okonomi guarda seus dados em um único banco **PostgreSQL 17**. O esquema é criado
-pelas *migrations* do Rails e descrito em `db/schema.rb`, que é a fonte deste
-documento. Nenhuma tabela é editada à mão.
+O okonomi guarda os dados do domínio em um banco **PostgreSQL 17**. O esquema é
+criado pelas *migrations* do Rails e descrito em `db/schema.rb`, que é a fonte deste
+documento. Os bancos auxiliares do framework, no mesmo servidor, ficam fora do
+modelo do domínio e são descritos à parte na seção 5. Nenhuma tabela é editada à mão.
 
 As regras do domínio ficam no modelo (validações do Active Record) **e**, sempre que
 o banco consegue impor, também em restrições do próprio banco. Uma regra que só
@@ -27,7 +29,15 @@ Convenções usadas em todas as tabelas:
 - **Chave primária** `id` do tipo `bigint`, gerada pelo banco.
 - **`created_at` e `updated_at`** (`datetime`, não nulos) preenchidos pelo Rails em
   toda inserção e atualização.
-- **Chaves estrangeiras** nomeadas `<tabela_no_singular>_id` e sempre indexadas.
+- **Chaves estrangeiras** nomeadas `<tabela_no_singular>_id` e sempre cobertas por
+  um índice. Na maioria das tabelas é um índice próprio (`index_<tabela>_on_<coluna>`).
+  As exceções são `backlogs.project_id` e `epics.project_id`: elas não têm índice
+  isolado porque são a **primeira coluna** dos índices únicos compostos
+  `index_backlogs_on_project_id_and_id` e `index_epics_on_project_id_and_id`, e o
+  PostgreSQL usa um índice composto para buscas pela sua coluna inicial. Um índice só
+  em `project_id` seria redundante. (O índice parcial
+  `index_backlogs_one_product_per_project` não serve para isso, porque só contém as
+  linhas de product backlog.)
 - Textos curtos (nomes, e-mail) são `string` (`character varying`); textos livres
   ou longos são `text`.
 
@@ -36,7 +46,9 @@ Convenções usadas em todas as tabelas:
 O diagrama abaixo identifica as tabelas, suas colunas e os relacionamentos.
 `PK` é a chave primária, `FK` a chave estrangeira e `UK` a chave única. A notação
 das linhas é a "pé de galinha": `||` lê-se "exatamente um", `o{` "zero ou muitos"
-e `|o` "zero ou um".
+e `|o` "zero ou um". A anotação `not null` marca as colunas obrigatórias,
+as mesmas que aparecem com "não" na coluna "Nulo" da seção 3; a chave primária `id`
+é sempre não nula.
 
 ![Diagrama físico do banco de dados do okonomi](BANCO-DE-DADOS/der.png)
 
@@ -57,9 +69,10 @@ Resumo dos relacionamentos:
 | `acceptance_criteria` | `user_stories` | N : 1 | `user_story_id` | critérios excluídos |
 
 A coluna "Ao excluir o pai" descreve o comportamento da aplicação (associações
-`dependent:` do Rails). No banco, as chaves estrangeiras usam a ação padrão `NO ACTION`, que tem o efeito de `RESTRICT`: ele recusa
-apagar um pai que ainda tem filhos, de modo que um registro órfão nunca chega a
-existir.
+`dependent:` do Rails). No banco, as chaves estrangeiras usam a ação padrão
+`NO ACTION`, que na prática funciona como `RESTRICT`: o PostgreSQL recusa apagar um
+pai que ainda tem filhos. Assim, um registro órfão nunca chega a existir, mesmo que a
+aplicação seja contornada.
 
 ## 3. Tabelas
 
@@ -312,7 +325,52 @@ ser gravado.
   uma sprint com histórias é recusada.
 - Excluir um **épico** só desvincula as histórias (`epic_id` fica nulo).
 
-## 5. Rastreabilidade
+## 5. Bancos auxiliares (Solid Cache, Solid Queue, Solid Cable)
+
+Em produção, o mesmo servidor PostgreSQL guarda mais três bancos, criados pelo
+Rails 8 para os seus componentes de infraestrutura (`config/database.yml`:
+`okonomi_production_cache`, `okonomi_production_queue` e `okonomi_production_cable`).
+Eles **não fazem parte do modelo do domínio**: as tabelas são definidas e mantidas
+pelas próprias gems, não têm relação com as tabelas das seções 3 e 4, e a aplicação
+nunca as consulta diretamente. Os esquemas ficam em `db/cache_schema.rb`,
+`db/queue_schema.rb` e `db/cable_schema.rb`. Em desenvolvimento e teste esses bancos
+não são usados (cache em memória ou nulo, Action Cable `async`/`test`).
+
+Ficam no PostgreSQL, e não num Redis, para que exista um único serviço de dados para
+instalar, copiar e monitorar (decisão D4 do [caderno de arquitetura](ARQUITETURA.md)).
+O volume é mínimo: a fila só leva o e-mail de redefinição de senha.
+
+**Solid Cache** (`db/cache_schema.rb`, 1 tabela)
+
+| Tabela | Propósito |
+|---|---|
+| `solid_cache_entries` | Entradas do `Rails.cache`: chave, valor e tamanho, para expirar as mais antigas. |
+
+**Solid Queue** (`db/queue_schema.rb`, 13 tabelas)
+
+| Tabela | Propósito |
+|---|---|
+| `solid_queue_jobs` | Cada job enfileirado pelo Active Job (classe, argumentos, fila, prioridade). |
+| `solid_queue_ready_executions` | Jobs prontos para rodar, à espera de um *worker*. |
+| `solid_queue_scheduled_executions` | Jobs agendados para um horário futuro. |
+| `solid_queue_claimed_executions` | Jobs que um *worker* já pegou e está executando. |
+| `solid_queue_blocked_executions` | Jobs retidos por limite de concorrência. |
+| `solid_queue_failed_executions` | Jobs que falharam, com o erro, para nova tentativa ou análise. |
+| `solid_queue_recurring_tasks` | Tarefas recorrentes configuradas (estilo *cron*). |
+| `solid_queue_recurring_executions` | Registro de cada execução de tarefa recorrente, para não rodar duas vezes. |
+| `solid_queue_pauses` | Filas pausadas manualmente. |
+| `solid_queue_processes` | Processos do Solid Queue vivos (*supervisor*, *workers*, *dispatchers*) e seu último sinal. |
+| `solid_queue_semaphores` | Semáforos dos limites de concorrência. |
+| `solid_queue_batches` | Lotes de jobs acompanhados em conjunto. |
+| `solid_queue_batch_executions` | Associação de cada job ao seu lote. |
+
+**Solid Cable** (`db/cable_schema.rb`, 1 tabela)
+
+| Tabela | Propósito |
+|---|---|
+| `solid_cable_messages` | Mensagens publicadas nos canais do Action Cable, guardadas por um dia (`message_retention`) até serem entregues. |
+
+## 6. Rastreabilidade
 
 | Instrução ou item do Critério 07 | Seção |
 |---|---|

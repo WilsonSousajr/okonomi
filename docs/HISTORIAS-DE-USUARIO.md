@@ -1,4 +1,4 @@
-# okonomi — Histórias de usuário
+# okonomi: Histórias de usuário
 
 **Artefato 4** do Trabalho Prático de Engenharia de Software (2026.2): especificação
 dos requisitos funcionais por meio de histórias de usuário. Rastreado pela issue
@@ -14,8 +14,8 @@ e ao Critério de Avaliação 04.
 
 Este documento reúne as histórias de usuário do **okonomi**. Cada um dos 19
 requisitos funcionais da seção 2 do enunciado (RF01 a RF19) é descrito por
-**exatamente uma** história, escrita do ponto de vista de quem usa o sistema e em
-linguagem informal, no modelo **Como um … eu quero … para …**.
+exatamente uma história, escrita do ponto de vista de quem usa o sistema e em
+linguagem informal, no modelo *Como um … eu quero … para …*.
 
 Cada história é também uma issue do projeto no GitHub, com o rótulo `RF`. A issue é
 o cartão do quadro Kanban (artefato 1): é por ela que a história é priorizada,
@@ -23,7 +23,7 @@ estimada, implementada e verificada. A seção 3 foi derivada dessas issues: a
 história e os critérios de cada RF foram transcritos da issue correspondente e
 revisados para este documento, e qualquer mudança é feita nos dois lugares.
 
-O que **não** cabe numa história, como os atributos de qualidade, as restrições e o
+O que não cabe numa história, como os atributos de qualidade, as restrições e o
 licenciamento, está no artefato 3, `REQUISITOS-NAO-FUNCIONAIS.md`
 ([#27](https://github.com/WilsonSousajr/okonomi/issues/27)).
 
@@ -35,7 +35,7 @@ para histórias de usuário da seguinte forma:
 
 | Seção do modelo (caso de uso) | Onde está aqui |
 |---|---|
-| *Use-Case Name* e *Brief Description* | Título da seção (RFnn — nome) e a **história** no formato Como um … eu quero … para … |
+| *Use-Case Name* e *Brief Description* | Título da seção (RFnn: nome) e a **história** no formato Como um … eu quero … para … |
 | *Actor Brief Descriptions* | Seção 2, Atores |
 | *Preconditions* | A parte **Dado** de cada critério de aceitação |
 | *Basic Flow* e *Alternative Flows* | Os critérios de aceitação: o primeiro descreve o caminho de sucesso e os demais, as alternativas e recusas |
@@ -64,19 +64,19 @@ iteração**" e "usuário autenticado **priorizando o backlog**".
 
 ## 3. Histórias de usuário
 
-### RF01 — Interface gráfica web para acesso ao sistema
+### RF01: Interface gráfica web para acesso ao sistema
 
 **Requisito no enunciado (seção 2):**
 
 > **(1)** interface com o usuário embasada em texto (*text user interface*) ou gráfica (*graphic user interface*)
 
-Optamos por **interface gráfica web**, servida por uma aplicação Ruby on Rails com Hotwire e Tailwind CSS.
+A opção adotada é a interface gráfica web, servida por uma aplicação Ruby on Rails com Hotwire e Tailwind CSS.
 
 **História.** **Como um** membro de equipe de desenvolvimento **eu quero** acessar o okonomi por um navegador web, com layout consistente e responsivo **para** gerenciar requisitos sem instalar nada na minha máquina.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 5 | [#1](https://github.com/WilsonSousajr/okonomi/issues/1) |
+| M (Must have) | 5 | [#1](https://github.com/WilsonSousajr/okonomi/issues/1) |
 
 **Critérios de aceitação:**
 
@@ -85,19 +85,19 @@ Optamos por **interface gráfica web**, servida por uma aplicação Ruby on Rail
 3. **Dado** que acesso de um dispositivo de 375px de largura, **quando** a página carrega, **então** o conteúdo permanece legível e utilizável sem rolagem horizontal.
 4. **Dado** que preencho um formulário com algum dado inválido, **quando** o envio, **então** vejo as mensagens de erro reunidas em um quadro padronizado no topo do formulário, no mesmo formato em todas as telas.
 
-### RF02 — Criação de conta de usuário
+### RF02: Criação de conta de usuário
 
 **Requisito no enunciado (seção 2):**
 
 > **(2)** para acessar os serviços disponibilizados, cada usuário deve criar uma conta e depois ser autenticado
 
-Esta issue cobre a **criação da conta**. A autenticação em si é #3.
+Esta história cobre a criação da conta. A autenticação fica em #3.
 
 **História.** **Como um** novo usuário do okonomi **eu quero** criar uma conta informando e-mail e senha **para** passar a ter uma identidade própria no sistema e poder ser autenticado.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#2](https://github.com/WilsonSousajr/okonomi/issues/2) |
+| M (Must have) | 3 | [#2](https://github.com/WilsonSousajr/okonomi/issues/2) |
 
 **Critérios de aceitação:**
 
@@ -106,7 +106,7 @@ Esta issue cobre a **criação da conta**. A autenticação em si é #3.
 3. **Dado** que informo e-mail em formato inválido ou senha fraca, **quando** submeto o formulário, **então** a conta não é criada e vejo a mensagem de validação no campo correspondente.
 4. **Dado** que criei minha conta, **quando** saio e entro de novo com o mesmo e-mail e a mesma senha, **então** acesso o sistema normalmente, e a senha nunca é exibida em nenhuma tela. (Que a senha é guardada só como *digest* bcrypt é um requisito não funcional: RNF-48 e seção 3.5 do artefato 3.)
 
-### RF02 (complementar) — Redefinição de senha
+### RF02 (complementar): Redefinição de senha
 
 História complementar a RF02: o enunciado não pede a redefinição de senha, mas sem
 ela quem esquece a senha perde a conta. O fluxo veio do gerador de autenticação do
@@ -120,7 +120,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| S — Should have | — (sem cartão próprio no quadro) | [#21](https://github.com/WilsonSousajr/okonomi/issues/21), [#80](https://github.com/WilsonSousajr/okonomi/issues/80), [#81](https://github.com/WilsonSousajr/okonomi/issues/81) |
+| S (Should have) | sem estimativa (não tem cartão próprio no quadro) | [#21](https://github.com/WilsonSousajr/okonomi/issues/21), [#80](https://github.com/WilsonSousajr/okonomi/issues/80), [#81](https://github.com/WilsonSousajr/okonomi/issues/81) |
 
 **Critérios de aceitação:**
 
@@ -132,7 +132,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 6. **Dado** que o link expirou ou foi alterado, **quando** o abro, **então** volto à tela "Esqueceu a senha?" com a mensagem "O link de redefinição é inválido ou expirou."
 7. **Dado** que eu estava com a conta aberta em outro dispositivo, **quando** redefino a senha, **então** essa sessão é encerrada e o outro dispositivo precisa entrar de novo.
 
-### RF03 — Autenticação e acesso aos serviços
+### RF03: Autenticação e acesso aos serviços
 
 **Requisito no enunciado (seção 2):**
 
@@ -143,7 +143,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#3](https://github.com/WilsonSousajr/okonomi/issues/3) |
+| M (Must have) | 3 | [#3](https://github.com/WilsonSousajr/okonomi/issues/3) |
 
 **Critérios de aceitação:**
 
@@ -153,7 +153,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 4. **Dado** que estou autenticado, **quando** aciono "sair", **então** a sessão é encerrada e o acesso às rotas protegidas volta a ser negado.
 5. **Dado** que estou autenticado, **quando** tento abrir o endereço de um projeto, backlog, história ou critério de outro usuário, **então** vejo a página de erro "página não encontrada" (404), como se o recurso não existisse, e nenhum dado dele é exibido.
 
-### RF04 — CRUD de projetos
+### RF04: CRUD de projetos
 
 **Requisito no enunciado (seção 2):**
 
@@ -163,7 +163,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#4](https://github.com/WilsonSousajr/okonomi/issues/4) |
+| M (Must have) | 3 | [#4](https://github.com/WilsonSousajr/okonomi/issues/4) |
 
 **Critérios de aceitação:**
 
@@ -173,7 +173,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 4. **Dado** que abro um projeto meu, **quando** altero nome ou descrição, **então** as mudanças são persistidas.
 5. **Dado** que excluo um projeto, **quando** confirmo a ação, **então** o projeto e seus backlogs, épicos e histórias associados deixam de existir.
 
-### RF05 — CRUD de product backlog (no máximo um por projeto)
+### RF05: CRUD de product backlog (no máximo um por projeto)
 
 **Requisito no enunciado (seção 2):**
 
@@ -183,7 +183,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 5 | [#5](https://github.com/WilsonSousajr/okonomi/issues/5) |
+| M (Must have) | 5 | [#5](https://github.com/WilsonSousajr/okonomi/issues/5) |
 
 **Critérios de aceitação:**
 
@@ -195,7 +195,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 > **Invariante:** a unicidade é validada no *model* e garantida por índice único no banco, não apenas no formulário.
 
-### RF06 — CRUD de sprint backlogs (vários por projeto)
+### RF06: CRUD de sprint backlogs (vários por projeto)
 
 **Requisito no enunciado (seção 2):**
 
@@ -205,17 +205,17 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#6](https://github.com/WilsonSousajr/okonomi/issues/6) |
+| M (Must have) | 3 | [#6](https://github.com/WilsonSousajr/okonomi/issues/6) |
 
 **Critérios de aceitação:**
 
 1. **Dado** um projeto, **quando** crio um sprint backlog com nome, **então** ele é persistido e vinculado ao projeto.
-2. **Dado** um projeto que já possui sprint backlogs, **quando** crio outro, **então** a criação é aceita — não há limite de quantidade.
+2. **Dado** um projeto que já possui sprint backlogs, **quando** crio outro, **então** a criação é aceita, sem limite de quantidade.
 3. **Dado** um projeto com vários sprint backlogs, **quando** acesso o projeto, **então** vejo todos listados, cada um com suas histórias.
 4. **Dado** um sprint backlog existente, **quando** edito seus dados, **então** as mudanças são persistidas.
 5. **Dado** um sprint backlog existente, **quando** o excluo, **então** ele deixa de existir e as histórias que continha não ficam órfãs.
 
-### RF07 — CRUD de histórias de usuário associadas ao product backlog
+### RF07: CRUD de histórias de usuário associadas ao product backlog
 
 **Requisito no enunciado (seção 2):**
 
@@ -225,19 +225,19 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 5 | [#7](https://github.com/WilsonSousajr/okonomi/issues/7) |
+| M (Must have) | 5 | [#7](https://github.com/WilsonSousajr/okonomi/issues/7) |
 
 **Critérios de aceitação:**
 
 1. **Dado** um projeto com product backlog, **quando** crio uma história, **então** ela é persistida **associada ao product backlog**.
-2. **Dado** que tento criar uma história associada diretamente a um sprint backlog, **quando** submeto, **então** a criação é recusada — toda história nasce no product backlog.
+2. **Dado** que tento criar uma história associada diretamente a um sprint backlog, **quando** submeto, **então** a criação é recusada, porque toda história nasce no product backlog.
 3. **Dado** histórias existentes, **quando** acesso o backlog, **então** vejo todas com título, etiqueta MoSCoW, story points e pontuação RICE.
 4. **Dado** uma história existente, **quando** a edito, **então** as mudanças são persistidas.
 5. **Dado** uma história existente, **quando** a excluo, **então** ela e seus critérios de aceitação deixam de existir.
 
 > **Invariante:** toda história nasce ligada a um product backlog. Movimentação posterior é tratada em #8.
 
-### RF08 — Movimentação de histórias de usuário entre backlogs
+### RF08: Movimentação de histórias de usuário entre backlogs
 
 **Requisito no enunciado (seção 2):**
 
@@ -247,7 +247,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 5 | [#8](https://github.com/WilsonSousajr/okonomi/issues/8) |
+| M (Must have) | 5 | [#8](https://github.com/WilsonSousajr/okonomi/issues/8) |
 
 **Critérios de aceitação:**
 
@@ -258,7 +258,7 @@ estão em RNF-05 e RNF-06 do artefato 3.
 
 > **Invariante:** movimentação só é válida dentro do mesmo projeto.
 
-### RF09 — Formato padrão da história: Como um … eu quero … para …
+### RF09: Formato padrão da história: Como um … eu quero … para …
 
 **Requisito no enunciado (seção 2):**
 
@@ -270,17 +270,17 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 2 | [#9](https://github.com/WilsonSousajr/okonomi/issues/9) |
+| M (Must have) | 2 | [#9](https://github.com/WilsonSousajr/okonomi/issues/9) |
 
 **Critérios de aceitação:**
 
-1. **Dado** o formulário de história, **quando** ele é exibido, **então** apresenta **três campos separados** — papel, ação e benefício — com os rótulos do formato padrão.
+1. **Dado** o formulário de história, **quando** ele é exibido, **então** apresenta **três campos separados** (papel, ação e benefício), com os rótulos do formato padrão.
 2. **Dado** que deixo qualquer um dos três campos em branco, **quando** submeto, **então** a história não é salva e o campo faltante é apontado.
 3. **Dado** uma história salva, **quando** ela é exibida em qualquer listagem ou relatório, **então** seu texto é renderizado como *Como um [papel], eu quero [ação], para [benefício]*.
 
-> **Invariante:** o formato é garantido pela **estrutura de dados** (três colunas), nunca por texto livre. É impossível gravar uma história fora do padrão.
+> **Invariante:** o formato é imposto pela estrutura de dados (três colunas), nunca por texto livre. Não há como gravar uma história fora do padrão.
 
-### RF10 — CRUD de épicos
+### RF10: CRUD de épicos
 
 **Requisito no enunciado (seção 2):**
 
@@ -290,7 +290,7 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#10](https://github.com/WilsonSousajr/okonomi/issues/10) |
+| M (Must have) | 3 | [#10](https://github.com/WilsonSousajr/okonomi/issues/10) |
 
 **Critérios de aceitação:**
 
@@ -300,7 +300,7 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 4. **Dado** um épico existente, **quando** o edito, **então** as mudanças são persistidas.
 5. **Dado** um épico existente, **quando** o excluo, **então** ele deixa de existir e as histórias que estavam vinculadas continuam existindo, apenas sem épico.
 
-### RF11 — Vinculação de histórias de usuário a épicos
+### RF11: Vinculação de histórias de usuário a épicos
 
 **Requisito no enunciado (seção 2):**
 
@@ -310,16 +310,16 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#11](https://github.com/WilsonSousajr/okonomi/issues/11) |
+| M (Must have) | 3 | [#11](https://github.com/WilsonSousajr/okonomi/issues/11) |
 
 **Critérios de aceitação:**
 
 1. **Dado** uma história e um épico do **mesmo projeto**, **quando** faço a vinculação, **então** a história passa a pertencer ao épico.
-2. **Dado** uma história vinculada, **quando** a desvinculo, **então** ela permanece existindo sem épico — o vínculo é opcional.
+2. **Dado** uma história vinculada, **quando** a desvinculo, **então** ela continua existindo sem épico, já que o vínculo é opcional.
 3. **Dado** uma história, **quando** tento vinculá-la a um épico de **outro projeto**, **então** a operação é recusada.
 4. **Dado** um épico, **quando** acesso sua página, **então** vejo todas as histórias vinculadas e a soma de seus story points.
 
-### RF12 — CRUD de critérios de aceitação
+### RF12: CRUD de critérios de aceitação
 
 **Requisito no enunciado (seção 2):**
 
@@ -329,7 +329,7 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#12](https://github.com/WilsonSousajr/okonomi/issues/12) |
+| M (Must have) | 3 | [#12](https://github.com/WilsonSousajr/okonomi/issues/12) |
 
 **Critérios de aceitação:**
 
@@ -340,7 +340,7 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 5. **Dado** um critério existente, **quando** o excluo, **então** ele deixa de existir e a história permanece intacta.
 6. **Dado** que excluo a história, **quando** a exclusão é confirmada, **então** seus critérios de aceitação também deixam de existir.
 
-### RF13 — Formato padrão do critério: Dado … quando … então …
+### RF13: Formato padrão do critério: Dado … quando … então …
 
 **Requisito no enunciado (seção 2):**
 
@@ -350,17 +350,17 @@ Ver também a instrução 14 da seção 4 e o Critério de Avaliação 04.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 2 | [#13](https://github.com/WilsonSousajr/okonomi/issues/13) |
+| M (Must have) | 2 | [#13](https://github.com/WilsonSousajr/okonomi/issues/13) |
 
 **Critérios de aceitação:**
 
-1. **Dado** o formulário de critério, **quando** ele é exibido, **então** apresenta **três campos separados** — contexto, ação e resultado — com os rótulos do formato padrão.
+1. **Dado** o formulário de critério, **quando** ele é exibido, **então** apresenta **três campos separados** (contexto, ação e resultado), com os rótulos do formato padrão.
 2. **Dado** que deixo qualquer um dos três campos em branco, **quando** submeto, **então** o critério não é salvo e o campo faltante é apontado.
 3. **Dado** um critério salvo, **quando** ele é exibido, **então** seu texto é renderizado como *Dado [contexto], quando [ação], então [resultado]*.
 
-> **Invariante:** assim como em #9, o formato é garantido pela **estrutura de dados** (três colunas), nunca por texto livre.
+> **Invariante:** como em #9, o formato é imposto pela estrutura de dados (três colunas), nunca por texto livre.
 
-### RF14 — Atribuição de story points a histórias de usuário
+### RF14: Atribuição de story points a histórias de usuário
 
 **Requisito no enunciado (seção 2):**
 
@@ -372,16 +372,16 @@ O domínio de valores permitidos é tratado em #15.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 2 | [#14](https://github.com/WilsonSousajr/okonomi/issues/14) |
+| M (Must have) | 2 | [#14](https://github.com/WilsonSousajr/okonomi/issues/14) |
 
 **Critérios de aceitação:**
 
 1. **Dado** uma história sem estimativa, **quando** atribuo pontos de história, **então** o valor é persistido e exibido na listagem do backlog.
 2. **Dado** uma história estimada, **quando** altero os pontos, **então** o novo valor substitui o anterior.
-3. **Dado** uma história estimada, **quando** removo a estimativa, **então** a história volta a ficar sem pontos, sem ser invalidada — estimar é opcional.
+3. **Dado** uma história estimada, **quando** removo a estimativa, **então** a história volta a ficar sem pontos, sem ser invalidada, pois estimar é opcional.
 4. **Dado** um backlog com histórias estimadas, **quando** o acesso, **então** vejo a soma dos pontos de história do backlog.
 
-### RF15 — Domínio de story points: 0, 1, 2, 3, 5, 8, 13, 21, 34, 55
+### RF15: Domínio de story points: 0, 1, 2, 3, 5, 8, 13, 21, 34, 55
 
 **Requisito no enunciado (seção 2):**
 
@@ -391,7 +391,7 @@ O domínio de valores permitidos é tratado em #15.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 1 | [#15](https://github.com/WilsonSousajr/okonomi/issues/15) |
+| M (Must have) | 1 | [#15](https://github.com/WilsonSousajr/okonomi/issues/15) |
 
 **Critérios de aceitação:**
 
@@ -401,7 +401,7 @@ O domínio de valores permitidos é tratado em #15.
 
 > **Invariante:** a escala é validada no *model*, não apenas no formulário. É o mesmo conjunto usado por Effort em RICE.
 
-### RF16 — Atribuição de etiqueta MoSCoW (M, S, C, W)
+### RF16: Atribuição de etiqueta MoSCoW (M, S, C, W)
 
 **Requisito no enunciado (seção 2):**
 
@@ -411,7 +411,7 @@ O domínio de valores permitidos é tratado em #15.
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 2 | [#16](https://github.com/WilsonSousajr/okonomi/issues/16) |
+| M (Must have) | 2 | [#16](https://github.com/WilsonSousajr/okonomi/issues/16) |
 
 **Critérios de aceitação:**
 
@@ -419,9 +419,9 @@ O domínio de valores permitidos é tratado em #15.
 2. **Dado** o formulário, **quando** ele é exibido, **então** oferece exatamente as quatro opções M, S, C e W, com o significado de cada uma visível.
 3. **Dado** que um valor fora do conjunto M, S, C, W é enviado, mesmo contornando o formulário, **quando** salvo a história, **então** a história não é salva e vejo uma mensagem de erro explicando que a etiqueta não é aceita.
 4. **Dado** um backlog etiquetado, **quando** o acesso, **então** posso filtrar as histórias por etiqueta MoSCoW.
-5. **Dado** uma história, **quando** não atribuo etiqueta, **então** ela permanece válida — a etiqueta é opcional.
+5. **Dado** uma história, **quando** não atribuo etiqueta, **então** ela permanece válida (a etiqueta é opcional).
 
-### RF17 — Atribuição de critério RICE (Reach, Impact, Confidence, Effort)
+### RF17: Atribuição de critério RICE (Reach, Impact, Confidence, Effort)
 
 **Requisito no enunciado (seção 2):**
 
@@ -433,16 +433,16 @@ Os domínios de cada valor estão em #18; o cálculo da pontuação está em #19
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#17](https://github.com/WilsonSousajr/okonomi/issues/17) |
+| M (Must have) | 3 | [#17](https://github.com/WilsonSousajr/okonomi/issues/17) |
 
 **Critérios de aceitação:**
 
 1. **Dado** uma história, **quando** preencho os quatro campos RICE, **então** os valores são persistidos e exibidos junto da história.
 2. **Dado** uma história com RICE preenchido, **quando** altero qualquer um dos quatro campos, **então** o novo valor é persistido e a pontuação é recalculada (#19).
-3. **Dado** uma história, **quando** deixo o RICE em branco, **então** ela permanece válida — o preenchimento é opcional.
+3. **Dado** uma história, **quando** deixo o RICE em branco, **então** ela permanece válida, pois o preenchimento é opcional.
 4. **Dado** um preenchimento parcial do RICE, **quando** submeto, **então** o comportamento definido é aplicado de forma consistente: a história é aceita e a pontuação fica indefinida.
 
-### RF18 — Domínios dos valores RICE
+### RF18: Domínios dos valores RICE
 
 **Requisito no enunciado (seção 2):**
 
@@ -452,7 +452,7 @@ Os domínios de cada valor estão em #18; o cálculo da pontuação está em #19
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 2 | [#18](https://github.com/WilsonSousajr/okonomi/issues/18) |
+| M (Must have) | 2 | [#18](https://github.com/WilsonSousajr/okonomi/issues/18) |
 
 **Critérios de aceitação:**
 
@@ -462,9 +462,9 @@ Os domínios de cada valor estão em #18; o cálculo da pontuação está em #19
 4. **Dado** o campo Effort, **quando** salvo a história com um valor fora da escala de pontos de história, **então** a história não é salva e vejo uma mensagem de erro.
 5. **Dado** os formulários de Impact, Confidence e Effort, **quando** exibidos, **então** oferecem apenas as opções do domínio, com o rótulo textual (massivo, alto, médio…) visível.
 
-> **Decisão de projeto:** *Impact* é armazenado em coluna decimal (não *float*) para que 0.25 e 0.5 sejam exatos. *Confidence* é armazenado como **inteiro percentual** e convertido para fração no cálculo (#19). As validações vivem no *model*.
+> **Decisão de projeto:** *Impact* é armazenado em coluna decimal (não *float*) para que 0.25 e 0.5 sejam exatos. *Confidence* é armazenado como inteiro percentual e convertido para fração no cálculo (#19). As validações ficam no *model*.
 
-### RF19 — Cálculo da pontuação RICE pela fórmula (R × I × C) / E
+### RF19: Cálculo da pontuação RICE pela fórmula (R × I × C) / E
 
 **Requisito no enunciado (seção 2):**
 
@@ -474,17 +474,17 @@ Os domínios de cada valor estão em #18; o cálculo da pontuação está em #19
 
 | Prioridade (MoSCoW) | Story points | Issue |
 |---|---|---|
-| M — Must have | 3 | [#19](https://github.com/WilsonSousajr/okonomi/issues/19) |
+| M (Must have) | 3 | [#19](https://github.com/WilsonSousajr/okonomi/issues/19) |
 
 **Critérios de aceitação:**
 
-1. **Dado** uma história com R=1000, I=2, C=80, E=5, **quando** consulto sua pontuação, **então** vejo **320.0** — ou seja, (1000 × 2 × 0.8) / 5.
+1. **Dado** uma história com R=1000, I=2, C=80, E=5, **quando** consulto sua pontuação, **então** vejo **320.0**, resultado de (1000 × 2 × 0.8) / 5.
 2. **Dado** uma história com qualquer um dos quatro campos em branco, **quando** consulto sua pontuação, **então** ela é apresentada como indefinida, sem erro.
-3. **Dado** uma história com **Effort = 0**, **quando** consulto sua pontuação, **então** ela é apresentada como indefinida — não ocorre divisão por zero nem exceção.
+3. **Dado** uma história com **Effort = 0**, **quando** consulto sua pontuação, **então** ela é apresentada como indefinida, sem divisão por zero nem exceção.
 4. **Dado** um backlog com histórias pontuadas, **quando** ordeno por RICE, **então** as histórias aparecem da maior para a menor pontuação, e as indefinidas ao final.
 5. **Dado** que altero qualquer campo RICE, **quando** salvo, **então** a pontuação exibida reflete imediatamente o novo valor.
 
-> **Decisão de projeto:** *Confidence* é percentual e entra na fórmula como `C / 100.0`. `Effort = 0` produz pontuação `nil` (indefinida), nunca divisão por zero — o enunciado não define este caso e a escolha está registrada aqui e no `AGENTS.md`.
+> **Decisão de projeto:** *Confidence* é percentual e entra na fórmula como `C / 100.0`. `Effort = 0` produz pontuação `nil` (indefinida), nunca divisão por zero. O enunciado não define este caso, e a escolha está registrada aqui e no `AGENTS.md`.
 
 ## 4. Glossário
 
@@ -532,7 +532,7 @@ requisito do enunciado e por isso não entra na contagem 1:1 acima:
 
 | Complementa | História | Issues | MoSCoW | Story points |
 |---|---|---|---|---|
-| RF02 | Redefinição de senha | [#21](https://github.com/WilsonSousajr/okonomi/issues/21), [#80](https://github.com/WilsonSousajr/okonomi/issues/80), [#81](https://github.com/WilsonSousajr/okonomi/issues/81) | S | — |
+| RF02 | Redefinição de senha | [#21](https://github.com/WilsonSousajr/okonomi/issues/21), [#80](https://github.com/WilsonSousajr/okonomi/issues/80), [#81](https://github.com/WilsonSousajr/okonomi/issues/81) | S | sem estimativa |
 
 ### 5.2 Instruções e Critério de Avaliação 04
 

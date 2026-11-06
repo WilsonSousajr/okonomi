@@ -1,4 +1,4 @@
-# okonomi — Visão
+# okonomi: Visão
 
 **Artefato 2** do Trabalho Prático de Engenharia de Software (2026.2): documento de
 visão e escopo. Segue a estrutura do modelo `vision_tpl.odt`
@@ -30,7 +30,7 @@ demais artefatos: histórias de usuário (artefato 4), requisitos não funcionai
 
 | | |
 |---|---|
-| **O problema de** | registrar requisitos como histórias de usuário em ferramentas genéricas — planilhas, quadros de tarefas, documentos de texto — que não conhecem o formato de uma história nem as escalas de estimativa e priorização |
+| **O problema de** | registrar requisitos como histórias de usuário em ferramentas genéricas (planilhas, quadros de tarefas, documentos de texto) que não conhecem o formato de uma história nem as escalas de estimativa e priorização |
 | **afeta** | Product Owners, Scrum Masters e times de desenvolvimento de equipes ágeis pequenas, além de estudantes e professores de Engenharia de Software |
 | **cujo impacto é** | histórias escritas em texto livre, sem papel, ação ou benefício claros; critérios de aceitação ausentes ou vagos; story points fora da escala combinada; prioridades decididas sem critério explícito; e a mesma história copiada entre backlogs até ninguém saber qual versão vale |
 | **uma solução bem-sucedida** | garantiria que toda história siga o modelo *Como um … eu quero … para …* e todo critério o modelo *Dado … quando … então …*; limitaria story points à escala de Fibonacci; calcularia a prioridade RICE automaticamente; e manteria cada história em exatamente um backlog, movendo-a entre product e sprint backlogs sem duplicação |
@@ -59,19 +59,17 @@ história de usuário como mais um tipo de item:
 
 O okonomi ocupa o espaço que essas ferramentas deixam aberto:
 
-- **gratuito e de código aberto** (licença MIT), sem limite de usuários;
-- **focado só em histórias de usuário**: formato *Como um … eu quero … para …* e
-  critérios *Dado … quando … então …* garantidos pela estrutura dos dados, e não por
-  disciplina;
-- **MoSCoW e RICE nativos**, com domínios fechados e cálculo automático da pontuação,
-  sem extensões nem campos personalizados;
-- **simples, para um único time**: cada pessoa mantém os próprios projetos, sem
-  configuração de fluxos, permissões ou esquemas de campos.
+- é gratuito e de código aberto (licença MIT), sem limite de usuários;
+- trata apenas de histórias de usuário: o formato *Como um … eu quero … para …* e
+  os critérios *Dado … quando … então …* são impostos pela estrutura dos dados;
+- tem MoSCoW e RICE nativos, com domínios fechados e cálculo automático da
+  pontuação, sem extensões nem campos personalizados;
+- é feito para um único time: cada pessoa mantém os próprios projetos, sem
+  configurar fluxos, permissões ou esquemas de campos.
 
 O okonomi não pretende competir com as ferramentas completas de gestão de
-projetos. Seu espaço é o de uma ferramenta **especializada e didática**: pequena o
-bastante para ser adotada em uma tarde, rigorosa o bastante para ensinar a forma
-correta de escrever e priorizar requisitos.
+projetos. É uma ferramenta especializada e didática, que pode ser adotada em uma
+tarde e que obriga a escrever e priorizar requisitos na forma correta.
 
 ## 3. Partes interessadas
 
@@ -111,7 +109,7 @@ correta de escrever e priorizar requisitos.
 
 Prioridade na escala MoSCoW (**M** = *must have*). Todas as funcionalidades
 abaixo são requisitos do enunciado e, por isso, obrigatórias. A entrega planejada
-é o marco **M4 — Protótipo**.
+é o marco **M4: Protótipo**.
 
 | Necessidade | Prioridade | Funcionalidades | Requisito |
 |---|---|---|---|
@@ -135,15 +133,15 @@ métricas e licenças, é o artefato 3
 
 | Requisito | Prioridade | Entrega planejada |
 |---|---|---|
-| **Usabilidade** — um usuário novo cria um projeto, uma história e um critério sem consultar manual; mensagens de erro em português, junto ao campo com problema. | M | M4 |
-| **Segurança** — senhas guardadas como *hash* (bcrypt); cookie de sessão `secure`, `httponly` e `SameSite=Lax`; HTTPS obrigatório em produção; cada usuário acessa apenas os próprios dados; mensagem de falha de login não revela se o e-mail existe. | M | M4 |
-| **Integridade dos dados** — os formatos e domínios dos requisitos funcionais são garantidos pelo banco de dados, não só pela interface. | M | M0 (concluído em [#24](https://github.com/WilsonSousajr/okonomi/issues/24)) |
-| **Compatibilidade** — funciona nas versões atuais de Chrome, Edge, Firefox e Safari, no computador ou no celular, em telas a partir de 375 px de largura, sem rolagem horizontal (RNF-10, RNF-36). | M | M4 |
-| **Desempenho** — o servidor responde às páginas em até 500 ms no percentil 95, com projetos de até 200 histórias (RNF-17). | S | M4 |
-| **Conformidade** — dados pessoais (e-mail) tratados conforme a LGPD; acessibilidade orientada pela WCAG 2.2. | S | M4 |
-| **Licenciamento** — apenas dependências de código aberto com licenças permissivas (MIT, BSD, PostgreSQL License). | M | M5 |
-| **Documentação** — README com instruções de instalação e execução; artefatos 1 a 9 entregues em PDF. | M | M5 |
-| **Qualidade do código** — integração contínua com análise estática (RuboCop, Brakeman), auditoria de dependências e testes automatizados em cada pull request. | M | M0 (concluído) |
+| Usabilidade: um usuário novo cria um projeto, uma história e um critério sem consultar manual; mensagens de erro em português, junto ao campo com problema. | M | M4 |
+| Segurança: senhas guardadas como *hash* (bcrypt); cookie de sessão `secure`, `httponly` e `SameSite=Lax`; HTTPS obrigatório em produção; cada usuário acessa apenas os próprios dados; mensagem de falha de login não revela se o e-mail existe. | M | M4 |
+| Integridade dos dados: os formatos e domínios dos requisitos funcionais são impostos pelo banco de dados, além da interface. | M | M0 (concluído em [#24](https://github.com/WilsonSousajr/okonomi/issues/24)) |
+| Compatibilidade: funciona nas versões atuais de Chrome, Edge, Firefox e Safari, no computador ou no celular, em telas a partir de 375 px de largura, sem rolagem horizontal (RNF-10, RNF-36). | M | M4 |
+| Desempenho: o servidor responde às páginas em até 500 ms no percentil 95, com projetos de até 200 histórias (RNF-17). | S | M4 |
+| Conformidade: dados pessoais (e-mail) tratados conforme a LGPD; acessibilidade orientada pela WCAG 2.2. | S | M4 |
+| Licenciamento: apenas dependências de código aberto com licenças permissivas (MIT, BSD, PostgreSQL License). | M | M5 |
+| Documentação: README com instruções de instalação e execução; artefatos 1 a 9 entregues em PDF. | M | M5 |
+| Qualidade do código: integração contínua com análise estática (RuboCop, Brakeman), auditoria de dependências e testes automatizados em cada pull request. | M | M0 (concluído) |
 
 **Suposições e dependências.** O sistema supõe um servidor Linux com PostgreSQL 17
 e acesso à internet para implantação; se essa plataforma mudar, as seções 6 e 7
@@ -151,9 +149,9 @@ deste documento precisam ser revistas.
 
 ## 7. Elementos da solução
 
-A equipe propõe uma **aplicação web monolítica** — apresentação, regras de
-negócio e acesso a dados no mesmo sistema — por ser a forma mais simples de
-entregar um protótipo integrado e fácil de implantar.
+A equipe propõe uma **aplicação web monolítica**, com apresentação, regras de
+negócio e acesso a dados no mesmo sistema. É a forma mais simples de entregar um
+protótipo integrado e fácil de implantar.
 
 | Elemento | Escolha | Por quê |
 |---|---|---|
@@ -164,11 +162,11 @@ entregar um protótipo integrado e fácil de implantar.
 | Implantação | **Kamal** com contêineres Docker, servidor **Puma** atrás do **Thruster** | Um único servidor Linux basta para pôr o sistema em produção. |
 | Qualidade | **Minitest** e **Capybara**; **GitHub Actions** | Cada critério de aceitação vira um teste; nenhuma mudança entra sem CI verde. |
 
-As regras centrais do domínio — formato da história em três campos (papel, ação,
-benefício), formato do critério em três campos (contexto, ação, resultado),
-escalas fechadas e cálculo do RICE — já estão implementadas no modelo de dados
+As regras centrais do domínio já estão implementadas no modelo de dados
 ([#24](https://github.com/WilsonSousajr/okonomi/issues/24)) e detalhadas nos
-artefatos 5 e 7.
+artefatos 5 e 7: o formato da história em três campos (papel, ação, benefício),
+o formato do critério em três campos (contexto, ação, resultado), as escalas
+fechadas e o cálculo do RICE.
 
 ## 8. Rastreabilidade com o Critério de Avaliação 02
 

@@ -1,4 +1,4 @@
-# okonomi — Requisitos não funcionais
+# okonomi: Requisitos não funcionais
 
 **Artefato 3** do Trabalho Prático de Engenharia de Software (2026.2): especificação
 dos requisitos que valem para o sistema inteiro (*system-wide requirements*). Segue a
@@ -46,7 +46,7 @@ as histórias respeitam.
 | Id | Requisito | Métrica ou verificação |
 |---|---|---|
 | RNF-08 | **Idioma.** Toda a interface, inclusive mensagens de validação, datas e e-mails, está em **português do Brasil**. | Locale padrão `pt-BR` (`LocaleTest`); os testes de cada tela conferem as mensagens em português. Uma chave sem tradução ("translation missing") é tratada como defeito e ganha teste de regressão, como em #81. |
-| RNF-09 | **Acessibilidade.** A interface busca o nível **AA da WCAG 2.2**. Todo campo tem rótulo visível ligado a ele; mensagens de erro e de retorno ficam numa região `role="alert"`/`role="status"`; a navegação funciona só com teclado; o contraste do texto é de pelo menos 4,5:1. | Procedimento: auditoria de cada tela com o **Lighthouse** (categoria *Accessibility*) e com a extensão **axe DevTools**, que aplicam as regras automáticas da WCAG; a tela é aceita sem nenhuma violação de nível A ou AA apontada pelo axe. Os itens que as ferramentas não conferem sozinhas (ordem de foco, navegação só com teclado) são verificados à mão, percorrendo a tela com Tab. Os testes de sistema usam os rótulos para preencher os campos, o que garante a ligação rótulo–campo. |
+| RNF-09 | **Acessibilidade.** A interface busca o nível **AA da WCAG 2.2**. Todo campo tem rótulo visível ligado a ele; mensagens de erro e de retorno ficam numa região `role="alert"`/`role="status"`; a navegação funciona só com teclado; o contraste do texto é de pelo menos 4,5:1. | Procedimento: auditoria de cada tela com o **Lighthouse** (categoria *Accessibility*) e com a extensão **axe DevTools**, que aplicam as regras automáticas da WCAG; a tela é aceita sem nenhuma violação de nível A ou AA apontada pelo axe. Os itens que as ferramentas não conferem sozinhas (ordem de foco, navegação só com teclado) são verificados à mão, percorrendo a tela com Tab. Os testes de sistema usam os rótulos para preencher os campos, o que confirma que cada rótulo está ligado ao seu campo. |
 | RNF-10 | **Responsividade.** Todas as telas funcionam a partir de **375 px** de largura sem rolagem horizontal. | Teste de sistema `no horizontal scroll at 375px` (#1) nas telas públicas; as demais usam o mesmo layout e são conferidas no navegador a cada história. |
 | RNF-11 | **Formatos guiados.** O formulário da história mostra os campos "Como um", "eu quero" e "para", e o do critério de aceitação mostra "Dado", "quando" e "então", para que o usuário não precise conhecer os formatos de antemão. | Histórias RF09 e RF13. |
 | RNF-12 | **Facilidade de aprendizado.** Um membro de equipe ágil que nunca usou o sistema consegue, sem manual, criar a conta, um projeto, o product backlog e a primeira história em até **5 minutos**. | Roteiro do vídeo de teste de sistema (#32). |
@@ -55,7 +55,7 @@ as histórias respeitam.
 
 | Id | Requisito | Métrica ou verificação |
 |---|---|---|
-| RNF-13 | **Integridade garantida pelo banco.** As regras do domínio (um product backlog por projeto, escalas fechadas, histórias e épicos sempre do mesmo projeto, formatos em colunas obrigatórias) são impostas pelo banco de dados, além do modelo. Nenhum defeito na aplicação consegue gravar um dado que as viole. | Testes que contornam o modelo e esperam o erro do banco; ver o artefato 7, seção 4. |
+| RNF-13 | **Integridade imposta pelo banco.** As regras do domínio (um product backlog por projeto, escalas fechadas, histórias e épicos sempre do mesmo projeto, formatos em colunas obrigatórias) são impostas pelo banco de dados, além do modelo. Nenhum defeito na aplicação consegue gravar um dado que as viole. | Testes que contornam o modelo e esperam o erro do banco; ver o artefato 7, seção 4. |
 | RNF-14 | **Falha sem perda.** Um erro inesperado devolve uma página de erro e não deixa registro gravado pela metade: cada gravação ou exclusão de um registro, com os efeitos colaterais dela (por exemplo, devolver as histórias de uma sprint excluída), acontece numa única transação. | Transações do Active Record; páginas `public/4xx/5xx`. |
 | RNF-15 | **Cópia de segurança.** Em produção, o banco tem cópia de segurança diária mantida por pelo menos 7 dias. Perda máxima aceitável: 24 horas de dados. | Descrito no artefato 9 (infraestrutura, #33). |
 | RNF-16 | **Disponibilidade.** Durante o período de avaliação, a meta é 99% de disponibilidade mensal (no máximo cerca de 7 horas fora do ar por mês), com a verificação de saúde em `/up`. | O Kamal usa `/up` para só liberar uma versão nova que responda 200. A meta mensal é medida por um **monitor externo de disponibilidade** (por exemplo, UptimeRobot) que consulta `https://<domínio>/up` a cada 5 minutos: disponibilidade = verificações com resposta 200 ÷ total de verificações no mês. Este é o procedimento de verificação; o valor só existe depois de um mês com o sistema em produção. |
@@ -87,16 +87,16 @@ documento (seções 2, 4.2.3, 6 e 7), classificados pelas subcaracterísticas de
 
 | Atributo | O que o okonomi faz | ISO/IEC 25010 | OWASP Top 10 (2021) | Verificação |
 |---|---|---|---|---|
-| Armazenamento da senha | A senha nunca é gravada; o banco guarda só o *digest* **bcrypt** (`has_secure_password`). RNF-43, RNF-48. | Confidencialidade | A02 — Falhas criptográficas | Teste de `User` `stores the password as a digest, never in plain text` (#2). |
-| Política de senha | Mínimo de **8 caracteres** e máximo de 72 bytes, no cadastro e na redefinição. RNF-04. | Autenticidade | A07 — Falhas de identificação e autenticação | Testes de `User`, de cadastro (#2) e de redefinição (#80, #81). |
+| Armazenamento da senha | A senha nunca é gravada; o banco guarda só o *digest* **bcrypt** (`has_secure_password`). RNF-43, RNF-48. | Confidencialidade | A02: Falhas criptográficas | Teste de `User` `stores the password as a digest, never in plain text` (#2). |
+| Política de senha | Mínimo de **8 caracteres** e máximo de 72 bytes, no cadastro e na redefinição. RNF-04. | Autenticidade | A07: Falhas de identificação e autenticação | Testes de `User`, de cadastro (#2) e de redefinição (#80, #81). |
 | Limite de tentativas | Entrada, cadastro e pedido de redefinição aceitam **10 tentativas a cada 3 minutos** por origem (`rate_limit`). RNF-05. | Autenticidade | A07 | `rate_limit` em `SessionsController`, `RegistrationsController` e `PasswordsController`. |
 | Mensagens que não revelam contas | Falha de login e pedido de redefinição dão a mesma resposta exista ou não o e-mail. RNF-03, RNF-06. | Confidencialidade | A07 | Testes de sessão (#3) e de redefinição. |
 | Cookie de sessão | Assinado, `HttpOnly`, `SameSite=Lax` e, em produção, `Secure`. RNF-39. | Confidencialidade, autenticidade | A07 | `Authentication#session_cookie_options` (#40). |
 | Transporte | Em produção, `force_ssl` redireciona HTTP para HTTPS e envia o cabeçalho HSTS. RNF-38. | Confidencialidade, integridade | A02 | `config/environments/production.rb` (#40). |
-| Controle de acesso | Todo recurso é buscado a partir de `Current.user.projects`; o dado de outro usuário responde **404**, sem confirmar que existe. RNF-01, RNF-02. | Confidencialidade, integridade | A01 — Quebra de controle de acesso | Testes `… is not found` (#3 a #7). |
+| Controle de acesso | Todo recurso é buscado a partir de `Current.user.projects`; o dado de outro usuário responde **404**, sem confirmar que existe. RNF-01, RNF-02. | Confidencialidade, integridade | A01: Quebra de controle de acesso | Testes `… is not found` (#3 a #7). |
 | Proteção contra CSRF | Todo formulário leva o *token* de autenticidade do Rails. | Integridade | A01 | Proteção padrão do Rails (`protect_from_forgery`), ligada pelo `config.load_defaults 8.1`. |
-| Segredos fora do código | Nenhuma credencial no repositório. RNF-45. | Confidencialidade | A05 — Configuração incorreta de segurança | GitGuardian em cada commit. |
-| Componentes vulneráveis e código inseguro | **Brakeman** (análise estática) e **bundler-audit** / `importmap audit` (vulnerabilidades conhecidas nas dependências) rodam em todo PR. RNF-21. | Integridade | A03 — Injeção; A06 — Componentes vulneráveis e desatualizados | Check `ci` obrigatório na `main`. |
+| Segredos fora do código | Nenhuma credencial no repositório. RNF-45. | Confidencialidade | A05: Configuração incorreta de segurança | GitGuardian em cada commit. |
+| Componentes vulneráveis e código inseguro | **Brakeman** (análise estática) e **bundler-audit** / `importmap audit` (vulnerabilidades conhecidas nas dependências) rodam em todo PR. RNF-21. | Integridade | A03: Injeção; A06: Componentes vulneráveis e desatualizados | Check `ci` obrigatório na `main`. |
 | Registro das sessões | Cada sessão guarda IP e navegador; sair apaga a sessão; redefinir a senha encerra todas as sessões abertas. RNF-06. | Responsabilização | A07 | Testes de `SessionsController` e `PasswordsController`. |
 
 ## 4. Interfaces do sistema
@@ -166,19 +166,19 @@ Regras do domínio impostas pelo modelo **e** pelo banco (detalhes no artefato 7
 
 | Id | Restrição | Justificativa |
 |---|---|---|
-| RNF-40 | Aplicação **monolítica Ruby on Rails 8.1** sobre **Ruby 3.4**, com HTML renderizado no servidor (**Hotwire**: Turbo e Stimulus) e **Tailwind CSS v4**. Sem aplicação JavaScript separada (SPA) e sem empacotador (*bundler*) de JavaScript. | Uma pessoa mantém o projeto inteiro; menos peças, menos falhas. |
+| RNF-40 | Aplicação **monolítica Ruby on Rails 8.1** sobre **Ruby 3.4**, com HTML renderizado no servidor (**Hotwire**: Turbo e Stimulus) e **Tailwind CSS v4**. Sem aplicação JavaScript separada (SPA) e sem empacotador (*bundler*) de JavaScript. | O projeto é mantido por uma pessoa, e cada peça a menos é um ponto de falha a menos. |
 | RNF-41 | Banco **PostgreSQL 17**. | Índice único parcial, chaves estrangeiras compostas, restrições `CHECK` e `decimal` exato, necessários às regras da seção 5. |
 | RNF-42 | Sem **Redis** nem outro serviço de infraestrutura: filas, cache e websockets usam o próprio PostgreSQL (Solid Queue, Solid Cache, Solid Cable). | Um único servidor basta para produção. |
 | RNF-43 | Autenticação com o gerador nativo do Rails 8 (`has_secure_password` com bcrypt). Sem Devise. | Menos dependências; o código é do projeto e é testado. |
 | RNF-44 | Implantação com **Kamal** em contêiner Docker, servidor **Puma** atrás do **Thruster**. | Um comando implanta; ver artefato 9. |
-| RNF-45 | Nenhuma credencial fica no repositório, nem mesmo um valor padrão de desenvolvimento. As credenciais vêm de variáveis de ambiente (`.env` fora do Git). | Segredo publicado é segredo vazado; o GitGuardian verifica cada commit. |
+| RNF-45 | Nenhuma credencial fica no repositório, nem mesmo um valor padrão de desenvolvimento. As credenciais vêm de variáveis de ambiente (`.env` fora do Git). | Um segredo publicado no repositório é considerado vazado; o GitGuardian verifica cada commit. |
 | RNF-46 | Uma nova dependência precisa ser justificada na issue, registrada no artefato 9 e ter a licença declarada na seção 8 deste documento. | Controle da superfície de ataque e do licenciamento. |
 
 ## 7. Conformidade do sistema
 
 ### 7.1 Leis
 
-- **LGPD — Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais).** O okonomi
+- **LGPD (Lei nº 13.709/2018, Lei Geral de Proteção de Dados Pessoais).** O okonomi
   trata poucos dados pessoais: o **e-mail** do usuário e, em cada sessão, o **endereço
   IP** e o **navegador** (*user agent*).
   - RNF-47 (finalidade e minimização): esses dados servem só para autenticar o usuário

@@ -1,4 +1,4 @@
-# okonomi — Infraestrutura de implantação
+# okonomi: Infraestrutura de implantação
 
 **Artefato 9** do Trabalho Prático de Engenharia de Software (2026.2): descrição da
 infraestrutura de implantação, contemplando *hardware*, *software* e serviços.

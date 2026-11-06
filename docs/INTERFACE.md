@@ -1,4 +1,4 @@
-# okonomi — Projeto de interface com o usuário
+# okonomi: Projeto de interface com o usuário
 
 **Artefato 6** do Trabalho Prático de Engenharia de Software (2026.2): projeto de
 interface com o usuário, em *storyboards* compostos por *wireframes*. Rastreado pela
@@ -114,8 +114,8 @@ o RICE (Reach 1000, Impact 2, Confidence 80%, Effort 5). A pontuação calculada
 320. Depois ela filtra o backlog pelas histórias *M* e ordena pela maior pontuação.
 
 1. **Editar história, grupo "Estimativa e prioridade":** as listas oferecem só os
-   valores permitidos, com o rótulo do método ("2 — alto", "80% — média",
-   "M — Must have").
+   valores permitidos, com o rótulo do método ("2 (alto)", "80% (média)",
+   "M (Must have)").
 2. **História com a pontuação calculada:** (1000 × 2 × 0,8) / 5 = 320,00. Se algum
    campo ficar vazio, ou se Effort for 0, a pontuação aparece como "indefinida".
 3. **Backlog filtrado por MoSCoW e ordenado por RICE:** as pontuações indefinidas
@@ -174,8 +174,8 @@ sem épico.
    "Nenhuma sprint ainda." na seção de sprints.
 4. **Segundo product backlog recusado:** a página do projeto não oferece mais o botão
    *Criar product backlog*, mas mesmo abrindo o formulário pelo endereço o envio é
-   recusado com "Este projeto já possui um product backlog — só pode existir um por
-   projeto.".
+   recusado com a mensagem "Este projeto já possui um product backlog e só pode
+   existir um por projeto.".
 5. **Excluir épico:** a confirmação "Excluir o épico? As histórias dele continuam
    existindo, sem épico.".
 6. **Projeto depois da exclusão:** o aviso "Épico excluído.", a história ainda no

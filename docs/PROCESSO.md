@@ -39,14 +39,20 @@ na visão *Board*, agrupado pelo campo **Status**.
 
 | Coluna | Propósito | Critério de saída |
 |---|---|---|
-| **Backlog** | Trabalho capturado e priorizado, ainda sem responsável. É a fonte única de tudo que falta fazer. | Escopo entendido; MoSCoW e story points definidos. |
-| **Sprint Backlog** | Trabalho comprometido para a iteração (marco) atual e pronto para ser puxado. | Critérios de aceitação escritos e story points estimados. |
-| **Doing** | Em execução agora. Limite de WIP: 1 cartão por pessoa. | Branch aberta e vinculada à issue. |
+| **Backlog** | Trabalho capturado e priorizado, ainda sem responsável. É a fonte única de tudo que falta fazer. | Escopo entendido, story points e MoSCoW definidos e cartão escolhido para o marco atual. |
+| **Sprint Backlog** | Trabalho comprometido para a iteração (marco) atual e pronto para ser puxado. | Critérios de aceitação escritos; alguém puxa o cartão, respeitando o limite de WIP. |
+| **Doing** | Em execução agora. Limite de WIP: 1 cartão por pessoa. | Pull request aberto, com `Closes #N` (ou `Refs #N`) ligando-o à issue. |
 | **Review** | Pull request aberto, aguardando revisão e o check `ci` da integração contínua. | PR aprovado e `ci` verde. |
 | **Done** | Merge feito no `main`, CI verde e critérios de aceitação verificados. | Evidência registrada na issue (saída de testes, link do PR). |
 
 A descrição de cada coluna também está cadastrada no próprio quadro, como
 descrição da opção do campo Status e no README do projeto no GitHub.
+
+Os nomes *Backlog* e *Sprint Backlog* vêm do vocabulário do Scrum porque é o
+vocabulário do próprio domínio do sistema (product backlog e sprint backlogs).
+O processo continua sendo Kanban: não há reuniões nem duração fixa de sprint, o
+fluxo é puxado e limitado por WIP, e "sprint" aqui significa apenas o marco em
+andamento.
 
 ### Marcos (iterações)
 
@@ -78,7 +84,8 @@ também aparecem no quadro, ligados à issue que fecham.
 | **Marco** | Iteração em que o cartão será entregue (M0–M5). | `M4 — Protótipo` |
 | **Story Points** | Esforço relativo na escala 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 — a mesma que o sistema impõe às histórias (RF15). | `1` |
 | **MoSCoW** | Prioridade: **M** (*must*), **S** (*should*), **C** (*could*), **W** (*won't*). | `M — Must have` |
-| **RICE** | Pontuação (R × I × C) / E, usada para desempatar cartões de mesma prioridade MoSCoW dentro de um marco. | preenchido ao ordenar o M4 |
+| **RICE** | Pontuação (R × I × C) / E, reservada para desempatar cartões de mesma prioridade MoSCoW que disputem a mesma vaga de WIP. Como o projeto tem um único participante e os cartões M de cada marco foram puxados na ordem de dependência entre eles, nenhum empate precisou ser decidido, e o campo ficou vazio em todos os cartões. | vazio |
+| **Responsável** (*Assignees*) | Quem puxou o cartão. Todos os cartões têm o único membro da equipe como responsável. | `WilsonSousajr` |
 | **Status** | Coluna atual do quadro. | `Backlog` |
 | **PR vinculado** | Pull request que implementa o cartão (`Closes #N`). | [#54](https://github.com/WilsonSousajr/okonomi/pull/54) fecha #24 |
 
@@ -95,8 +102,8 @@ Três modelos de issue padronizam a criação dos cartões:
 | Artefato (`artefato:*`) | 9 | Um por artefato da seção 3 (#25–#33). |
 | Gestão e entrega | 3 | Processo e equipe (#34), geração dos PDFs (#58) e entrega final (#35). |
 | Fundação e infraestrutura | 5 | Convenções, esqueleto, banco, CI e modelo de domínio (#20–#24). |
-| Defeito (`fix` + `regression`) | 3 | Encontrados durante o trabalho (#36, #40, #52). |
-| Manutenção | 2 | Ajustes de documentação e dependências (#46, #48). |
+| Defeito (`regression`) | 12 | Encontrados durante o trabalho, cada um com teste de regressão (#36, #40, #52, #68, #80–#82, #94, #102–#104, #117). |
+| Manutenção | 6 | Documentação de apoio e atualização de dependências com avisos de segurança (#46, #48, #66, #85, #108, #114). |
 
 ## 4. Ciclo de vida de um cartão
 
@@ -132,65 +139,84 @@ Três modelos de issue padronizam a criação dos cartões:
 | Decomposição do enunciado em cartões: 19 RF, 9 artefatos, gestão e entrega (instrução 11). | Issues #1–#35 |
 | Rastreamento de cada instrução (seção 4) e de cada item de critério (seção 5) como caixa de seleção dentro de um cartão. | Issues de artefato, #34 e #35 |
 | Criação de labels de tipo, área, artefato e sinalização, e dos marcos M0–M5. | [Labels](https://github.com/WilsonSousajr/okonomi/labels), [Marcos](https://github.com/WilsonSousajr/okonomi/milestones) |
-| Estimativa (story points) e priorização (MoSCoW) de todos os cartões. | Campos no quadro |
+| Estimativa (story points) e priorização (MoSCoW) de todos os cartões. | Campos no quadro; inventário na seção 6 |
 | Definição do padrão de commit e de branch, com validação automática. | `.githooks/commit-msg`, `AGENTS.md` |
 | Proteção do `main`: PR obrigatório, check `ci` obrigatório, sem *force-push*. | Regras da branch |
 | Integração contínua com análise estática e testes. | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
-| Registro de defeitos encontrados como cartões com teste de regressão. | #36, #40, #52 |
+| Registro de defeitos encontrados como cartões com teste de regressão. | #36, #40, #52, #68, #80–#82, #94, #102–#104, #117 |
 | Geração dos artefatos textuais em PDF a partir do Markdown (instrução 7). | `bin/docs-pdf`, [`docs/pdf/`](pdf/), #58 |
+| Atualização de dependências com avisos de segurança, cada uma em cartão próprio antes de qualquer outro merge. | #68, #85, #108, #114 |
+| Auditoria de todos os artefatos contra o enunciado (04/11/2026): cada item dos critérios de avaliação conferido com o documento e com o código, e as divergências corrigidas em PRs próprios. | PRs #112, #113, #115, #116, #118, #119 |
+| Revisão do quadro (06/11/2026): todos os PRs incluídos, cartões fechados movidos para Done, responsável atribuído e estimativa preenchida nos cartões que não tinham. | [Projeto 14](https://github.com/users/WilsonSousajr/projects/14) |
 
 ## 6. Inventário de cartões
 
-Retrato do quadro em **29/09/2026**, gerado com
-`gh project item-list 14 --owner WilsonSousajr --format json`. O estado atual
-está sempre no [quadro](https://github.com/users/WilsonSousajr/projects/14).
+Retrato do quadro em **06/11/2026**, gerado pela API do GitHub Projects
+(`gh api graphql`, campos Status, Story Points e MoSCoW de cada item). O estado
+atual está sempre no [quadro](https://github.com/users/WilsonSousajr/projects/14).
+Todos os cartões têm o único membro da equipe como responsável.
 
 | Cartão | Título | Labels | Marco | Pontos | MoSCoW | Coluna |
 |---|---|---|---|---|---|---|
-| [#1](https://github.com/WilsonSousajr/okonomi/issues/1) | RF01 — Interface gráfica web para acesso ao sistema | `feat` `area:ui` `RF` `artefato:prototipo` | M4 | 5 | M | Backlog |
-| [#2](https://github.com/WilsonSousajr/okonomi/issues/2) | RF02 — Criação de conta de usuário | `feat` `area:auth` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#3](https://github.com/WilsonSousajr/okonomi/issues/3) | RF03 — Autenticação e acesso aos serviços | `feat` `area:auth` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#4](https://github.com/WilsonSousajr/okonomi/issues/4) | RF04 — CRUD de projetos | `feat` `area:projects` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#5](https://github.com/WilsonSousajr/okonomi/issues/5) | RF05 — CRUD de product backlog (no máximo um por projeto) | `feat` `area:backlogs` `RF` `artefato:prototipo` | M4 | 5 | M | Backlog |
-| [#6](https://github.com/WilsonSousajr/okonomi/issues/6) | RF06 — CRUD de sprint backlogs (vários por projeto) | `feat` `area:backlogs` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#7](https://github.com/WilsonSousajr/okonomi/issues/7) | RF07 — CRUD de histórias de usuário associadas ao product backlog | `feat` `area:stories` `RF` `artefato:prototipo` | M4 | 5 | M | Backlog |
-| [#8](https://github.com/WilsonSousajr/okonomi/issues/8) | RF08 — Movimentação de histórias de usuário entre backlogs | `feat` `area:stories` `RF` `artefato:prototipo` | M4 | 5 | M | Backlog |
-| [#9](https://github.com/WilsonSousajr/okonomi/issues/9) | RF09 — Formato padrão da história: Como um … eu quero … para … | `feat` `area:stories` `RF` `artefato:historias` | M4 | 2 | M | Backlog |
-| [#10](https://github.com/WilsonSousajr/okonomi/issues/10) | RF10 — CRUD de épicos | `feat` `area:epics` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#11](https://github.com/WilsonSousajr/okonomi/issues/11) | RF11 — Vinculação de histórias de usuário a épicos | `feat` `area:epics` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#12](https://github.com/WilsonSousajr/okonomi/issues/12) | RF12 — CRUD de critérios de aceitação | `feat` `area:criteria` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#13](https://github.com/WilsonSousajr/okonomi/issues/13) | RF13 — Formato padrão do critério: Dado … quando … então … | `feat` `area:criteria` `RF` `artefato:historias` | M4 | 2 | M | Backlog |
-| [#14](https://github.com/WilsonSousajr/okonomi/issues/14) | RF14 — Atribuição de story points a histórias de usuário | `feat` `area:estimation` `RF` `artefato:prototipo` | M4 | 2 | M | Backlog |
-| [#15](https://github.com/WilsonSousajr/okonomi/issues/15) | RF15 — Domínio de story points: 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 | `feat` `area:estimation` `RF` `artefato:prototipo` | M4 | 1 | M | Backlog |
-| [#16](https://github.com/WilsonSousajr/okonomi/issues/16) | RF16 — Atribuição de etiqueta MoSCoW (M, S, C, W) | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 2 | M | Backlog |
-| [#17](https://github.com/WilsonSousajr/okonomi/issues/17) | RF17 — Atribuição de critério RICE (Reach, Impact, Confidence, Effort) | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
-| [#18](https://github.com/WilsonSousajr/okonomi/issues/18) | RF18 — Domínios dos valores RICE | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 2 | M | Backlog |
-| [#19](https://github.com/WilsonSousajr/okonomi/issues/19) | RF19 — Cálculo da pontuação RICE pela fórmula (R × I × C) / E | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 3 | M | Backlog |
+| [#1](https://github.com/WilsonSousajr/okonomi/issues/1) | RF01 — Interface gráfica web para acesso ao sistema | `feat` `area:ui` `RF` `artefato:prototipo` | M4 | 5 | M | Done |
+| [#2](https://github.com/WilsonSousajr/okonomi/issues/2) | RF02 — Criação de conta de usuário | `feat` `area:auth` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#3](https://github.com/WilsonSousajr/okonomi/issues/3) | RF03 — Autenticação e acesso aos serviços | `feat` `area:auth` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#4](https://github.com/WilsonSousajr/okonomi/issues/4) | RF04 — CRUD de projetos | `feat` `area:projects` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#5](https://github.com/WilsonSousajr/okonomi/issues/5) | RF05 — CRUD de product backlog (no máximo um por projeto) | `feat` `area:backlogs` `RF` `artefato:prototipo` | M4 | 5 | M | Done |
+| [#6](https://github.com/WilsonSousajr/okonomi/issues/6) | RF06 — CRUD de sprint backlogs (vários por projeto) | `feat` `area:backlogs` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#7](https://github.com/WilsonSousajr/okonomi/issues/7) | RF07 — CRUD de histórias de usuário associadas ao product backlog | `feat` `area:stories` `RF` `artefato:prototipo` | M4 | 5 | M | Done |
+| [#8](https://github.com/WilsonSousajr/okonomi/issues/8) | RF08 — Movimentação de histórias de usuário entre backlogs | `feat` `area:stories` `RF` `artefato:prototipo` | M4 | 5 | M | Done |
+| [#9](https://github.com/WilsonSousajr/okonomi/issues/9) | RF09 — Formato padrão da história: Como um … eu quero … para … | `feat` `area:stories` `RF` `artefato:historias` | M4 | 2 | M | Done |
+| [#10](https://github.com/WilsonSousajr/okonomi/issues/10) | RF10 — CRUD de épicos | `feat` `area:epics` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#11](https://github.com/WilsonSousajr/okonomi/issues/11) | RF11 — Vinculação de histórias de usuário a épicos | `feat` `area:epics` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#12](https://github.com/WilsonSousajr/okonomi/issues/12) | RF12 — CRUD de critérios de aceitação | `feat` `area:criteria` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#13](https://github.com/WilsonSousajr/okonomi/issues/13) | RF13 — Formato padrão do critério: Dado … quando … então … | `feat` `area:criteria` `RF` `artefato:historias` | M4 | 2 | M | Done |
+| [#14](https://github.com/WilsonSousajr/okonomi/issues/14) | RF14 — Atribuição de story points a histórias de usuário | `feat` `area:estimation` `RF` `artefato:prototipo` | M4 | 2 | M | Done |
+| [#15](https://github.com/WilsonSousajr/okonomi/issues/15) | RF15 — Domínio de story points: 0, 1, 2, 3, 5, 8, 13, 21, 34, 55 | `feat` `area:estimation` `RF` `artefato:prototipo` | M4 | 1 | M | Done |
+| [#16](https://github.com/WilsonSousajr/okonomi/issues/16) | RF16 — Atribuição de etiqueta MoSCoW (M, S, C, W) | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 2 | M | Done |
+| [#17](https://github.com/WilsonSousajr/okonomi/issues/17) | RF17 — Atribuição de critério RICE (Reach, Impact, Confidence, Effort) | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
+| [#18](https://github.com/WilsonSousajr/okonomi/issues/18) | RF18 — Domínios dos valores RICE | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 2 | M | Done |
+| [#19](https://github.com/WilsonSousajr/okonomi/issues/19) | RF19 — Cálculo da pontuação RICE pela fórmula (R × I × C) / E | `feat` `area:prioritization` `RF` `artefato:prototipo` | M4 | 3 | M | Done |
 | [#20](https://github.com/WilsonSousajr/okonomi/issues/20) | chore: diretrizes do projeto e convenções de contribuição | `docs` `chore` | M0 | 3 | M | Done |
 | [#21](https://github.com/WilsonSousajr/okonomi/issues/21) | chore: esqueleto Rails 8.1 com PostgreSQL e Tailwind | `chore` `area:infra` | M0 | 5 | M | Done |
 | [#22](https://github.com/WilsonSousajr/okonomi/issues/22) | build: PostgreSQL de desenvolvimento via Docker Compose | `build` `area:db` `area:infra` | M0 | 2 | M | Done |
 | [#23](https://github.com/WilsonSousajr/okonomi/issues/23) | ci: pipeline de integração contínua | `ci` `area:infra` | M0 | 3 | S | Done |
 | [#24](https://github.com/WilsonSousajr/okonomi/issues/24) | feat: modelagem base do domínio (migrations, models e invariantes) | `feat` `area:db` | M0 | 8 | M | Done |
-| [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | [Artefato 1] Descrição do processo — quadro e cartões Kanban | `docs` `artefato:processo` | M1 | 3 | M | Review |
+| [#25](https://github.com/WilsonSousajr/okonomi/issues/25) | [Artefato 1] Descrição do processo — quadro e cartões Kanban | `docs` `artefato:processo` | M1 | 3 | M | Done |
 | [#26](https://github.com/WilsonSousajr/okonomi/issues/26) | [Artefato 2] Documento de visão e escopo | `docs` `artefato:visao` | M2 | 5 | M | Done |
-| [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | [Artefato 3] Especificação de requisitos não funcionais | `docs` `artefato:rnf` | M2 | 8 | M | Backlog |
-| [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | [Artefato 4] Especificação de requisitos funcionais por histórias de usuário | `docs` `artefato:historias` | M2 | 5 | M | Backlog |
-| [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | [Artefato 5] Architecture notebook | `docs` `artefato:arquitetura` | M3 | 8 | M | Backlog |
-| [#30](https://github.com/WilsonSousajr/okonomi/issues/30) | [Artefato 6] Projeto de interface — storyboards e wireframes | `docs` `area:ui` `artefato:interface` | M3 | 13 | M | Backlog |
-| [#31](https://github.com/WilsonSousajr/okonomi/issues/31) | [Artefato 7] Projeto físico do banco de dados | `docs` `area:db` `artefato:bd` | M3 | 5 | M | Backlog |
-| [#32](https://github.com/WilsonSousajr/okonomi/issues/32) | [Artefato 8] Protótipo e vídeo de teste de sistema | `docs` `artefato:prototipo` | M4 | 13 | M | Backlog |
-| [#33](https://github.com/WilsonSousajr/okonomi/issues/33) | [Artefato 9] Descrição da infraestrutura de implantação | `docs` `area:infra` `artefato:infraestrutura` | M5 | 5 | M | Backlog |
+| [#27](https://github.com/WilsonSousajr/okonomi/issues/27) | [Artefato 3] Especificação de requisitos não funcionais | `docs` `artefato:rnf` | M2 | 8 | M | Done |
+| [#28](https://github.com/WilsonSousajr/okonomi/issues/28) | [Artefato 4] Especificação de requisitos funcionais por histórias de usuário | `docs` `artefato:historias` | M2 | 5 | M | Done |
+| [#29](https://github.com/WilsonSousajr/okonomi/issues/29) | [Artefato 5] Architecture notebook | `docs` `artefato:arquitetura` | M3 | 8 | M | Done |
+| [#30](https://github.com/WilsonSousajr/okonomi/issues/30) | [Artefato 6] Projeto de interface — storyboards e wireframes | `docs` `area:ui` `artefato:interface` | M3 | 13 | M | Done |
+| [#31](https://github.com/WilsonSousajr/okonomi/issues/31) | [Artefato 7] Projeto físico do banco de dados | `docs` `area:db` `artefato:bd` | M3 | 5 | M | Done |
+| [#32](https://github.com/WilsonSousajr/okonomi/issues/32) | [Artefato 8] Protótipo e vídeo de teste de sistema | `docs` `artefato:prototipo` | M4 | 13 | M | Done |
+| [#33](https://github.com/WilsonSousajr/okonomi/issues/33) | [Artefato 9] Descrição da infraestrutura de implantação | `docs` `area:infra` `artefato:infraestrutura` | M5 | 5 | M | Done |
 | [#34](https://github.com/WilsonSousajr/okonomi/issues/34) | Processo e equipe — participantes, templates e revisão dos artefatos | `docs` `artefato:processo` | M1 | 2 | M | Done |
-| [#35](https://github.com/WilsonSousajr/okonomi/issues/35) | Entrega final — ESW-A-B-C-D-E-F.ZIP | `docs` `entrega` | M5 | 3 | M | Backlog |
+| [#35](https://github.com/WilsonSousajr/okonomi/issues/35) | Entrega final — ESW-A-B-C-D-E-F.ZIP | `docs` `entrega` | M5 | 3 | M | Doing |
 | [#36](https://github.com/WilsonSousajr/okonomi/issues/36) | fix: json 3.0 quebra a leitura de cookies assinados (autenticação inteira falha) | `fix` `build` `area:auth` `regression` | M0 | 2 | M | Done |
 | [#40](https://github.com/WilsonSousajr/okonomi/issues/40) | fix: cookie de sessão sem flag secure e force_ssl desativado em produção | `fix` `area:auth` `area:infra` `regression` | M0 | 2 | M | Done |
 | [#46](https://github.com/WilsonSousajr/okonomi/issues/46) | docs: CLAUDE.md duplica regras que pertencem só ao AGENTS.md | `docs` | M0 | 1 | M | Done |
 | [#48](https://github.com/WilsonSousajr/okonomi/issues/48) | build: ignorar o json no Dependabot enquanto a fixação em 2.x for necessária | `build` `ci` | M0 | 1 | M | Done |
 | [#52](https://github.com/WilsonSousajr/okonomi/issues/52) | fix: suíte de testes trava no macOS quando roda em paralelo | `fix` `area:infra` `regression` | M0 | 1 | M | Done |
 | [#58](https://github.com/WilsonSousajr/okonomi/issues/58) | build: gerar os artefatos textuais em PDF | `docs` `build` `entrega` | M1 | 3 | M | Done |
+| [#66](https://github.com/WilsonSousajr/okonomi/issues/66) | docs: documentar o uso do ai-memory no AGENTS.md | `docs` | M0 | 1 | C | Done |
+| [#68](https://github.com/WilsonSousajr/okonomi/issues/68) | fix: CI falha no Brakeman porque a versão 8.0.6 não é a mais recente | `fix` `ci` `regression` | M0 | 1 | M | Done |
+| [#80](https://github.com/WilsonSousajr/okonomi/issues/80) | fix: senha curta na redefinição aparece como "As senhas não conferem" | `fix` `area:auth` `regression` | M4 | 1 | M | Done |
+| [#81](https://github.com/WilsonSousajr/okonomi/issues/81) | fix: senha acima de 72 bytes mostra "Translation missing" | `fix` `area:auth` `regression` | M4 | 1 | M | Done |
+| [#82](https://github.com/WilsonSousajr/okonomi/issues/82) | fix: entrar depois de uma sessão expirada pode levar a uma página 404 | `fix` `area:auth` `regression` | M4 | 2 | M | Done |
+| [#85](https://github.com/WilsonSousajr/okonomi/issues/85) | chore: atualizar net-ssh e crass (avisos do bundler-audit quebram o CI) | `chore` | M0 | 1 | M | Done |
+| [#94](https://github.com/WilsonSousajr/okonomi/issues/94) | test: testes de sistema perdem texto digitado de forma intermitente | `test` `regression` | M4 | 2 | S | Backlog |
+| [#102](https://github.com/WilsonSousajr/okonomi/issues/102) | fix: story points, Confidence e Effort aceitam valores não inteiros truncando-os em silêncio | `fix` `area:estimation` `regression` | M4 | 2 | M | Done |
+| [#103](https://github.com/WilsonSousajr/okonomi/issues/103) | fix: épico excluído ou inexistente no formulário da história gera erro 500 | `fix` `area:epics` `regression` | M4 | 1 | M | Done |
+| [#104](https://github.com/WilsonSousajr/okonomi/issues/104) | fix: Reach acima do limite do inteiro gera erro 500 | `fix` `area:prioritization` `regression` | M4 | 1 | M | Done |
+| [#108](https://github.com/WilsonSousajr/okonomi/issues/108) | chore: atualizar addressable, loofah, nokogiri, rack e rails-html-sanitizer (avisos do bundler-audit quebram o CI) | `chore` | M5 | 1 | M | Done |
+| [#114](https://github.com/WilsonSousajr/okonomi/issues/114) | chore: atualizar o Rails para 8.1.4.1 (avisos de segurança do bundler-audit quebram o CI) | `chore` | M5 | 1 | M | Done |
+| [#117](https://github.com/WilsonSousajr/okonomi/issues/117) | fix: páginas de erro (404, 422, 500…) em inglês violam RNF-08 | `fix` `area:ui` `regression` | M5 | 1 | S | Done |
 
-Pull requests também aparecem no quadro, sempre em Done após o merge, ligados à
-issue que fecham; foram omitidos do inventário para não duplicar cartões.
+Pull requests também aparecem no quadro, ligados à issue que fecham: ficam em
+Review enquanto abertos e vão para Done após o merge. Foram omitidos do
+inventário para não duplicar cartões. PRs fechados sem merge (por exemplo,
+atualizações do Dependabot descartadas) não ficam no quadro.
 
 ## 7. Evidência
 
@@ -198,7 +224,7 @@ Visão *Board* do quadro, com as cinco colunas:
 
 ![Quadro Kanban do okonomi na visão Board](PROCESSO/quadro.png)
 
-Detalhe de um cartão ([#24](https://github.com/WilsonSousajr/okonomi/issues/24)), com labels, coluna (Status), Story Points, RICE, MoSCoW, marco e PR vinculado:
+Detalhe de um cartão ([#24](https://github.com/WilsonSousajr/okonomi/issues/24)), com responsável, labels, coluna (Status), Story Points, MoSCoW, marco e PR vinculado:
 
 ![Detalhe de um cartão no quadro](PROCESSO/cartao.png)
 

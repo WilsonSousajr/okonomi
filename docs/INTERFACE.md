@@ -1,5 +1,7 @@
 # okonomi: Projeto de interface com o usuário
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 6** do Trabalho Prático de Engenharia de Software (2026.2): projeto de
 interface com o usuário, em *storyboards* compostos por *wireframes*. Rastreado pela
 issue [#30](https://github.com/WilsonSousajr/okonomi/issues/30); atende às instruções

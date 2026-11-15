@@ -1,5 +1,7 @@
 # okonomi: Infraestrutura de implantação
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 9** do Trabalho Prático de Engenharia de Software (2026.2): descrição da
 infraestrutura de implantação, contemplando *hardware*, *software* e serviços.
 Rastreado pela issue [#33](https://github.com/WilsonSousajr/okonomi/issues/33);

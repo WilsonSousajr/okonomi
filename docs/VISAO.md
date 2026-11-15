@@ -1,5 +1,7 @@
 # okonomi: Visão
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 2** do Trabalho Prático de Engenharia de Software (2026.2): documento de
 visão e escopo. Segue a estrutura do modelo `vision_tpl.odt`
 ([`docs/RF/Templates/`](RF/Templates/)). Rastreado pela issue

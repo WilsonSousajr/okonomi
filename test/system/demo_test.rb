@@ -49,6 +49,9 @@ class DemoTest < ApplicationSystemTestCase
     visit root_path
     caption "Teste de sistema do okonomi: um cenário de sucesso para cada serviço"
     pause 3
+    # Every artefact carries the author's name and student number (professor's request).
+    caption "José Wilson Barbosa de Sousa Júnior · Matrícula 241024259"
+    pause 3
 
     # RF01, RF02, RF03
     caption "RF02: Criação de conta de usuário"

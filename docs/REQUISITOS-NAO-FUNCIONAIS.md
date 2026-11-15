@@ -1,5 +1,7 @@
 # okonomi: Requisitos não funcionais
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 3** do Trabalho Prático de Engenharia de Software (2026.2): especificação
 dos requisitos que valem para o sistema inteiro (*system-wide requirements*). Segue a
 estrutura do modelo `systemwide_req_spec.odt` ([`docs/RF/Templates/`](RF/Templates/)).

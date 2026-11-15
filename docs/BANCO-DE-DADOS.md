@@ -1,5 +1,7 @@
 # okonomi: Projeto físico do banco de dados
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 7** do Trabalho Prático de Engenharia de Software (2026.2): projeto físico
 do banco de dados, em diagrama e texto. Rastreado pela issue
 [#31](https://github.com/WilsonSousajr/okonomi/issues/31); atende às instruções 19, 20

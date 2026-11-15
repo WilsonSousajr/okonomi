@@ -1,5 +1,7 @@
 # Descrição do processo de gerenciamento: plano de projeto
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 1** do Trabalho Prático de Engenharia de Software (2026.2), projeto okonomi.
 Rastreado pela issue [#25](https://github.com/WilsonSousajr/okonomi/issues/25).
 Atende às instruções 8 a 12 da seção 4 e ao Critério de Avaliação 01 do enunciado.

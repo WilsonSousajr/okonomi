@@ -1,5 +1,7 @@
 # Equipe, autoria e entrega
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 Documento exigido pela instrução 6 da seção 4 do enunciado: informa quais
 artefatos foram construídos por cada membro da equipe. Registra também como as
 instruções 1 a 5 são atendidas. Rastreado pela issue

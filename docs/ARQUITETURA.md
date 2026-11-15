@@ -1,5 +1,7 @@
 # okonomi: Architecture notebook (Caderno de arquitetura)
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 5** do Trabalho Prático de Engenharia de Software (2026.2): descrição da
 arquitetura do software. Rastreado pela issue
 [#29](https://github.com/WilsonSousajr/okonomi/issues/29); segue o modelo

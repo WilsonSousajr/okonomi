@@ -1,5 +1,7 @@
 # okonomi: Histórias de usuário
 
+**José Wilson Barbosa de Sousa Júnior · Matrícula 241024259**
+
 **Artefato 4** do Trabalho Prático de Engenharia de Software (2026.2): especificação
 dos requisitos funcionais por meio de histórias de usuário. Rastreado pela issue
 [#28](https://github.com/WilsonSousajr/okonomi/issues/28); atende às instruções 3 e 14
